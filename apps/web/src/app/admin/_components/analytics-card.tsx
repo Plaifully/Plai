@@ -11,11 +11,21 @@ import {
 import { env } from "~/env"
 import { cache } from "~/lib/cache"
 
+type AnalyticsData = {
+  results: AnalyticsChartData[]
+  totalVisitors: number
+  averageVisitors: number
+}
+
 const getAnalytics = cache(
-  async () => {
+  async (): Promise<AnalyticsData | null> => {
     const host = env.NEXT_PUBLIC_PLAUSIBLE_HOST
     const apiKey = env.PLAUSIBLE_API_KEY
     const domain = env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN
+
+    if (!host || !apiKey || !domain) {
+      return null
+    }
 
     const api = wretch(`${host}/api/v1`)
       .auth(`Bearer ${apiKey}`)
@@ -31,6 +41,7 @@ const getAnalytics = cache(
     const { results } = await api
       .get(`/stats/timeseries?${queryOptions.toString()}`)
       .json<{ results: AnalyticsChartData[] }>()
+    
     const totalVisitors = results.reduce((acc, curr) => acc + curr.visitors, 0)
     const averageVisitors = Math.round(totalVisitors / results.length)
 
@@ -41,7 +52,17 @@ const getAnalytics = cache(
 )
 
 const AnalyticsCard = async ({ ...props }: ComponentProps<typeof Card>) => {
-  const { results, totalVisitors, averageVisitors } = await getAnalytics()
+  const analytics = await getAnalytics()
+
+  if (!analytics) {
+    return <Card {...props}>
+      <CardHeader>
+        <CardDescription>Analytics not configured</CardDescription>
+      </CardHeader>
+    </Card>
+  }
+
+  const { results, totalVisitors, averageVisitors } = analytics
 
   return (
     <Card {...props}>

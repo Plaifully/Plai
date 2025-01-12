@@ -42,12 +42,15 @@ export const env = createEnv({
     SCREENSHOTONE_ACCESS_KEY: z.string().optional(),
     BEEHIIV_API_KEY: z.string().optional(),
     BEEHIIV_PUBLICATION_ID: z.string().optional(),
+    PLAUSIBLE_API_KEY: z.string().optional(),
   },
 
   client: {
     NEXT_PUBLIC_SITE_URL: z.string().url().min(1),
     NEXT_PUBLIC_SITE_EMAIL: z.string().email().min(1),
     NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string().optional(),
+    NEXT_PUBLIC_PLAUSIBLE_HOST: z.string().url().optional(),
+    NEXT_PUBLIC_PLAUSIBLE_DOMAIN: z.string().optional(),
   },
 
   experimental__runtimeEnv: {
@@ -56,6 +59,8 @@ export const env = createEnv({
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_SITE_EMAIL: process.env.NEXT_PUBLIC_SITE_EMAIL,
     NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    NEXT_PUBLIC_PLAUSIBLE_HOST: process.env.NEXT_PUBLIC_PLAUSIBLE_HOST,
+    NEXT_PUBLIC_PLAUSIBLE_DOMAIN: process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN,
   },
 
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
