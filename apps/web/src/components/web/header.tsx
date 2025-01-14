@@ -137,7 +137,7 @@ export const Header = ({ className, ...props }: HTMLAttributes<HTMLElement>) => 
 
         <Stack className="items-center gap-3 lg:gap-4">
           <Suspense fallback={<SearchIcon className="size-4" />}>
-            <SearchForm />
+            <SearchForm className="hidden lg:block" />
           </Suspense>
 
           <NavLink
