@@ -1,11 +1,9 @@
 import { siteConfig } from "~/config/site"
 
 export const linksConfig = {
-  author: "https://kulpinski.pl",
-  twitter: "https://x.com/ossalternative",
-  bluesky: "https://bsky.app/profile/plai.co",
+  twitter: "https://x.com/PlaifulAi",
   linkedin: "https://linkedin.com/company/plai",
-  github: "https://github.com/piotrkulpinski/plai",
+  github: "https://github.com/Plaifully/Plai",
   analytics: "https://go.plai.co/analytics",
   feeds: [
     { title: "Open Source Tools", url: `${siteConfig.url}/rss/tools.xml` },
