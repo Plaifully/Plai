@@ -45,8 +45,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
       <body className="min-h-dvh flex flex-col bg-background text-foreground font-sans antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
           disableTransitionOnChange
         >
           <NuqsAdapter>{children}</NuqsAdapter>
