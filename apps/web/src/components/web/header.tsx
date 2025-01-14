@@ -180,12 +180,6 @@ export const Header = ({ className, ...props }: HTMLAttributes<HTMLElement>) => 
         <NavLink href="/categories" className="text-base">
           Categories
         </NavLink>
-        <NavLink href="/alternatives" className="text-base">
-          Alternatives
-        </NavLink>
-        <NavLink href="/stacks" className="text-base">
-          Tech Stacks
-        </NavLink>
         <NavLink href="/topics" className="text-base">
           Topics
         </NavLink>
