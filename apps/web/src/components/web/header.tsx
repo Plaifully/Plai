@@ -29,6 +29,7 @@ import { Logo } from "~/components/web/ui/logo"
 import { NavLink, navLinkVariants } from "~/components/web/ui/nav-link"
 import { config } from "~/config"
 import { cx } from "~/utils/cva"
+import { DarkModeToggle } from "~/components/web/ui/dark-mode-toggle"
 
 export const Header = ({ className, ...props }: HTMLAttributes<HTMLElement>) => {
   const pathname = usePathname()
@@ -135,7 +136,7 @@ export const Header = ({ className, ...props }: HTMLAttributes<HTMLElement>) => 
           <NavLink href="/advertise">Advertise</NavLink>
         </nav>
 
-        <Stack size="sm" className="max-sm:hidden">
+        <Stack className="items-center gap-3 lg:gap-4">
           <Suspense fallback={<SearchIcon className="size-4" />}>
             <SearchForm />
           </Suspense>
@@ -158,6 +159,8 @@ export const Header = ({ className, ...props }: HTMLAttributes<HTMLElement>) => 
             <BrandGitHubIcon className="size-4" />
           </NavLink>
         </Stack>
+
+        <DarkModeToggle />
 
         <Button size="sm" variant="secondary" asChild>
           <Link href="/submit" prefetch={false}>
