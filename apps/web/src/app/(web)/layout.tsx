@@ -81,7 +81,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
         </Container>
       </div>
 
-      <Bottom />
+      {/* <Bottom /> */}
 
       {/* JSON-LD */}
       <Script
