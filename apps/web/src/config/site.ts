@@ -2,9 +2,9 @@ import { env } from "~/env"
 
 export const siteConfig = {
   name: "Plaiful",
-  tagline: "Open Source Alternatives to Popular Software",
+  tagline: "The future of AI is Agents",
   description:
-    "A curated collection of the best open source alternatives to everyday SaaS products. Save money with reliable tools hand-picked for you.",
+    "Discover more with our curated collection of the best AI agents across dozens of categories and use cases.",
   email: env.NEXT_PUBLIC_SITE_EMAIL,
   url: env.NEXT_PUBLIC_SITE_URL,
 
