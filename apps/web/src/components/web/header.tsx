@@ -141,15 +141,6 @@ export const Header = ({ className, ...props }: HTMLAttributes<HTMLElement>) => 
           </Suspense>
 
           <NavLink
-            href={config.links.bluesky}
-            target="_blank"
-            rel="nofollow noreferrer"
-            title="Follow us on Bluesky"
-          >
-            <BrandBlueskyIcon className="size-4" />
-          </NavLink>
-
-          <NavLink
             href={config.links.twitter}
             target="_blank"
             rel="nofollow noreferrer"

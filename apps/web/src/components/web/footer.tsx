@@ -90,12 +90,6 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
                 </NavLink>
               </Tooltip>
 
-              <Tooltip tooltip="Follow us on Bluesky">
-                <NavLink href={config.links.bluesky} target="_blank" rel="nofollow noreferrer">
-                  <BrandBlueskyIcon className="size-[1.44em] stroke-[1.25]" />
-                </NavLink>
-              </Tooltip>
-
               <Tooltip tooltip="Follow us on LinkedIn">
                 <NavLink href={config.links.linkedin} target="_blank" rel="nofollow noreferrer">
                   <BrandLinkedInIcon className="size-[1.44em] stroke-[1.25]" />
