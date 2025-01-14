@@ -43,7 +43,7 @@ export function DarkModeToggle() {
         className="inline-flex h-4 w-4 transform items-center justify-center rounded-full 
           bg-primary"
       />
-      <span className="absolute inset-1.5 flex items-center justify-between text-[10px] text-primary">
+      <span className="absolute inset-1.5 flex items-center justify-between text-[10px] text-white">
         <motion.span
           initial={false}
           animate={{
@@ -54,7 +54,7 @@ export function DarkModeToggle() {
             duration: 0.2
           }}
         >
-          <SunIcon className="h-3 w-3" />
+          <SunIcon fill="white" className="h-3 w-3" />
         </motion.span>
         <motion.span
           initial={false}
@@ -66,7 +66,7 @@ export function DarkModeToggle() {
             duration: 0.2
           }}
         >
-          <MoonIcon className="h-3 w-3" />
+          <MoonIcon fill="white" className="h-3 w-3" />
         </motion.span>
       </span>
     </button>
