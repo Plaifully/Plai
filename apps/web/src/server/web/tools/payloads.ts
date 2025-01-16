@@ -39,6 +39,12 @@ export const toolManyPayload = Prisma.validator<Prisma.ToolSelect>()({
   discountAmount: true,
   publishedAt: true,
   updatedAt: true,
+  categories: {
+    select: {
+      name: true,
+      slug: true,
+    },
+  },
 })
 
 export const toolManyExtendedPayload = Prisma.validator<Prisma.ToolSelect>()({
