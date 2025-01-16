@@ -114,21 +114,6 @@ export const Header = ({ className, ...props }: HTMLAttributes<HTMLElement>) => 
                   <GalleryHorizontalEndIcon className="shrink-0 size-4 opacity-75" /> Categories
                 </NavLink>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <NavLink href="/stacks">
-                  <BlocksIcon className="shrink-0 size-4 opacity-75" /> Tech Stacks
-                </NavLink>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <NavLink href="/topics">
-                  <TagIcon className="shrink-0 size-4 opacity-75" /> Topics
-                </NavLink>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <NavLink href="/licenses">
-                  <CopyrightIcon className="shrink-0 size-4 opacity-75" /> Licenses
-                </NavLink>
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 

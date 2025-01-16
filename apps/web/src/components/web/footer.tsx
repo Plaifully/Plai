@@ -110,11 +110,8 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
 
         <Stack direction="column" className="text-sm/normal md:col-span-3 md:col-start-8">
           <H6 as="strong">Browse:</H6>
-
+          <NavLink href="/?sort=publishedAt.desc">Latest Tools</NavLink>
           <NavLink href="/categories">Categories</NavLink>
-          <NavLink href="/stacks">Tech Stacks</NavLink>
-          <NavLink href="/topics">Topics</NavLink>
-          <NavLink href="/licenses">Licenses</NavLink>
         </Stack>
 
         <Stack direction="column" className="text-sm/normal md:col-span-3">
@@ -124,7 +121,6 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
           <NavLink href="/blog">Blog</NavLink>
           <NavLink href="/advertise">Advertise</NavLink>
           <NavLink href="/submit">Add a Free Listing</NavLink>
-          <NavLink href="/tools/github-stack-analyzer">Stack Analyzer</NavLink>
         </Stack>
 
         <Stack direction="column" className="text-sm/normal md:col-span-3">
