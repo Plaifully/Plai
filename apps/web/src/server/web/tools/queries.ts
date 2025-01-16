@@ -1,5 +1,4 @@
 import { performance } from "node:perf_hooks"
-import { getRandomElement } from "@curiousleaf/utils"
 import { prisma } from "@plai/db"
 import { type Prisma, type Tool, ToolStatus } from "@plai/db/client"
 import type { inferParserType } from "nuqs/server"
@@ -19,7 +18,10 @@ export const searchTools = cache(
     const start = performance.now()
     const skip = (page - 1) * perPage
     const take = perPage
-    const [sortBy, sortOrder] = sort.split(".")
+    const [sortBy, sortOrder] = (sort?.split(".") ?? []) as [
+      keyof Prisma.ToolOrderByWithRelationInput | undefined,
+      Prisma.SortOrder | undefined,
+    ]
 
     const whereQuery: Prisma.ToolWhereInput = {
       status: ToolStatus.Published,
@@ -33,10 +35,15 @@ export const searchTools = cache(
       }),
     }
 
+    const orderBy: Prisma.ToolOrderByWithRelationInput | Prisma.ToolOrderByWithRelationInput[] = 
+      sortBy && sortOrder 
+        ? { [sortBy]: sortOrder }
+        : [{ isFeatured: "desc" }, { publishedAt: "desc" }]
+
     const [tools, totalCount] = await prisma.$transaction([
       prisma.tool.findMany({
         ...args,
-        orderBy: sortBy ? { [sortBy]: sortOrder } : [{ isFeatured: "desc" }, { score: "desc" }],
+        orderBy,
         where: { ...whereQuery, ...where },
         select: toolManyPayload,
         take,
@@ -55,43 +62,12 @@ export const searchTools = cache(
   ["tools"],
 )
 
-export const findRelatedTools = async ({
-  where,
-  slug,
-  ...args
-}: Prisma.ToolFindManyArgs & { slug: string }) => {
-  const relatedWhereClause = {
-    ...where,
-    AND: [
-      { status: ToolStatus.Published },
-      { slug: { not: slug } },
-      { alternatives: { some: { tools: { some: { slug } } } } },
-    ],
-  } satisfies Prisma.ToolWhereInput
-
-  const take = 3
-  const itemCount = await prisma.tool.count({ where: relatedWhereClause })
-  const skip = Math.max(0, Math.floor(Math.random() * itemCount) - take)
-  const properties = ["id", "name", "score"] satisfies (keyof Prisma.ToolOrderByWithRelationInput)[]
-  const orderBy = getRandomElement(properties)
-  const orderDir = getRandomElement(["asc", "desc"] as const)
-
-  return prisma.tool.findMany({
-    ...args,
-    where: relatedWhereClause,
-    select: toolManyPayload,
-    orderBy: { [orderBy]: orderDir },
-    take,
-    skip,
-  })
-}
-
 export const findTools = cache(
   async ({ where, orderBy, ...args }: Prisma.ToolFindManyArgs) => {
     return prisma.tool.findMany({
       ...args,
       where: { status: ToolStatus.Published, ...where },
-      orderBy: orderBy ?? [{ isFeatured: "desc" }, { score: "desc" }],
+      orderBy: orderBy ?? [{ isFeatured: "desc" }, { publishedAt: "desc" }],
       select: toolManyPayload,
     })
   },
@@ -142,8 +118,8 @@ export const findToolBySlug = (slug: string, { where, ...args }: Prisma.ToolFind
 
 export const findRandomTool = async () => {
   const tools = await prisma.$queryRaw<Array<Tool>>`
-    SELECT "id", "name", "slug", "website", "repository", "tagline", "description", "content", "stars", "forks", "score", 
-           "faviconUrl", "screenshotUrl", "firstCommitDate", "lastCommitDate", "status", "publishedAt", "createdAt", "updatedAt"
+    SELECT "id", "name", "slug", "website", "tagline", "description", "content",
+           "faviconUrl", "screenshotUrl", "status", "publishedAt", "createdAt", "updatedAt"
     FROM "Tool"
     WHERE status = 'Published'
     GROUP BY id

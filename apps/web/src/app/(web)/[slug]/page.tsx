@@ -1,24 +1,17 @@
-import { joinAsSentence } from "@curiousleaf/utils"
-import { ArrowUpRightIcon, HashIcon } from "lucide-react"
+import { HashIcon } from "lucide-react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Suspense, cache } from "react"
 import type { ImageObject } from "schema-dts"
 import { FeaturedTools } from "~/app/(web)/[slug]/featured-tools"
-import { RelatedTools } from "~/app/(web)/[slug]/related-tools"
-import { H1, H4, H5 } from "~/components/common/heading"
+import { H1, H5 } from "~/components/common/heading"
 import { Stack } from "~/components/common/stack"
 import { AdCard, AdCardSkeleton } from "~/components/web/ads/ad-card"
 import { ExternalLink } from "~/components/web/external-link"
-import { Listing } from "~/components/web/listing"
 import { Markdown } from "~/components/web/markdown"
-import { RepositoryDetails } from "~/components/web/repository-details"
 import { ShareButtons } from "~/components/web/share-buttons"
-import { StackList } from "~/components/web/stacks/stack-list"
 import { ToolBadges } from "~/components/web/tools/tool-badges"
-import { ToolListSkeleton } from "~/components/web/tools/tool-list"
 import { Badge } from "~/components/web/ui/badge"
-import { BrandLink } from "~/components/web/ui/brand-link"
 import { Button } from "~/components/web/ui/button"
 import { FaviconImage } from "~/components/web/ui/favicon"
 import { Image } from "~/components/web/ui/image"
@@ -47,7 +40,7 @@ const getTool = cache(async ({ params }: PageProps) => {
 
 const getMetadata = (tool: ToolOne): Metadata => {
   return {
-    title: `${tool.name}: ${getToolSuffix(tool)}`,
+    title: `${tool.name}}`,
     description: tool.description,
   }
 }
@@ -122,31 +115,9 @@ export default async function ToolPage(props: PageProps) {
               {tool.description && <IntroDescription>{tool.description}</IntroDescription>}
             </div>
 
-            {!!tool.alternatives.length && (
-              <>
-                <h3 className="sr-only">
-                  Open Source Alternative to{" "}
-                  {joinAsSentence(tool.alternatives.map(({ name }) => name))}
-                </h3>
-
-                <Stack>
-                  <span className="text-sm">Open Source Alternative to:</span>
-
-                  {tool.alternatives.map(({ slug, name, faviconUrl }) => (
-                    <BrandLink
-                      key={slug}
-                      href={`/alternatives/${slug}`}
-                      name={name}
-                      faviconUrl={faviconUrl}
-                    />
-                  ))}
-                </Stack>
-              </>
-            )}
-
             <Stack size="sm">
               {tool.website && (
-                <Button suffix={<ArrowUpRightIcon />} asChild>
+                <Button asChild>
                   <ExternalLink
                     href={tool.website}
                     rel={tool.isFeatured ? "noopener noreferrer" : undefined}
@@ -154,18 +125,6 @@ export default async function ToolPage(props: PageProps) {
                     eventProps={{ url: tool.website }}
                   >
                     Visit {tool.name}
-                  </ExternalLink>
-                </Button>
-              )}
-
-              {tool.hostingUrl && (
-                <Button variant="secondary" suffix={<ArrowUpRightIcon />} asChild>
-                  <ExternalLink
-                    href={tool.hostingUrl}
-                    eventName="click_ad"
-                    eventProps={{ url: tool.hostingUrl, type: "ToolPage" }}
-                  >
-                    Self-host with Easypanel
                   </ExternalLink>
                 </Button>
               )}
@@ -185,15 +144,6 @@ export default async function ToolPage(props: PageProps) {
           )}
 
           {tool.content && <Markdown code={tool.content} className="max-md:order-5" />}
-
-          {/* Stacks */}
-          {!!tool.stacks.length && (
-            <Stack size="lg" direction="column" className="w-full max-md:order-6 md:gap-y-6">
-              <H4 as="strong">Technical Stack:</H4>
-
-              <StackList stacks={tool.stacks} />
-            </Stack>
-          )}
 
           {/* Categories */}
           {!!tool.categories.length && (
@@ -229,8 +179,6 @@ export default async function ToolPage(props: PageProps) {
         </Section.Content>
 
         <Section.Sidebar className="max-md:contents">
-          <RepositoryDetails tool={tool} className="max-md:order-3" />
-
           {/* Advertisement */}
           <Suspense fallback={<AdCardSkeleton className="max-md:order-4" />}>
             <AdCard type="ToolPage" className="max-md:order-4" />
@@ -242,17 +190,6 @@ export default async function ToolPage(props: PageProps) {
           </Suspense>
         </Section.Sidebar>
       </Section>
-
-      {/* Related */}
-      <Suspense
-        fallback={
-          <Listing title={`Open source alternatives similar to ${tool.name}:`}>
-            <ToolListSkeleton count={3} />
-          </Listing>
-        }
-      >
-        <RelatedTools tool={tool} />
-      </Suspense>
 
       {/* JSON-LD */}
       <script

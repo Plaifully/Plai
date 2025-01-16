@@ -50,10 +50,7 @@ export const ToolFilters = ({ categories, placeholder, onLoadingChange }: ToolFi
     { value: "publishedAt.desc", label: "Recently Added" },
     { value: "name.asc", label: "Name (A to Z)" },
     { value: "name.desc", label: "Name (Z to A)" },
-    { value: "stars.desc", label: "Most Stars" },
-    { value: "forks.desc", label: "Most Forks" },
-    { value: "lastCommitDate.desc", label: "Recently Updated" },
-    { value: "firstCommitDate.desc", label: "Newest Projects" },
+    { value: "isFeatured.desc", label: "Featured" },
   ]
 
   return (
@@ -76,7 +73,7 @@ export const ToolFilters = ({ categories, placeholder, onLoadingChange }: ToolFi
         <Select
           size="lg"
           className="min-w-40 max-sm:flex-1"
-          value={filters.category}
+          value={filters.category || ""}
           onChange={e => updateFilters({ category: e.target.value })}
         >
           <option value="">All categories</option>
