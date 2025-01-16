@@ -45,9 +45,9 @@ export default function Home({ searchParams }: PageProps) {
         <HomeToolListing searchParams={searchParams} />
       </Suspense>
 
-      <Suspense fallback={<AlternativePreviewSkeleton />}>
+      {/* <Suspense fallback={<AlternativePreviewSkeleton />}>
         <AlternativePreview />
-      </Suspense>
+      </Suspense> */}
     </>
   )
 }

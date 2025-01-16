@@ -13,9 +13,10 @@ import { toolsSearchParams } from "~/server/web/tools/search-params"
 export type ToolFiltersProps = {
   categories?: CategoryMany[]
   placeholder?: string
+  onLoadingChange?: (isLoading: boolean) => void
 }
 
-export const ToolFilters = ({ categories, placeholder }: ToolFiltersProps) => {
+export const ToolFilters = ({ categories, placeholder, onLoadingChange }: ToolFiltersProps) => {
   const [isLoading, startTransition] = useTransition()
   const [filters, setFilters] = useQueryStates(toolsSearchParams, {
     shallow: false,
@@ -23,6 +24,11 @@ export const ToolFilters = ({ categories, placeholder }: ToolFiltersProps) => {
   })
   const [inputValue, setInputValue] = useState(filters.q || "")
   const q = useDebounce(inputValue, 300)
+
+  // Notify parent component of loading state changes
+  useEffect(() => {
+    onLoadingChange?.(isLoading)
+  }, [isLoading, onLoadingChange])
 
   const updateFilters = (values: Partial<Values<typeof toolsSearchParams>>) => {
     setFilters({ ...values, page: null })

@@ -24,17 +24,13 @@ export const searchTools = cache(
     const whereQuery: Prisma.ToolWhereInput = {
       status: ToolStatus.Published,
       ...(category && { categories: { some: { slug: category } } }),
-    }
-
-    // Use full-text search when query exists
-    if (q) {
-      const searchQuery: { id: string }[] = await prisma.$queryRaw`
-        SELECT id
-        FROM "Tool", plainto_tsquery('english', ${q}) query
-        WHERE "searchVector" @@ query
-      `
-
-      whereQuery.id = { in: searchQuery.map(r => r.id) }
+      ...(q && {
+        OR: [
+          { name: { contains: q, mode: "insensitive" } },
+          { description: { contains: q, mode: "insensitive" } },
+          { content: { contains: q, mode: "insensitive" } },
+        ],
+      }),
     }
 
     const [tools, totalCount] = await prisma.$transaction([
