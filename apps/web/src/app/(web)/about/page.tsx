@@ -180,12 +180,6 @@ export default function AboutPage() {
           free to reach out to me if you have any questions or suggestions.
         </p>
 
-        <p>
-          –{" "}
-          <a href={config.links.author} target="_blank" rel="noreferrer">
-            Piotr Kulpinski
-          </a>
-        </p>
       </Prose>
     </>
   )

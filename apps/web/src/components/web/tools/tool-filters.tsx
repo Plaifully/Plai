@@ -64,7 +64,7 @@ export const ToolFilters = ({ categories, placeholder, onLoadingChange }: ToolFi
           size="lg"
           value={inputValue}
           onChange={e => setInputValue(e.target.value)}
-          placeholder={placeholder || "Search tools..."}
+          placeholder={placeholder || "Search AI agents..."}
           className="w-full truncate pl-10"
         />
       </div>

@@ -10,7 +10,7 @@ type PageProps = {
 
 // Image metadata
 export const contentType = "image/png"
-export const alt = "Open Source Tool OpenGraph image"
+export const alt = "AI Agent OpenGraph image"
 export const size = { width: 1200, height: 630 }
 
 export default async function Image({ params }: PageProps) {

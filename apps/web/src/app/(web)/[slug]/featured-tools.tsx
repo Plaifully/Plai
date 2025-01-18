@@ -17,7 +17,7 @@ export const FeaturedTools = async ({ ...props }: ComponentProps<typeof Card>) =
 
   return (
     <Card hover={false} focus={false} {...props}>
-      <H5 as="strong">Featured open source projects:</H5>
+      <H5 as="strong">Featured AI agents:</H5>
 
       <div className="w-full divide-y -my-1.5">
         {tools.map(tool => (
@@ -31,12 +31,12 @@ export const FeaturedTools = async ({ ...props }: ComponentProps<typeof Card>) =
                 </H6>
               </Stack>
 
-              <Stack size="xs">
+              {/* <Stack size="xs">
                 <StarIcon className="size-3" />
                 <span className="text-xs text-muted tabular-nums">
                   {formatNumber(tool.stars, "standard")}
                 </span>
-              </Stack>
+              </Stack> */}
             </Link>
           </Stack>
         ))}
