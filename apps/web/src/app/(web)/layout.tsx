@@ -2,7 +2,6 @@ import Script from "next/script"
 import { type PropsWithChildren, Suspense } from "react"
 import type { Graph } from "schema-dts"
 import { AdBanner } from "~/components/web/ads/ad-banner"
-import { Bottom } from "~/components/web/bottom"
 import { Footer } from "~/components/web/footer"
 import { Header } from "~/components/web/header"
 import { Container } from "~/components/web/ui/container"
@@ -24,7 +23,6 @@ export default function RootLayout({ children }: PropsWithChildren) {
         url: `${url}/`,
         sameAs: [
           config.links.twitter,
-          config.links.bluesky,
           config.links.linkedin,
           config.links.github,
         ],
@@ -41,7 +39,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
         "@type": "Person",
         "@id": `${url}/#/schema/person/1`,
         name: "Piotr Kulpinski",
-        sameAs: [config.links.author],
+        sameAs: [config.links.twitter],
       },
       {
         "@type": "WebSite",

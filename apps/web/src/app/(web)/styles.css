@@ -113,6 +113,11 @@
 
     --color-border: hsl(0 0% 88%);
     --color-border-dark: hsl(0 0% 83%);
+
+    --success: 142 72% 29%;
+    --success-foreground: 144 70% 98%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 98%;
   }
 
   /* Change from @media query to .dark class */
@@ -128,6 +133,11 @@
 
     --color-border: hsl(0 0% 18%);
     --color-border-dark: hsl(0 0% 20%);
+
+    --success: 142 72% 82%;
+    --success-foreground: 144 70% 10%;
+    --warning: 48 96% 89%;
+    --warning-foreground: 38 92% 10%;
   }
 
   @media (prefers-reduced-motion) {
