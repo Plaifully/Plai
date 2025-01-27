@@ -7,9 +7,10 @@ import { Stack } from "~/components/common/stack"
 import { Card } from "~/components/web/ui/card"
 import { FaviconImage } from "~/components/web/ui/favicon"
 import { findTools } from "~/server/web/tools/queries"
+import { ToolTier } from "@plai/db/client"
 
 export const FeaturedTools = async ({ ...props }: ComponentProps<typeof Card>) => {
-  const tools = await findTools({ where: { isFeatured: true } })
+  const tools = await findTools({ where: { tier: ToolTier.Featured } })
 
   if (!tools.length) {
     return null

@@ -1,13 +1,19 @@
 "use client"
 
 import { formatDate } from "@curiousleaf/utils"
-import type { Tool } from "@plai/db/client"
-import type { ColumnDef } from "@tanstack/react-table"
+import { type Tool, type ToolTier } from "@plai/db/client"
+import { type ColumnDef } from "@tanstack/react-table"
 import { ToolActions } from "~/app/admin/tools/_components/tool-actions"
 import { DataTableColumnHeader } from "~/components/admin/data-table/data-table-column-header"
 import { DataTableLink } from "~/components/admin/data-table/data-table-link"
 import { DataTableThumbnail } from "~/components/admin/data-table/data-table-thumbnail"
 import { Checkbox } from "~/components/common/checkbox"
+
+const tierLabels: Record<ToolTier, string> = {
+  Free: "Free",
+  Featured: "Featured",
+  Premium: "Premium",
+}
 
 export function getColumns(): ColumnDef<Tool>[] {
   return [
@@ -24,7 +30,6 @@ export function getColumns(): ColumnDef<Tool>[] {
             aria-label="Select all"
             className="my-auto mx-1.5"
           />
-
           <DataTableColumnHeader column={column} title="Name" />
         </div>
       ),
@@ -36,7 +41,6 @@ export function getColumns(): ColumnDef<Tool>[] {
             aria-label="Select row"
             className="my-auto mx-1.5"
           />
-
           <DataTableLink href={`/admin/tools/${row.original.slug}`}>
             {row.original.faviconUrl && <DataTableThumbnail src={row.original.faviconUrl} />}
             {row.getValue("name")}
@@ -85,6 +89,15 @@ export function getColumns(): ColumnDef<Tool>[] {
       cell: ({ row }) => (
         <span className="text-muted-foreground text-sm">{row.getValue("submitterEmail")}</span>
       ),
+      size: 0,
+    },
+    {
+      accessorKey: "tier",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Tier" />,
+      cell: ({ row }) => {
+        const tier = row.getValue("tier") as ToolTier
+        return <span className="text-muted-foreground">{tierLabels[tier]}</span>
+      },
       size: 0,
     },
     {

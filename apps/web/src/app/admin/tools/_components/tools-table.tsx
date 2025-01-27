@@ -1,6 +1,6 @@
 "use client"
 
-import { type Tool, ToolStatus } from "@plai/db/client"
+import { type Tool, ToolStatus, ToolTier } from "@plai/db/client"
 import { CircleDashedIcon, CircleDotDashedIcon, CircleIcon, PlusIcon } from "lucide-react"
 import Link from "next/link"
 import * as React from "react"
@@ -61,6 +61,24 @@ export function ToolsTable({ toolsPromise }: ToolsTableProps) {
           label: "Draft",
           value: ToolStatus.Draft,
           icon: <CircleDashedIcon className="!text-gray-400" />,
+        },
+      ],
+    },
+    {
+      label: "Tier",
+      value: "tier",
+      options: [
+        {
+          label: "Free",
+          value: ToolTier.Free,
+        },
+        {
+          label: "Featured",
+          value: ToolTier.Featured,
+        },
+        {
+          label: "Premium",
+          value: ToolTier.Premium,
         },
       ],
     },

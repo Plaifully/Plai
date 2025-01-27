@@ -1,3 +1,4 @@
+import { ToolTier } from "@plai/db/client"
 import { HashIcon } from "lucide-react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
@@ -120,7 +121,7 @@ export default async function ToolPage(props: PageProps) {
                 <Button asChild>
                   <ExternalLink
                     href={tool.website}
-                    rel={tool.isFeatured ? "noopener noreferrer" : undefined}
+                    rel={tool.tier === ToolTier.Featured ? "noopener noreferrer" : undefined}
                     eventName="click_website"
                     eventProps={{ url: tool.website }}
                   >

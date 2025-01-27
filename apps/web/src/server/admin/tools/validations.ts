@@ -1,4 +1,4 @@
-import { ToolStatus } from "@plai/db/client"
+import { ToolStatus, ToolTier } from "@plai/db/client"
 import * as z from "zod"
 import { repositorySchema } from "~/server/schemas"
 
@@ -30,7 +30,6 @@ export const toolSchema = z.object({
   content: z.string().optional(),
   faviconUrl: z.string().optional(),
   screenshotUrl: z.string().optional(),
-  isFeatured: z.boolean().default(false),
   submitterName: z.string().optional(),
   submitterEmail: z.string().optional(),
   submitterNote: z.string().optional(),
@@ -41,6 +40,7 @@ export const toolSchema = z.object({
   status: z.nativeEnum(ToolStatus).default("Draft"),
   alternatives: z.array(z.string()).optional(),
   categories: z.array(z.string()).optional(),
+  tier: z.nativeEnum(ToolTier).default(ToolTier.Free),
 })
 
 export type ToolSchema = z.infer<typeof toolSchema>

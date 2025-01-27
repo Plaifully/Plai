@@ -38,7 +38,7 @@ export const searchTools = cache(
     const orderBy: Prisma.ToolOrderByWithRelationInput | Prisma.ToolOrderByWithRelationInput[] = 
       sortBy && sortOrder 
         ? { [sortBy]: sortOrder }
-        : [{ isFeatured: "desc" }, { publishedAt: "desc" }]
+        : [{ tier: "desc" }, { publishedAt: "desc" }]
 
     const [tools, totalCount] = await prisma.$transaction([
       prisma.tool.findMany({
@@ -67,7 +67,10 @@ export const findTools = cache(
     return prisma.tool.findMany({
       ...args,
       where: { status: ToolStatus.Published, ...where },
-      orderBy: orderBy ?? [{ isFeatured: "desc" }, { publishedAt: "desc" }],
+      orderBy: orderBy ?? [
+        { tier: "desc" },
+        { publishedAt: "desc" }
+      ],
       select: toolManyPayload,
     })
   },
