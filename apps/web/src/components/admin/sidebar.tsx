@@ -2,13 +2,11 @@
 
 import { cx } from "cva"
 import {
-  CopyrightIcon,
   GalleryHorizontalEndIcon,
   GemIcon,
   GlobeIcon,
   LayoutDashboardIcon,
   LogOutIcon,
-  ReplaceIcon,
 } from "lucide-react"
 import { signOut } from "next-auth/react"
 import { Nav } from "~/components/admin/nav"
@@ -49,19 +47,9 @@ export const Sidebar = () => {
               prefix: <GemIcon />,
             },
             {
-              title: "Alternatives",
-              href: "/admin/alternatives",
-              prefix: <ReplaceIcon />,
-            },
-            {
               title: "Categories",
               href: "/admin/categories",
               prefix: <GalleryHorizontalEndIcon />,
-            },
-            {
-              title: "Licenses",
-              href: "/admin/licenses",
-              prefix: <CopyrightIcon />,
             },
           ]}
         />

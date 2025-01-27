@@ -29,7 +29,6 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/common/form"
-import type { findAlternativeList } from "~/server/admin/alternatives/queries"
 import type { findCategoryList } from "~/server/admin/categories/queries"
 import { createTool, updateTool } from "~/server/admin/tools/actions"
 import type { findToolBySlug } from "~/server/admin/tools/queries"
@@ -39,7 +38,6 @@ import { nullsToUndefined } from "~/utils/helpers"
 
 type ToolFormProps = React.HTMLAttributes<HTMLFormElement> & {
   tool?: Awaited<ReturnType<typeof findToolBySlug>>
-  alternatives: ReturnType<typeof findAlternativeList>
   categories: ReturnType<typeof findCategoryList>
 }
 
@@ -47,7 +45,6 @@ export function ToolForm({
   children,
   className,
   tool,
-  alternatives,
   categories,
   ...props
 }: ToolFormProps) {
@@ -55,7 +52,6 @@ export function ToolForm({
     resolver: zodResolver(toolSchema),
     defaultValues: {
       ...nullsToUndefined(tool),
-      alternatives: tool?.alternatives.map(({ id }) => id),
       categories: tool?.categories.map(({ id }) => id),
     },
   })
@@ -370,21 +366,6 @@ export function ToolForm({
                 <Input {...field} />
               </FormControl>
               <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="alternatives"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Alternatives</FormLabel>
-              <RelationSelector
-                promise={alternatives}
-                selectedIds={field.value ?? []}
-                onChange={field.onChange}
-              />
             </FormItem>
           )}
         />

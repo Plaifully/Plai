@@ -27,7 +27,7 @@ export default async function UpdateToolPage({ params }: PageProps) {
         <ToolActions tool={tool} />
       </div>
 
-      <ToolForm tool={tool} alternatives={findAlternativeList()} categories={findCategoryList()} />
+      <ToolForm tool={tool} categories={findCategoryList()} />
     </Wrapper>
   )
 }
