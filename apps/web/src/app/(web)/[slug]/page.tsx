@@ -40,7 +40,7 @@ const getTool = cache(async ({ params }: PageProps) => {
 
 const getMetadata = (tool: ToolOne): Metadata => {
   return {
-    title: `${tool.name}}`,
+    title: `${tool.name}`,
     description: tool.description,
   }
 }
