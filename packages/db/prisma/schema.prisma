@@ -44,6 +44,12 @@ enum StackType {
   Network
 }
 
+enum ToolTier {
+  Free
+  Featured
+  Premium
+}
+
 model Ad {
   id          String   @id @default(cuid())
   email       String
@@ -68,13 +74,13 @@ model Tool {
   content         String?
   faviconUrl      String?
   screenshotUrl   String?
-  isFeatured      Boolean                  @default(false)
   submitterName   String?
   submitterEmail  String?
   submitterNote   String?
   discountCode    String?
   discountAmount  String?
   status          ToolStatus               @default(Draft)
+  tier            ToolTier                 @default(Free)
   publishedAt     DateTime?
   createdAt       DateTime                 @default(now())
   updatedAt       DateTime                 @updatedAt
@@ -87,7 +93,7 @@ model Tool {
   @@index([id, slug])
   @@index([name])
   @@index([status])
-  @@index([isFeatured])
+  @@index([tier])
   @@index([searchVector], type: Gin)
 }
 

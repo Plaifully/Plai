@@ -6,11 +6,13 @@
     "./client": "./client.ts"
   },
   "scripts": {
-    "db:generate": "prisma generate --no-hints",
+    "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:push": "prisma db push --skip-generate",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "db:seed": "bun prisma/seed.ts",
+    "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
     "@prisma/client": "^6.1.0"
@@ -18,6 +20,7 @@
   "devDependencies": {
     "@types/node": "^22.10.2",
     "prisma": "^6.1.0",
+    "tsx": "^4.7.0",
     "typescript": "5.7.2"
   },
   "trustedDependencies": ["@prisma/client", "@prisma/engines", "prisma"]
