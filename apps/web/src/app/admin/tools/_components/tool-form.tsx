@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ToolStatus } from "@plai/db/client"
+import { ToolStatus, ToolTier } from "@plai/db/client"
 import { formatDate } from "date-fns"
 import Link from "next/link"
 import { redirect } from "next/navigation"
@@ -19,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/admin/ui/select"
-import { Switch } from "~/components/admin/ui/switch"
 import { Textarea } from "~/components/admin/ui/textarea"
 import {
   Form,
@@ -28,6 +27,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "~/components/common/form"
 import type { findCategoryList } from "~/server/admin/categories/queries"
 import { createTool, updateTool } from "~/server/admin/tools/actions"
@@ -51,8 +51,23 @@ export function ToolForm({
   const form = useForm<ToolSchema>({
     resolver: zodResolver(toolSchema),
     defaultValues: {
-      ...nullsToUndefined(tool),
-      categories: tool?.categories.map(({ id }) => id),
+      name: tool?.name ?? "",
+      slug: tool?.slug ?? "",
+      website: tool?.website ?? "",
+      tagline: tool?.tagline ?? "",
+      description: tool?.description ?? "",
+      content: tool?.content ?? "",
+      faviconUrl: tool?.faviconUrl ?? "",
+      screenshotUrl: tool?.screenshotUrl ?? "",
+      submitterName: tool?.submitterName ?? "",
+      submitterEmail: tool?.submitterEmail ?? "",
+      submitterNote: tool?.submitterNote ?? "",
+      discountCode: tool?.discountCode ?? "",
+      discountAmount: tool?.discountAmount ?? "",
+      publishedAt: tool?.publishedAt,
+      status: tool?.status ?? ToolStatus.Draft,
+      tier: tool?.tier ?? ToolTier.Free,
+      categories: tool?.categories?.map(({ id }) => id) ?? [],
     },
   })
 
@@ -80,8 +95,45 @@ export function ToolForm({
     },
   })
 
-  const onSubmit = form.handleSubmit(data => {
-    tool ? updateToolAction({ id: tool.id, ...data }) : createToolAction(data)
+  const onSubmit = form.handleSubmit(async data => {
+    try {
+      const formData = {
+        ...data,
+        // Convert empty strings to null for optional fields
+        tagline: data.tagline || undefined,
+        description: data.description || undefined,
+        content: data.content || undefined,
+        faviconUrl: data.faviconUrl || undefined,
+        screenshotUrl: data.screenshotUrl || undefined,
+        submitterName: data.submitterName || undefined,
+        submitterEmail: data.submitterEmail || undefined,
+        submitterNote: data.submitterNote || undefined,
+        discountCode: data.discountCode || undefined,
+        discountAmount: data.discountAmount || undefined,
+        // Keep required fields as is
+        name: data.name,
+        website: data.website,
+        status: data.status,
+        tier: data.tier,
+        categories: data.categories,
+        // Handle date separately
+        publishedAt: data.publishedAt || undefined,
+      }
+
+      if (tool) {
+        await updateToolAction({ id: tool.id, ...formData })
+      } else {
+        await createToolAction(formData)
+      }
+    } catch (error) {
+      console.error('Form submission error:', {
+        error,
+        formData: data,
+        toolId: tool?.id,
+        stack: error instanceof Error ? error.stack : undefined
+      })
+      toast.error('Failed to save tool')
+    }
   })
 
   const isPending = isCreatingTool || isUpdatingTool
@@ -140,23 +192,9 @@ export function ToolForm({
 
         <FormField
           control={form.control}
-          name="repository"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Repository</FormLabel>
-              <FormControl>
-                <Input type="url" placeholder="https://github.com/posthog/posthog" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="tagline"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="col-span-full">
               <FormLabel>Tagline</FormLabel>
               <FormControl>
                 <Input placeholder="How developers build successful products" {...field} />
@@ -197,16 +235,29 @@ export function ToolForm({
           )}
         />
 
-        <div className="flex flex-row gap-4 max-sm:contents">
+        <div className="grid gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
-            name="isFeatured"
+            name="tier"
             render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormLabel>Featured</FormLabel>
-                <FormControl>
-                  <Switch onCheckedChange={field.onChange} checked={field.value} />
-                </FormControl>
+              <FormItem>
+                <FormLabel>Tier</FormLabel>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  defaultValue={ToolTier.Free}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select tier" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value={ToolTier.Free}>Free</SelectItem>
+                    <SelectItem value={ToolTier.Featured}>Featured</SelectItem>
+                    <SelectItem value={ToolTier.Premium}>Premium</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -216,23 +267,24 @@ export function ToolForm({
             control={form.control}
             name="status"
             render={({ field }) => (
-              <FormItem className="flex-1">
+              <FormItem>
                 <FormLabel>Status</FormLabel>
-                <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="h-8 w-full tabular-nums">
-                      <SelectValue />
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  defaultValue={ToolStatus.Draft}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
                     </SelectTrigger>
-
-                    <SelectContent side="top" className="tabular-nums">
-                      {Object.values(ToolStatus).map(status => (
-                        <SelectItem key={status} value={status}>
-                          {status}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value={ToolStatus.Draft}>Draft</SelectItem>
+                    <SelectItem value={ToolStatus.Published}>Published</SelectItem>
+                    <SelectItem value={ToolStatus.Scheduled}>Scheduled</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -294,20 +346,6 @@ export function ToolForm({
               <FormLabel>Submitter Note</FormLabel>
               <FormControl>
                 <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="hostingUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Hosting URL</FormLabel>
-              <FormControl>
-                <Input type="url" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
