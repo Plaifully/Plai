@@ -29,7 +29,7 @@ const AlternativePreview = async () => {
 
   return (
     <Listing
-      title="Discover Open Source alternatives to:"
+      title="Discover AI Agents alternatives to:"
       button={
         <Link href="/alternatives" prefetch={false}>
           View all alternatives
@@ -44,7 +44,7 @@ const AlternativePreview = async () => {
 
 const AlternativePreviewSkeleton = () => {
   return (
-    <Listing title="Discover Open Source alternatives to:">
+    <Listing title="Discover AI Agents alternatives to:">
       <AlternativeListSkeleton />
     </Listing>
   )

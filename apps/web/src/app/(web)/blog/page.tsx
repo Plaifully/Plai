@@ -8,7 +8,7 @@ import { metadataConfig } from "~/config/metadata"
 export const metadata: Metadata = {
   title: "Blog",
   description:
-    "A collection of useful articles for developers and open source enthusiasts. Learn about the latest trends and technologies in the open source community.",
+    "A collection of useful articles for developers and AI Agents enthusiasts. Learn about the latest trends and technologies in the AI Agents community.",
   openGraph: { ...metadataConfig.openGraph, url: "/blog" },
   alternates: { ...metadataConfig.alternates, canonical: "/blog" },
 }

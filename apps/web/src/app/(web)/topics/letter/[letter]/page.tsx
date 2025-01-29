@@ -12,8 +12,8 @@ type PageProps = {
 }
 
 const metadata: Metadata = {
-  title: "Open Source Software Topics",
-  description: "Browse top topics to find your best Open Source software options.",
+  title: "AI Agents Topics",
+  description: "Browse top topics to find your best AI Agents options.",
 }
 
 export const generateStaticParams = async () => {

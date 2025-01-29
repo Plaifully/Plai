@@ -9,7 +9,7 @@ import { config } from "~/config"
 
 export const metadata: Metadata = {
   title: "About Us",
-  description: `${config.site.name} is a community driven list of open source alternatives to proprietary software and applications.`,
+  description: `${config.site.name} is a community driven list of AI Agents to help you get things done.`,
   openGraph: { ...metadataConfig.openGraph, url: "/about" },
   alternates: { ...metadataConfig.alternates, canonical: "/about" },
 }

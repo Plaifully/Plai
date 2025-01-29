@@ -30,7 +30,7 @@ const getMetadata = (category: CategoryOne): Metadata => {
 
   return {
     title: `${name}`,
-    description: `A curated collection of the ${category._count.tools} best open source ${name} for inspiration and reference. Each listing includes a website screenshot along with a detailed review of its features.`,
+    description: `A curated collection of the ${category._count.tools} best AI Agents ${name} for inspiration and reference. Each listing includes a website screenshot along with a detailed review of its features.`,
   }
 }
 

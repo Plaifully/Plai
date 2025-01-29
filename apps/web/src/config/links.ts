@@ -6,7 +6,7 @@ export const linksConfig = {
   github: "https://github.com/Plaifully/Plai",
   analytics: "https://go.plai.co/analytics",
   feeds: [
-    { title: "Open Source Tools", url: `${siteConfig.url}/rss/tools.xml` },
+    { title: "AI Agents", url: `${siteConfig.url}/rss/tools.xml` },
     { title: "Proprietary Alternatives", url: `${siteConfig.url}/rss/alternatives.xml` },
   ],
   family: [

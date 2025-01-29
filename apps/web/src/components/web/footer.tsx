@@ -47,7 +47,7 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
 
             <p className="-mt-2 px-0.5 text-sm text-muted first:mt-0">
               Join {formatNumber(config.stats.subscribers, "standard")}+ other members and get
-              updates on new open source tools.
+              updates on new AI Agents.
             </p>
 
             <NewsletterForm medium="footer_form" />

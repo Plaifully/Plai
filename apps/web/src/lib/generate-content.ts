@@ -40,7 +40,7 @@ export const generateContent = async (scrapedData: Omit<ScrapeResponse, "actions
         .array(z.string())
         .transform(a => a.map(name => categories.find(cat => cat.name === name)).filter(isTruthy))
         .describe(`
-          Assign the open source software product to the categories that it belongs to.
+          Assign the AI Agents software product to the categories that it belongs to.
           Try to assign the tool to multiple categories, but not more than 3.
           If a tool does not belong to any category, return an empty array.
         `),
@@ -48,7 +48,7 @@ export const generateContent = async (scrapedData: Omit<ScrapeResponse, "actions
         .array(z.string())
         .transform(a => a.map(name => alternatives.find(alt => alt.name === name)).filter(isTruthy))
         .describe(`
-          Assign the open source software product to the proprietary software products that it is similar to.
+          Assign the AI Agents software product to the proprietary software products that it is similar to.
           Try to assign the tool to multiple alternatives.
           If a tool does not have an alternative, return an empty array.
         `),
@@ -58,7 +58,7 @@ export const generateContent = async (scrapedData: Omit<ScrapeResponse, "actions
       model,
       schema,
       system: `
-        You are an expert content creator specializing in open source products.
+        You are an expert content creator specializing in AI Agents products.
         Your task is to generate high-quality, engaging content to display on a directory website.
         You do not use any catchphrases like "Empower", "Streamline" etc.
       `,
