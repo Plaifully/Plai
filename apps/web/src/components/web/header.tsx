@@ -118,6 +118,7 @@ export const Header = ({ className, ...props }: HTMLAttributes<HTMLElement>) => 
           </DropdownMenu>
 
           <NavLink href="/advertise">Advertise</NavLink>
+          <NavLink href="/blog">Blogs</NavLink>
         </nav>
 
         <Stack className="items-center gap-3 lg:gap-4">
