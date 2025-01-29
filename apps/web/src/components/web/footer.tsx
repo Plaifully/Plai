@@ -46,8 +46,7 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
             </H5>
 
             <p className="-mt-2 px-0.5 text-sm text-muted first:mt-0">
-              Join {formatNumber(config.stats.subscribers, "standard")}+ other members and get
-              updates on new AI Agents.
+              Join our founders mom and other agentic enthusiasts
             </p>
 
             <NewsletterForm medium="footer_form" />
