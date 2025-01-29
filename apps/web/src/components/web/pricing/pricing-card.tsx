@@ -121,7 +121,7 @@ export function PricingCard({
               size="lg"
               className={cx(
                 "w-full font-medium relative overflow-hidden",
-                recommended && "bg-primary hover:bg-primary/90 text-white    shadow-md hover:shadow-lg",
+                recommended && "bg-primary hover:bg-primary/90 text-white shadow-md hover:shadow-lg",
                 "group"
               )}
               asChild
