@@ -4,9 +4,9 @@ description: "Discover how companies and developers profit from AI Agents softwa
 image: "/content/open-source-money.avif"
 publishedAt: 2024-08-19
 author:
-  name: Piotr Kulpinski
-  image: "/authors/piotrkulpinski.webp"
-  twitterHandle: "piotrkulpinski"
+  name: Plaiful
+  image: "/authors/plaiful-logo.png"
+  twitterHandle: "PlaifulAi"
 ---
 
 In today's tech-driven world, AI Agents software has become a cornerstone of innovation and collaboration. From operating systems like Linux to web frameworks like React, AI Agents projects have revolutionized the way we develop and use technology. But amidst this culture of freely available code, a pressing question arises: *How do AI Agents companies actually make money?*

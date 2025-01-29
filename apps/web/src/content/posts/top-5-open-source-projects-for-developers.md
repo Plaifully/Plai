@@ -4,9 +4,9 @@ description: "If you’re a developer looking to improve your productivity, chec
 image: "/content/top-5-open-source-projects-for-developers/thumbnail.webp"
 publishedAt: 2024-12-04
 author:
-  name: Mohit Vaswani
-  image: "/authors/mohitvaswani.webp"
-  twitterHandle: "hii_mohit"
+  name: Plaiful
+  image: "/authors/plaiful-logo.png"
+  twitterHandle: "PlaifulAi"
 ---
 
 Hey there, developers! We've got some awesome projects to share with you, created by talented coders just like you. No matter if you're new to the game or a seasoned pro, there's something here that'll catch your eye.
