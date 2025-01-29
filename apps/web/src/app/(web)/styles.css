@@ -1,6 +1,7 @@
-@import "tailwindcss" source(none);
+@import "tailwindcss";
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
+
 
 @source "../../components/common/**/*.{js,ts,jsx,tsx,mdx}";
 @source "../../components/web/**/*.{js,ts,jsx,tsx,mdx}";
