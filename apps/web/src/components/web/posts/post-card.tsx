@@ -18,6 +18,8 @@ export const PostCard = ({ className, post, ...props }: PostCardProps) => {
           <Image
             src={post.image}
             alt=""
+            width={1920}
+            height={1080}
             className="-m-5 mb-0 w-[calc(100%+2.5rem)] max-w-none aspect-video object-cover"
           />
         )}

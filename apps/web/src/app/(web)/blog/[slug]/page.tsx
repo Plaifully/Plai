@@ -86,6 +86,8 @@ export default async function BlogPostPage(props: PageProps) {
               <Image
                 src={post.image}
                 alt={post.title}
+                width={1920}
+                height={1080}
                 className="w-full h-auto aspect-video object-cover rounded-lg"
               />
             )}
@@ -124,9 +126,6 @@ export default async function BlogPostPage(props: PageProps) {
         </Section>
       </div>
 
-      <Suspense fallback={<AlternativePreviewSkeleton />}>
-        <AlternativePreview />
-      </Suspense>
     </>
   )
 }
