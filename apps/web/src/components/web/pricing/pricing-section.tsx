@@ -14,7 +14,8 @@ const pricingTiers = [
       "Community support",
       "Standard search placement",
     ],
-    ctaLabel: "Submit for Free"
+    ctaLabel: "Submit for Free",
+    comingSoon: false
   },
   {
     title: "Featured",
@@ -28,7 +29,8 @@ const pricingTiers = [
       "Higher search ranking",
     ],
     highlighted: true,
-    ctaLabel: "Get Featured"
+    ctaLabel: "Coming Soon",
+    comingSoon: true
   },
   {
     title: "Premium",
@@ -43,13 +45,14 @@ const pricingTiers = [
       "Top search placement",
     ],
     recommended: true,
-    ctaLabel: "Go Premium"
+    ctaLabel: "Coming Soon",
+    comingSoon: true
   }
 ]
 
 export function PricingSection() {
   return (
-    <section className="w-full py-12">
+    <section className="w-full">
       <div className="relative">
         {/* Background gradient effects */}
         <motion.div 
@@ -73,11 +76,11 @@ export function PricingSection() {
         </motion.div>
         
         {/* Cards */}
-        <div className="relative grid grid-cols-1 gap-6 md:grid-cols-3 max-w-7xl mx-auto px-4 mt-4">
+        <div className="relative grid grid-cols-1 gap-6 md:grid-cols-3 max-w-7xl mx-auto mt-4">
           {pricingTiers.map((tier, index) => (
             <motion.div 
               key={tier.title} 
-              className="flex"
+              className="flex w-full"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ 

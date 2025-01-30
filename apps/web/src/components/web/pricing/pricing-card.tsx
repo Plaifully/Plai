@@ -14,6 +14,7 @@ type PricingCardProps = HTMLAttributes<HTMLDivElement> & {
   recommended?: boolean
   ctaLabel?: string
   ctaHref?: string
+  comingSoon?: boolean
 }
 
 export function PricingCard({
@@ -24,6 +25,7 @@ export function PricingCard({
   recommended = false,
   ctaLabel = "Get Started",
   ctaHref = "/submit",
+  comingSoon = false,
   className,
   ...props
 }: PricingCardProps) {
@@ -31,12 +33,13 @@ export function PricingCard({
     <motion.div
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2 }}
-      className="pt-4"
+      className="pt-4 w-full"
     >
       <Card 
         className={cx(
           "relative h-full w-full",
           recommended ? "bg-gradient-to-b from-primary/5 via-background to-background border-primary" : "bg-background border-border/50",
+          comingSoon && "select-none",
           className
         )} 
         {...props}
@@ -76,7 +79,10 @@ export function PricingCard({
           </motion.div>
         )}
 
-        <div className="relative flex flex-col h-full p-6">
+        <div className={cx(
+          "relative flex flex-col h-full p-6",
+          comingSoon && "blur-[6px]"
+        )}>
           {/* Header */}
           <div className="space-y-2 pb-6">
             <h3 className={cx(
@@ -122,27 +128,41 @@ export function PricingCard({
               className={cx(
                 "w-full font-medium relative overflow-hidden",
                 recommended && "bg-primary hover:bg-primary/90 text-white shadow-md hover:shadow-lg",
-                "group"
+                "group",
+                comingSoon && "cursor-not-allowed opacity-75"
               )}
-              asChild
+              disabled={comingSoon}
+              asChild={!comingSoon}
             >
-              <Link href={ctaHref}>
+              {!comingSoon ? (
+                <Link href={ctaHref}>
+                  <span className="relative z-10">{ctaLabel}</span>
+                  {recommended && (
+                    <motion.div 
+                      className="absolute inset-0 bg-gradient-to-r from-primary-foreground/0 via-primary-foreground/10 to-primary-foreground/0"
+                      animate={{ x: ["100%", "-100%"] }}
+                      transition={{ 
+                        duration: 1.5,
+                        repeat: Infinity,
+                        repeatDelay: 1
+                      }}
+                    />
+                  )}
+                </Link>
+              ) : (
                 <span className="relative z-10">{ctaLabel}</span>
-                {recommended && (
-                  <motion.div 
-                    className="absolute inset-0 bg-gradient-to-r from-primary-foreground/0 via-primary-foreground/10 to-primary-foreground/0"
-                    animate={{ x: ["100%", "-100%"] }}
-                    transition={{ 
-                      duration: 1.5,
-                      repeat: Infinity,
-                      repeatDelay: 1
-                    }}
-                  />
-                )}
-              </Link>
+              )}
             </Button>
           </div>
         </div>
+
+        {comingSoon && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="bg-primary/90 text-white px-4 py-2 rounded-md font-medium shadow-lg z-10 text-sm shadow-2xl">
+              Coming Soon
+            </span>
+          </div>
+        )}
       </Card>
     </motion.div>
   )

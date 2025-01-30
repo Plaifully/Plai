@@ -45,7 +45,7 @@ export default async function SubmitPage() {
         </Section.Sidebar>
       </Section>
 
-      <div id="pricing" className="scroll-mt-16">
+      <div id="pricing" className="scroll-mt-16 pt-16">
         <Intro alignment="center">
           <IntroTitle size="h2">Get Featured Faster</IntroTitle>
           <IntroDescription>
