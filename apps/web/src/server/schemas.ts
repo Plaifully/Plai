@@ -17,6 +17,11 @@ export const submitToolSchema = z.object({
     .string()
     .min(1, "Your email is required")
     .email("Invalid email address, please use a correct format."),
+  xAccountUrl: z.string().url("Invalid X/Twitter URL").optional(),
+  logoUrl: z.string().url("Invalid logo URL").optional(),
+  websiteScreenshotUrl: z.string().url("Invalid screenshot URL").optional(),
+  pricingType: z.enum(["Free", "Freemium", "Paid"]).default("Free"),
+  pricingDetails: z.string().optional(),
   newsletterOptIn: z.boolean().optional().default(true),
   affiliateOptIn: z.boolean().optional().default(false),
 })

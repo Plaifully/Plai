@@ -50,6 +50,12 @@ enum ToolTier {
   Premium
 }
 
+enum PricingType {
+  Free
+  Freemium
+  Paid
+}
+
 model Ad {
   id          String   @id @default(cuid())
   email       String
@@ -90,6 +96,15 @@ model Tool {
   // Relations
   categories   Category[]
   topics       Topic[]
+
+  // Social & Media
+  xAccountUrl     String?
+  logoUrl         String?
+  websiteScreenshotUrl String?
+  
+  // Pricing
+  pricingType    PricingType @default(Free)
+  pricingDetails String?     // For any additional pricing information
 
   @@index([id, slug])
   @@index([name])

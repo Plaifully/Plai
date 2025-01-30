@@ -1,21 +1,23 @@
-import type { ComponentProps } from "react"
-import { Box } from "~/components/common/box"
-import { inputVariants } from "~/components/web/ui/input"
-import { type VariantProps, cx } from "~/utils/cva"
+import * as React from "react"
+import { cx } from "~/utils/cva"
 
-export type TextAreaProps = Omit<ComponentProps<"textarea">, "size"> &
-  VariantProps<typeof inputVariants>
+export interface TextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
-export const TextArea = ({ className, size, ...props }: TextAreaProps) => {
-  return (
-    <Box focus>
+const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ className, ...props }, ref) => {
+    return (
       <textarea
         className={cx(
-          "leading-normal! resize-none field-sizing-content",
-          inputVariants({ size, className }),
+          "flex min-h-[80px] w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          className
         )}
+        ref={ref}
         {...props}
       />
-    </Box>
-  )
-}
+    )
+  }
+)
+Textarea.displayName = "Textarea"
+
+export { Textarea }
