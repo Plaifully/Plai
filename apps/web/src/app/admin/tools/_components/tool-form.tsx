@@ -35,6 +35,7 @@ import type { findToolBySlug } from "~/server/admin/tools/queries"
 import { type ToolSchema, toolSchema } from "~/server/admin/tools/validations"
 import { cx } from "~/utils/cva"
 import { nullsToUndefined } from "~/utils/helpers"
+import { Checkbox } from "~/components/common/checkbox"
 
 type ToolFormProps = React.HTMLAttributes<HTMLFormElement> & {
   tool?: Awaited<ReturnType<typeof findToolBySlug>>
@@ -68,6 +69,12 @@ export function ToolForm({
       status: tool?.status ?? ToolStatus.Draft,
       tier: tool?.tier ?? ToolTier.Free,
       categories: tool?.categories?.map(({ id }) => id) ?? [],
+      pricingType: tool?.pricingType ?? "Free",
+      pricingDetails: tool?.pricingDetails ?? "",
+      xAccountUrl: tool?.xAccountUrl ?? "",
+      logoUrl: tool?.logoUrl ?? "",
+      websiteScreenshotUrl: tool?.websiteScreenshotUrl ?? "",
+      affiliateOptIn: tool?.affiliateOptIn ?? false,
     },
   })
 
@@ -110,11 +117,18 @@ export function ToolForm({
         submitterNote: data.submitterNote || undefined,
         discountCode: data.discountCode || undefined,
         discountAmount: data.discountAmount || undefined,
+        // New fields
+        pricingDetails: data.pricingDetails || undefined,
+        xAccountUrl: data.xAccountUrl || undefined,
+        logoUrl: data.logoUrl || undefined,
+        websiteScreenshotUrl: data.websiteScreenshotUrl || undefined,
         // Keep required fields as is
         name: data.name,
         website: data.website,
         status: data.status,
         tier: data.tier,
+        pricingType: data.pricingType,
+        affiliateOptIn: data.affiliateOptIn,
         categories: data.categories,
         // Handle date separately
         publishedAt: data.publishedAt || undefined,
@@ -423,12 +437,117 @@ export function ToolForm({
           )}
         />
 
-        <div className="flex justify-between gap-4 col-span-full">
+        <div className="col-span-full grid gap-4 md:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="pricingType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Pricing Type</FormLabel>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select pricing type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Free">Free</SelectItem>
+                    <SelectItem value="Freemium">Freemium</SelectItem>
+                    <SelectItem value="Paid">Paid</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="pricingDetails"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Pricing Details</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g. Starts at $10/month" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="col-span-full grid gap-4 md:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="xAccountUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>X Account</FormLabel>
+                <FormControl>
+                  <Input placeholder="https://x.com/username" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="logoUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Logo URL</FormLabel>
+                <FormControl>
+                  <Input placeholder="https://example.com/logo.png" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="websiteScreenshotUrl"
+          render={({ field }) => (
+            <FormItem className="col-span-full">
+              <FormLabel>Website Screenshot URL</FormLabel>
+              <FormControl>
+                <Input placeholder="https://example.com/screenshot.png" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="affiliateOptIn"
+          render={({ field }) => (
+            <FormItem className="col-span-full flex flex-row items-start space-x-3 space-y-0">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>
+                  Affiliate Program
+                </FormLabel>
+                <FormDescription>
+                  Tool owner is interested in affiliate partnership
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
+
+        <div className="col-span-full flex justify-end gap-4">
           <Button variant="outline" asChild>
             <Link href="/admin/tools">Cancel</Link>
           </Button>
-
-          <Button isPending={isPending} disabled={isPending}>
+          <Button type="submit" disabled={isPending}>
             {tool ? "Update tool" : "Create tool"}
           </Button>
         </div>
