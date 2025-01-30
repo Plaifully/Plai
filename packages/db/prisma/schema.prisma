@@ -85,6 +85,7 @@ model Tool {
   createdAt       DateTime                 @default(now())
   updatedAt       DateTime                 @updatedAt
   searchVector    Unsupported("tsvector")?
+  affiliateOptIn  Boolean                  @default(false)
 
   // Relations
   categories   Category[]

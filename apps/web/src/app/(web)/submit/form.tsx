@@ -36,6 +36,7 @@ export const SubmitForm = ({ className, ...props }: HTMLAttributes<HTMLFormEleme
       submitterName: "",
       submitterEmail: "",
       newsletterOptIn: true,
+      affiliateOptIn: false,
     },
   })
 
@@ -58,12 +59,7 @@ export const SubmitForm = ({ className, ...props }: HTMLAttributes<HTMLFormEleme
         <Alert>
           <InfoIcon className="h-4 w-4" />
           <AlertDescription>
-            This is a free submission. It will be manually reviewed and may take up to 2 weeks to be listed.
-            For faster listing times and enhanced visibility, please check our{" "}
-            <a href="#pricing" className="font-medium underline underline-offset-4">
-              premium options
-            </a>
-            .
+            This is a free submission, it will be manually reviewed by our team and may take up to 2 weeks to be listed. Our team may contact you for more information.
           </AlertDescription>
         </Alert>
 
@@ -141,6 +137,21 @@ export const SubmitForm = ({ className, ...props }: HTMLAttributes<HTMLFormEleme
               </FormControl>
               <FormLabel className="font-normal">
                 I'd like to receive free email updates about my submission
+              </FormLabel>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="affiliateOptIn"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+              <FormControl>
+                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+              </FormControl>
+              <FormLabel className="font-normal">
+                We are willing to discuss an affiliate referral promotional code for Plaiful
               </FormLabel>
             </FormItem>
           )}

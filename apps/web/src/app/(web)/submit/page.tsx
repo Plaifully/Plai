@@ -9,8 +9,8 @@ import { metadataConfig } from "~/config/metadata"
 import { PricingSection } from "~/components/web/pricing/pricing-section"
 
 export const metadata: Metadata = {
-  title: "Submit your AI Agent",
-  description: `Help us grow the list of AI Agents. Contribute to ${config.site.name} by submitting a new AI Agent.`,
+  title: "Submit your agent",
+  description: "Join the internet's largest and most relevant AI agent roster today.",
   openGraph: { ...metadataConfig.openGraph, url: "/submit" },
   alternates: { ...metadataConfig.alternates, canonical: "/submit" },
 }
@@ -19,7 +19,7 @@ export default async function SubmitPage() {
   return (
     <>
       <Intro>
-        <IntroTitle>{`${metadata.title}`}</IntroTitle>
+        <IntroTitle>{metadata.title as string}</IntroTitle>
         <IntroDescription>{metadata.description}</IntroDescription>
       </Intro>
 

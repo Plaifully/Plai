@@ -18,6 +18,7 @@ export const submitToolSchema = z.object({
     .min(1, "Your email is required")
     .email("Invalid email address, please use a correct format."),
   newsletterOptIn: z.boolean().optional().default(true),
+  affiliateOptIn: z.boolean().optional().default(false),
 })
 
 export const newsletterSchema = z.object({
