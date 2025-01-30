@@ -38,6 +38,12 @@ export const toolSchema = z.object({
   status: z.nativeEnum(ToolStatus).default("Draft"),
   categories: z.array(z.string()).optional(),
   tier: z.nativeEnum(ToolTier).default(ToolTier.Free),
+  xAccountUrl: z.string().url().optional(),
+  logoUrl: z.string().url().optional(),
+  websiteScreenshotUrl: z.string().url().optional(),
+  pricingType: z.enum(["Free", "Freemium", "Paid"]).default("Free"),
+  pricingDetails: z.string().optional(),
+  affiliateOptIn: z.boolean().default(false),
 })
 
 export type ToolSchema = z.infer<typeof toolSchema>

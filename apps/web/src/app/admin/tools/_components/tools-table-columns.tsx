@@ -101,6 +101,27 @@ export function getColumns(): ColumnDef<Tool>[] {
       size: 0,
     },
     {
+      accessorKey: "pricingType",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Pricing" />,
+      cell: ({ row }) => (
+        <span className="text-muted-foreground">{row.getValue("pricingType")}</span>
+      ),
+      size: 0,
+    },
+    {
+      accessorKey: "xAccountUrl",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="X Account" />,
+      cell: ({ row }) => {
+        const url = row.getValue("xAccountUrl") as string
+        return url ? (
+          <span className="text-muted-foreground text-sm">{new URL(url).pathname.slice(1)}</span>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )
+      },
+      size: 0,
+    },
+    {
       id: "actions",
       cell: ({ row }) => (
         <ToolActions tool={row.original} row={row} className="float-right -my-0.5" />
