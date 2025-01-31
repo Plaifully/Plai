@@ -92,9 +92,11 @@ export function ToolsTable({ toolsPromise }: ToolsTableProps) {
     filterFields,
     initialState: {
       sorting: [{ id: "createdAt", desc: true }],
-      columnPinning: { right: ["actions"] },
+      columnPinning: { 
+        right: ["actions"],
+        left: ["name", "status"]
+      },
       columnVisibility: {
-        status: false,
         submitterEmail: false,
       },
     },
