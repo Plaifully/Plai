@@ -109,21 +109,11 @@ export const ToolActions = ({ tool, row, className, ...props }: ToolActionsProps
             Reupload Assets
           </DropdownMenuItem>
 
-          <DropdownMenuItem onSelect={() => analyzeToolStackAction({ id: tool.id })}>
-            Analyze Stack
-          </DropdownMenuItem>
-
           <DropdownMenuSeparator />
 
           <DropdownMenuItem asChild>
             <Link href={tool.website} target="_blank">
               Visit website
-            </Link>
-          </DropdownMenuItem>
-
-          <DropdownMenuItem asChild>
-            <Link href={tool.repository} target="_blank">
-              Visit repository
             </Link>
           </DropdownMenuItem>
 

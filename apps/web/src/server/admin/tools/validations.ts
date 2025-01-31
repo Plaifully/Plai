@@ -1,4 +1,4 @@
-import { ToolStatus } from "@plai/db/client"
+import { ToolStatus, ToolTier } from "@plai/db/client"
 import * as z from "zod"
 import { repositorySchema } from "~/server/schemas"
 
@@ -21,26 +21,35 @@ export const getToolsSchema = searchParamsSchema
 export type GetToolsSchema = z.infer<typeof getToolsSchema>
 
 export const toolSchema = z.object({
+  // Required fields (with red asterisks)
   name: z.string().min(1, "Name is required"),
-  slug: z.string().optional(),
   website: z.string().min(1, "Website is required").url(),
-  repository: repositorySchema,
-  tagline: z.string().optional(),
-  description: z.string().optional(),
-  content: z.string().optional(),
-  faviconUrl: z.string().optional(),
-  screenshotUrl: z.string().optional(),
-  isFeatured: z.boolean().default(false),
-  submitterName: z.string().optional(),
-  submitterEmail: z.string().optional(),
-  submitterNote: z.string().optional(),
-  hostingUrl: z.string().url().optional().or(z.literal("")),
-  discountCode: z.string().optional(),
-  discountAmount: z.string().optional(),
-  publishedAt: z.coerce.date().nullish(),
+  
+  // Optional fields (no asterisks)
+  submitterName: z.string().transform(val => val || undefined).optional(),
+  submitterEmail: z.string()
+    .transform(val => val || undefined)
+    .pipe(z.string().email("Invalid email format").optional())
+    .optional(),
+  slug: z.string().transform(val => val || undefined).optional(),
+  tagline: z.string().transform(val => val || undefined).optional(),
+  description: z.string().transform(val => val || undefined).optional(),
+  content: z.string().transform(val => val || undefined).optional(),
+  faviconUrl: z.string().transform(val => val || undefined).optional(),
+  screenshotUrl: z.string().transform(val => val || undefined).optional(),
+  submitterNote: z.string().transform(val => val || undefined).optional(),
+  discountCode: z.string().transform(val => val || undefined).optional(),
+  discountAmount: z.string().transform(val => val || undefined).optional(),
+  publishedAt: z.coerce.date().optional(),
   status: z.nativeEnum(ToolStatus).default("Draft"),
-  alternatives: z.array(z.string()).optional(),
   categories: z.array(z.string()).optional(),
+  tier: z.nativeEnum(ToolTier).default(ToolTier.Free),
+  xAccountUrl: z.string().transform(val => val || undefined).optional(),
+  logoUrl: z.string().transform(val => val || undefined).optional(),
+  websiteScreenshotUrl: z.string().transform(val => val || undefined).optional(),
+  pricingType: z.enum(["Free", "Freemium", "Paid"]).default("Free"),
+  pricingDetails: z.string().transform(val => val || undefined).optional(),
+  affiliateOptIn: z.boolean().default(false),
 })
 
 export type ToolSchema = z.infer<typeof toolSchema>

@@ -46,8 +46,7 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
             </H5>
 
             <p className="-mt-2 px-0.5 text-sm text-muted first:mt-0">
-              Join {formatNumber(config.stats.subscribers, "standard")}+ other members and get
-              updates on new open source tools.
+              Join our founders mom and other agentic enthusiasts
             </p>
 
             <NewsletterForm medium="footer_form" />
@@ -90,12 +89,6 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
                 </NavLink>
               </Tooltip>
 
-              <Tooltip tooltip="Follow us on Bluesky">
-                <NavLink href={config.links.bluesky} target="_blank" rel="nofollow noreferrer">
-                  <BrandBlueskyIcon className="size-[1.44em] stroke-[1.25]" />
-                </NavLink>
-              </Tooltip>
-
               <Tooltip tooltip="Follow us on LinkedIn">
                 <NavLink href={config.links.linkedin} target="_blank" rel="nofollow noreferrer">
                   <BrandLinkedInIcon className="size-[1.44em] stroke-[1.25]" />
@@ -109,16 +102,15 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
               </Tooltip>
             </TooltipProvider>
           </Stack>
+          <div className="flex flex-row flex-wrap items-end gap-x-4 w-full">
+            <p className="text-xs text-muted">This website may contain affiliate links</p>
+          </div>
         </Stack>
 
         <Stack direction="column" className="text-sm/normal md:col-span-3 md:col-start-8">
           <H6 as="strong">Browse:</H6>
-
-          <NavLink href="/alternatives">Alternatives</NavLink>
+          <NavLink href="/?sort=publishedAt.desc">Latest Tools</NavLink>
           <NavLink href="/categories">Categories</NavLink>
-          <NavLink href="/stacks">Tech Stacks</NavLink>
-          <NavLink href="/topics">Topics</NavLink>
-          <NavLink href="/licenses">Licenses</NavLink>
         </Stack>
 
         <Stack direction="column" className="text-sm/normal md:col-span-3">
@@ -128,7 +120,6 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
           <NavLink href="/blog">Blog</NavLink>
           <NavLink href="/advertise">Advertise</NavLink>
           <NavLink href="/submit">Add a Free Listing</NavLink>
-          <NavLink href="/tools/github-stack-analyzer">Stack Analyzer</NavLink>
         </Stack>
 
         <Stack direction="column" className="text-sm/normal md:col-span-3">
@@ -148,28 +139,6 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
             ))}
           </Stack>
         </Stack>
-      </div>
-
-      <div className="flex flex-row flex-wrap items-end justify-between gap-x-4 gap-y-2 w-full">
-        <NavLink
-          href={config.links.author}
-          className="text-xs"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            src="/authors/piotrkulpinski.webp"
-            alt="Piotr Kulpinski"
-            loading="lazy"
-            width="16"
-            height="16"
-            decoding="async"
-            className="max-sm:hidden size-4 rounded-full"
-          />
-          Made by Piotr Kulpinski
-        </NavLink>
-
-        <p className="text-xs text-muted">This website may contain affiliate links</p>
       </div>
 
       {children}

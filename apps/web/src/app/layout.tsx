@@ -5,6 +5,7 @@ import type { PropsWithChildren } from "react"
 import { Toaster } from "~/components/common/toaster"
 import { config } from "~/config"
 import { geist } from "~/lib/fonts"
+import { ThemeProvider } from "next-themes"
 
 export const metadata: Metadata = {
   metadataBase: new URL(config.site.url),
@@ -40,9 +41,15 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang="en" className={`${geist.variable} scroll-smooth`}>
-      <body className="min-h-dvh flex flex-col bg-background text-foreground font-sans">
-        <NuqsAdapter>{children}</NuqsAdapter>
+    <html lang="en" className={`${geist.variable} scroll-smooth dark`} suppressHydrationWarning>
+      <body className="min-h-dvh flex flex-col bg-background text-foreground font-sans antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          disableTransitionOnChange
+        >
+          <NuqsAdapter>{children}</NuqsAdapter>
+        </ThemeProvider>
         <Toaster />
         <SpeedInsights />
       </body>

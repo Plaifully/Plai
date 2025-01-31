@@ -23,7 +23,7 @@ const CategoryCard = ({ category, ...props }: CategoryCardProps) => {
         <CardSimpleDivider />
 
         <CardSimpleCaption>
-          {`${category._count.tools} ${plur("tool", category._count.tools)}`}
+          {`${category._count.tools} ${plur("AI agent", category._count.tools)}`}
         </CardSimpleCaption>
       </Link>
     </CardSimple>

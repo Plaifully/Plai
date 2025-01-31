@@ -7,26 +7,27 @@ import { revalidateTag } from "next/cache"
 import { z } from "zod"
 import { uploadFavicon, uploadScreenshot } from "~/lib/media"
 import { authedProcedure } from "~/lib/safe-actions"
-import { analyzeRepositoryStack } from "~/lib/stack-analysis"
 import { toolSchema } from "~/server/admin/tools/validations"
 import { inngest } from "~/services/inngest"
 
 export const createTool = authedProcedure
   .createServerAction()
   .input(toolSchema)
-  .handler(async ({ input: { alternatives, categories, ...input } }) => {
+  .handler(async ({ input }) => {
+    const { categories, ...data } = input
+    
     const tool = await prisma.tool.create({
       data: {
-        ...input,
-        slug: input.slug || slugify(input.name),
-        alternatives: { connect: alternatives?.map(id => ({ id })) },
-        categories: { connect: categories?.map(id => ({ id })) },
+        ...data,
+        slug: data.slug || slugify(data.name),
+        categories: categories ? {
+          connect: categories.map(id => ({ id }))
+        } : undefined,
       },
     })
 
     revalidateTag("admin/tools")
 
-    // Send an event to the Inngest pipeline
     if (tool.publishedAt) {
       await inngest.send({ name: "tool.scheduled", data: { slug: tool.slug } })
     }
@@ -37,20 +38,33 @@ export const createTool = authedProcedure
 export const updateTool = authedProcedure
   .createServerAction()
   .input(toolSchema.extend({ id: z.string() }))
-  .handler(async ({ input: { id, alternatives, categories, ...input } }) => {
-    const tool = await prisma.tool.update({
-      where: { id },
-      data: {
-        ...input,
-        alternatives: { set: alternatives?.map(id => ({ id })) },
-        categories: { set: categories?.map(id => ({ id })) },
-      },
-    })
+  .handler(async ({ input }) => {
+    try {
+      const { id, categories, ...data } = input
+      
+      const tool = await prisma.tool.update({
+        where: { id },
+        data: {
+          ...data,
+          categories: categories ? {
+            set: categories.map(id => ({ id }))
+          } : undefined,
+        },
+      })
 
-    revalidateTag("tools")
-    revalidateTag(`tool-${tool.slug}`)
+      revalidateTag("tools")
+      revalidateTag(`tool-${tool.slug}`)
 
-    return tool
+      return tool
+    } catch (error) {
+      console.error('Failed to update tool:', {
+        error,
+        toolId: input.id,
+        data: input,
+        stack: error instanceof Error ? error.stack : undefined
+      })
+      throw error
+    }
   })
 
 export const updateTools = authedProcedure
@@ -138,15 +152,7 @@ export const analyzeToolStack = authedProcedure
   .handler(async ({ input: { id } }) => {
     const tool = await prisma.tool.findUniqueOrThrow({ where: { id } })
 
-    // Get analysis and cache it
-    const { stack, repository } = await analyzeRepositoryStack(tool.repository)
-
-    console.log(stack)
-    console.log(repository)
-
-    // Update tool with new stack
-    return await prisma.tool.update({
-      where: { id: tool.id },
-      data: { stacks: { set: stack.map(slug => ({ slug })) } },
-    })
+    // Since we removed repository field, we might want to analyze based on website URL instead
+    // Or remove this function entirely if it's no longer needed
+    throw new Error("Tool stack analysis is no longer supported")
   })

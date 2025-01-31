@@ -7,9 +7,10 @@ import { Stack } from "~/components/common/stack"
 import { Card } from "~/components/web/ui/card"
 import { FaviconImage } from "~/components/web/ui/favicon"
 import { findTools } from "~/server/web/tools/queries"
+import { ToolTier } from "@plai/db/client"
 
 export const FeaturedTools = async ({ ...props }: ComponentProps<typeof Card>) => {
-  const tools = await findTools({ where: { isFeatured: true } })
+  const tools = await findTools({ where: { tier: ToolTier.Featured } })
 
   if (!tools.length) {
     return null
@@ -17,7 +18,7 @@ export const FeaturedTools = async ({ ...props }: ComponentProps<typeof Card>) =
 
   return (
     <Card hover={false} focus={false} {...props}>
-      <H5 as="strong">Featured open source projects:</H5>
+      <H5 as="strong">Featured AI agents:</H5>
 
       <div className="w-full divide-y -my-1.5">
         {tools.map(tool => (
@@ -31,12 +32,12 @@ export const FeaturedTools = async ({ ...props }: ComponentProps<typeof Card>) =
                 </H6>
               </Stack>
 
-              <Stack size="xs">
+              {/* <Stack size="xs">
                 <StarIcon className="size-3" />
                 <span className="text-xs text-muted tabular-nums">
                   {formatNumber(tool.stars, "standard")}
                 </span>
-              </Stack>
+              </Stack> */}
             </Link>
           </Stack>
         ))}

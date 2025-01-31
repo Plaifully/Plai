@@ -1,6 +1,7 @@
-@import "tailwindcss" source(none);
+@import "tailwindcss";
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
+
 
 @source "../../components/common/**/*.{js,ts,jsx,tsx,mdx}";
 @source "../../components/web/**/*.{js,ts,jsx,tsx,mdx}";
@@ -101,20 +102,43 @@
 }
 
 @layer base {
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --color-primary: hsl(15 63% 50%);
-      --color-background: hsl(0 0% 8%);
-      --color-muted: hsl(0 0% 60%);
-      --color-secondary: hsl(0 0% 70%);
-      --color-foreground: hsl(0 0% 87%);
+  :root {
+    --color-primary: hsl(15 63% 40%);
+    --color-background: hsl(0 0% 100%);
+    --color-muted: hsl(0 0% 40%);
+    --color-secondary: hsl(0 0% 30%);
+    --color-foreground: hsl(0 0% 13%);
 
-      --color-card: hsl(0 0% 11%);
-      --color-card-dark: hsl(0 0% 13%);
+    --color-card: hsl(0 0% 98%);
+    --color-card-dark: hsl(0 0% 96%);
 
-      --color-border: hsl(0 0% 18%);
-      --color-border-dark: hsl(0 0% 20%);
-    }
+    --color-border: hsl(0 0% 88%);
+    --color-border-dark: hsl(0 0% 83%);
+
+    --success: 142 72% 29%;
+    --success-foreground: 144 70% 98%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 98%;
+  }
+
+  /* Change from @media query to .dark class */
+  .dark {
+    --color-primary: hsl(15 63% 50%);
+    --color-background: hsl(0 0% 8%);
+    --color-muted: hsl(0 0% 60%);
+    --color-secondary: hsl(0 0% 70%);
+    --color-foreground: hsl(0 0% 87%);
+
+    --color-card: hsl(0 0% 11%);
+    --color-card-dark: hsl(0 0% 13%);
+
+    --color-border: hsl(0 0% 18%);
+    --color-border-dark: hsl(0 0% 20%);
+
+    --success: 142 72% 82%;
+    --success-foreground: 144 70% 10%;
+    --warning: 48 96% 89%;
+    --warning-foreground: 38 92% 10%;
   }
 
   @media (prefers-reduced-motion) {
@@ -178,4 +202,16 @@ select:not([size]) {
   @apply bg-[right_0.75rem_center];
   @apply bg-[length:1.25em_1.25em];
   @apply pr-10;
+}
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  /* ... other light mode variables */
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  /* ... other dark mode variables */
 }

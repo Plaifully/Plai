@@ -32,14 +32,14 @@ export const adsConfig = {
     website: "/advertise",
     name: "Advertise with us",
     description:
-      "Reach out to our audience of professional open source/tech enthusiasts to boost your sales.",
+      "Reach out to our audience of professional AI Agents/tech enthusiasts to boost your sales.",
     faviconUrl: null,
   } satisfies AdOne,
 
   testimonials: [
     {
       quote:
-        "OpenAlternative has been a solid traffic source for our website since we partnered up with them. Their homepage ad, in particular, delivered great results, giving us a noticeable **10–20% traffic boost**. Piotr has done an excellent job with OpenAlternative and it’s clear from the platform’s traffic, engagement, and audience quality. Highly recommended!",
+        "Plaiful has been a solid traffic source for our website since we partnered up with them. Their homepage ad, in particular, delivered great results, giving us a noticeable **10–20% traffic boost**. Piotr has done an excellent job with Plaiful and it’s clear from the platform’s traffic, engagement, and audience quality. Highly recommended!",
       author: {
         name: "Abdullah Atta",
         title: "Founder of Notesnook",
@@ -52,13 +52,13 @@ export const adsConfig = {
     {
       name: "Preline UI",
       description:
-        "Open source set of prebuilt UI components based on the utility-first Tailwind CSS framework.",
+        "AI Agents set of prebuilt UI components based on the utility-first Tailwind CSS framework.",
       websiteUrl: "https://preline.co",
     },
     {
       name: "Efficient App",
       description:
-        "Not all Open Source alternatives are equal — Narrow down the best, without the bullsh*t",
+        "Not all AI Agents alternatives are equal — Narrow down the best, without the bullsh*t",
       websiteUrl: "https://efficient.link/ea/plai",
     },
     {
@@ -86,7 +86,7 @@ export const adsConfig = {
     },
     {
       name: "Polar",
-      description: "An open source Lemon Squeezy alternative with 20% lower fees",
+      description: "An AI Agents Lemon Squeezy alternative with 20% lower fees",
       websiteUrl: "https://polar.sh",
     },
   ],

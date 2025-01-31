@@ -13,9 +13,10 @@ import { toolsSearchParams } from "~/server/web/tools/search-params"
 export type ToolFiltersProps = {
   categories?: CategoryMany[]
   placeholder?: string
+  onLoadingChange?: (isLoading: boolean) => void
 }
 
-export const ToolFilters = ({ categories, placeholder }: ToolFiltersProps) => {
+export const ToolFilters = ({ categories, placeholder, onLoadingChange }: ToolFiltersProps) => {
   const [isLoading, startTransition] = useTransition()
   const [filters, setFilters] = useQueryStates(toolsSearchParams, {
     shallow: false,
@@ -23,6 +24,11 @@ export const ToolFilters = ({ categories, placeholder }: ToolFiltersProps) => {
   })
   const [inputValue, setInputValue] = useState(filters.q || "")
   const q = useDebounce(inputValue, 300)
+
+  // Notify parent component of loading state changes
+  useEffect(() => {
+    onLoadingChange?.(isLoading)
+  }, [isLoading, onLoadingChange])
 
   const updateFilters = (values: Partial<Values<typeof toolsSearchParams>>) => {
     setFilters({ ...values, page: null })
@@ -44,10 +50,7 @@ export const ToolFilters = ({ categories, placeholder }: ToolFiltersProps) => {
     { value: "publishedAt.desc", label: "Recently Added" },
     { value: "name.asc", label: "Name (A to Z)" },
     { value: "name.desc", label: "Name (Z to A)" },
-    { value: "stars.desc", label: "Most Stars" },
-    { value: "forks.desc", label: "Most Forks" },
-    { value: "lastCommitDate.desc", label: "Recently Updated" },
-    { value: "firstCommitDate.desc", label: "Newest Projects" },
+    { value: "isFeatured.desc", label: "Featured" },
   ]
 
   return (
@@ -61,7 +64,7 @@ export const ToolFilters = ({ categories, placeholder }: ToolFiltersProps) => {
           size="lg"
           value={inputValue}
           onChange={e => setInputValue(e.target.value)}
-          placeholder={placeholder || "Search tools..."}
+          placeholder={placeholder || "Search AI agents..."}
           className="w-full truncate pl-10"
         />
       </div>
@@ -70,7 +73,7 @@ export const ToolFilters = ({ categories, placeholder }: ToolFiltersProps) => {
         <Select
           size="lg"
           className="min-w-40 max-sm:flex-1"
-          value={filters.category}
+          value={filters.category || ""}
           onChange={e => updateFilters({ category: e.target.value })}
         >
           <option value="">All categories</option>

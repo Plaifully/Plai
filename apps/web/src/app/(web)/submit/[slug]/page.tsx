@@ -31,7 +31,7 @@ const getTool = cache(async ({ params, searchParams }: PageProps) => {
   const { slug } = await params
 
   const tool = await findToolBySlug(slug, {
-    where: { isFeatured: success ? undefined : false, status: undefined },
+    where: { status: undefined },
   })
 
   if (!tool) {
@@ -43,13 +43,6 @@ const getTool = cache(async ({ params, searchParams }: PageProps) => {
 
 const getMetadata = (tool: ToolOne, success: boolean): Metadata => {
   if (success) {
-    if (tool.isFeatured) {
-      return {
-        title: "Thank you for your payment!",
-        description: `We've received your payment. ${tool.name} should be featured on ${config.site.name} shortly.`,
-      }
-    }
-
     return {
       title: `Thank you for submitting ${tool.name}!`,
       description: `We've received your submission. We'll review it shortly and get back to you.`,

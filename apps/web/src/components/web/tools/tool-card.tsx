@@ -1,6 +1,4 @@
-import { formatNumber } from "@curiousleaf/utils"
-import { formatDistanceToNowStrict } from "date-fns"
-import { GitForkIcon, StarIcon, TimerIcon } from "lucide-react"
+import { HashIcon, TagIcon } from "lucide-react"
 import Link from "next/link"
 import type { ComponentProps } from "react"
 import { H4 } from "~/components/common/heading"
@@ -8,29 +6,27 @@ import { Skeleton } from "~/components/common/skeleton"
 import { Stack } from "~/components/common/stack"
 import { ToolBadges } from "~/components/web/tools/tool-badges"
 import { Badge } from "~/components/web/ui/badge"
-import { Card, CardDescription, CardHeader } from "~/components/web/ui/card"
+import { Card, CardDescription, CardHeader, CardFooter } from "~/components/web/ui/card"
 import { Favicon } from "~/components/web/ui/favicon"
 import { Insights } from "~/components/web/ui/insights"
 import type { ToolMany } from "~/server/web/tools/payloads"
 
 type ToolCardProps = ComponentProps<typeof Card> & {
   tool: ToolMany
-
-  /**
-   * Disables the view transition.
-   */
   isRelated?: boolean
 }
 
 const ToolCard = ({ className, tool, isRelated, ...props }: ToolCardProps) => {
   const insights = [
-    { label: "Stars", value: formatNumber(tool.stars, "standard"), icon: <StarIcon /> },
-    { label: "Forks", value: formatNumber(tool.forks, "standard"), icon: <GitForkIcon /> },
     {
-      label: "Last commit",
-      value:
-        tool.lastCommitDate && formatDistanceToNowStrict(tool.lastCommitDate, { addSuffix: true }),
-      icon: <TimerIcon />,
+      label: "Category",
+      value: tool.categories?.[0]?.name ?? "Uncategorized",
+      icon: <HashIcon className="size-3.5" />,
+    },
+    {
+      label: "Pricing",
+      value: tool.discountAmount ? "Free + Paid" : "Free",
+      icon: <TagIcon className="size-3.5" />,
     },
   ]
 
@@ -51,7 +47,9 @@ const ToolCard = ({ className, tool, isRelated, ...props }: ToolCardProps) => {
 
         {tool.tagline && <CardDescription>{tool.tagline}</CardDescription>}
 
-        <Insights insights={insights} className="mt-auto" />
+        <CardFooter className="mt-auto pt-4 w-full">
+          <Insights insights={insights} />
+        </CardFooter>
       </Link>
     </Card>
   )
@@ -59,9 +57,16 @@ const ToolCard = ({ className, tool, isRelated, ...props }: ToolCardProps) => {
 
 const ToolCardSkeleton = () => {
   const insights = [
-    { label: "Stars", value: <Skeleton className="h-4 w-16" />, icon: <StarIcon /> },
-    { label: "Forks", value: <Skeleton className="h-4 w-14" />, icon: <GitForkIcon /> },
-    { label: "Last commit", value: <Skeleton className="h-4 w-20" />, icon: <TimerIcon /> },
+    { 
+      label: "Category",
+      value: <Skeleton className="h-3.5 w-16" />,
+      icon: <HashIcon className="size-3.5" />
+    },
+    {
+      label: "Pricing",
+      value: <Skeleton className="h-3.5 w-14" />,
+      icon: <TagIcon className="size-3.5" />
+    },
   ]
 
   return (
@@ -79,9 +84,9 @@ const ToolCardSkeleton = () => {
         <Skeleton className="h-5 w-1/2">&nbsp;</Skeleton>
       </CardDescription>
 
-      <Stack size="sm">
-        <Insights insights={insights} className="mt-auto animate-pulse" />
-      </Stack>
+      <CardFooter className="mt-auto pt-4 w-full">
+        <Insights insights={insights} className="w-full text-xs animate-pulse" />
+      </CardFooter>
     </Card>
   )
 }

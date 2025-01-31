@@ -1,6 +1,6 @@
 "use client"
 
-import { type Tool, ToolStatus } from "@plai/db/client"
+import { type Tool, ToolStatus, ToolTier } from "@plai/db/client"
 import { CircleDashedIcon, CircleDotDashedIcon, CircleIcon, PlusIcon } from "lucide-react"
 import Link from "next/link"
 import * as React from "react"
@@ -64,6 +64,24 @@ export function ToolsTable({ toolsPromise }: ToolsTableProps) {
         },
       ],
     },
+    {
+      label: "Tier",
+      value: "tier",
+      options: [
+        {
+          label: "Free",
+          value: ToolTier.Free,
+        },
+        {
+          label: "Featured",
+          value: ToolTier.Featured,
+        },
+        {
+          label: "Premium",
+          value: ToolTier.Premium,
+        },
+      ],
+    },
   ]
 
   const { table } = useDataTable({
@@ -74,9 +92,11 @@ export function ToolsTable({ toolsPromise }: ToolsTableProps) {
     filterFields,
     initialState: {
       sorting: [{ id: "createdAt", desc: true }],
-      columnPinning: { right: ["actions"] },
+      columnPinning: { 
+        right: ["actions"],
+        left: ["name", "status"]
+      },
       columnVisibility: {
-        status: false,
         submitterEmail: false,
       },
     },

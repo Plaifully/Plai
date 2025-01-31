@@ -29,6 +29,7 @@ import { Logo } from "~/components/web/ui/logo"
 import { NavLink, navLinkVariants } from "~/components/web/ui/nav-link"
 import { config } from "~/config"
 import { cx } from "~/utils/cva"
+import { DarkModeToggle } from "~/components/web/ui/dark-mode-toggle"
 
 export const Header = ({ className, ...props }: HTMLAttributes<HTMLElement>) => {
   const pathname = usePathname()
@@ -113,41 +114,17 @@ export const Header = ({ className, ...props }: HTMLAttributes<HTMLElement>) => 
                   <GalleryHorizontalEndIcon className="shrink-0 size-4 opacity-75" /> Categories
                 </NavLink>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <NavLink href="/stacks">
-                  <BlocksIcon className="shrink-0 size-4 opacity-75" /> Tech Stacks
-                </NavLink>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <NavLink href="/topics">
-                  <TagIcon className="shrink-0 size-4 opacity-75" /> Topics
-                </NavLink>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <NavLink href="/licenses">
-                  <CopyrightIcon className="shrink-0 size-4 opacity-75" /> Licenses
-                </NavLink>
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <NavLink href="/alternatives">Alternatives</NavLink>
           <NavLink href="/advertise">Advertise</NavLink>
+          <NavLink href="/blog">Blogs</NavLink>
         </nav>
 
-        <Stack size="sm" className="max-sm:hidden">
+        <Stack className="items-center gap-3 lg:gap-4">
           <Suspense fallback={<SearchIcon className="size-4" />}>
-            <SearchForm />
+            <SearchForm className="hidden lg:block" />
           </Suspense>
-
-          <NavLink
-            href={config.links.bluesky}
-            target="_blank"
-            rel="nofollow noreferrer"
-            title="Follow us on Bluesky"
-          >
-            <BrandBlueskyIcon className="size-4" />
-          </NavLink>
 
           <NavLink
             href={config.links.twitter}
@@ -168,6 +145,8 @@ export const Header = ({ className, ...props }: HTMLAttributes<HTMLElement>) => 
           </NavLink>
         </Stack>
 
+        <DarkModeToggle />
+
         <Button size="sm" variant="secondary" asChild>
           <Link href="/submit" prefetch={false}>
             Submit
@@ -186,12 +165,6 @@ export const Header = ({ className, ...props }: HTMLAttributes<HTMLElement>) => 
         </NavLink>
         <NavLink href="/categories" className="text-base">
           Categories
-        </NavLink>
-        <NavLink href="/alternatives" className="text-base">
-          Alternatives
-        </NavLink>
-        <NavLink href="/stacks" className="text-base">
-          Tech Stacks
         </NavLink>
         <NavLink href="/topics" className="text-base">
           Topics

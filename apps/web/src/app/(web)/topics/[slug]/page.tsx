@@ -30,8 +30,8 @@ const getMetadata = (topic: TopicOne): Metadata => {
   const name = titleCase(topic.slug)
 
   return {
-    title: `Open Source Projects tagged "${name}"`,
-    description: `A curated collection of the ${topic._count.tools} best open source projects tagged "${name}". Each listing includes a website screenshot along with a detailed review of its features.`,
+    title: `AI Agents Projects tagged "${name}"`,
+    description: `A curated collection of the ${topic._count.tools} best AI Agents tagged "${name}". Each listing includes a website screenshot along with a detailed review of its features.`,
   }
 }
 

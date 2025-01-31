@@ -40,7 +40,7 @@ export const NewsletterForm = ({
 
   const { data, error, isPending, execute } = useServerAction(subscribeToNewsletter, {
     onSuccess: () => {
-      posthog.capture("subscribe_newsletter", { email: form.getValues("email") })
+      // posthog.capture("subscribe_newsletter", { email: form.getValues("email") })
       form.reset()
     },
 

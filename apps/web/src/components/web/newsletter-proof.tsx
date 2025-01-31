@@ -27,7 +27,7 @@ export const NewsletterProof = ({ className, ...props }: HTMLAttributes<HTMLElem
       ))}
 
       <p className="w-full text-xs text-muted">
-        Join {formatNumber(config.stats.subscribers, "standard")}+ open source enthusiasts
+        Join our founders mom and other agentic enthusiasts
       </p>
     </div>
   )

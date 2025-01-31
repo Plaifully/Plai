@@ -1,10 +1,10 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ToolStatus } from "@plai/db/client"
+import { ToolStatus, ToolTier } from "@plai/db/client"
 import { formatDate } from "date-fns"
 import Link from "next/link"
-import { redirect } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 import type React from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -19,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/admin/ui/select"
-import { Switch } from "~/components/admin/ui/switch"
 import { Textarea } from "~/components/admin/ui/textarea"
 import {
   Form,
@@ -28,45 +27,74 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "~/components/common/form"
-import type { findAlternativeList } from "~/server/admin/alternatives/queries"
 import type { findCategoryList } from "~/server/admin/categories/queries"
 import { createTool, updateTool } from "~/server/admin/tools/actions"
 import type { findToolBySlug } from "~/server/admin/tools/queries"
 import { type ToolSchema, toolSchema } from "~/server/admin/tools/validations"
 import { cx } from "~/utils/cva"
 import { nullsToUndefined } from "~/utils/helpers"
+import { Checkbox } from "~/components/common/checkbox"
+import { Loader2Icon } from "lucide-react"
+import { useTransition } from "react"
 
 type ToolFormProps = React.HTMLAttributes<HTMLFormElement> & {
   tool?: Awaited<ReturnType<typeof findToolBySlug>>
-  alternatives: ReturnType<typeof findAlternativeList>
-  categories: ReturnType<typeof findCategoryList>
+  categories: Awaited<ReturnType<typeof findCategoryList>>
 }
 
 export function ToolForm({
   children,
   className,
   tool,
-  alternatives,
   categories,
   ...props
 }: ToolFormProps) {
+  const router = useRouter()
+  const [isTransitioning, startTransition] = useTransition()
+
+  console.log('Tool categories:', tool?.categories)
+  const categoryIds = tool?.categories?.map(({ id }) => id) ?? []
+  console.log('Mapped category IDs:', categoryIds)
+
   const form = useForm<ToolSchema>({
     resolver: zodResolver(toolSchema),
     defaultValues: {
-      ...nullsToUndefined(tool),
-      alternatives: tool?.alternatives.map(({ id }) => id),
-      categories: tool?.categories.map(({ id }) => id),
+      name: tool?.name ?? "",
+      slug: tool?.slug ?? "",
+      website: tool?.website ?? "",
+      tagline: tool?.tagline ?? "",
+      description: tool?.description ?? "",
+      content: tool?.content ?? "",
+      faviconUrl: tool?.faviconUrl ?? "",
+      screenshotUrl: tool?.screenshotUrl ?? "",
+      submitterName: tool?.submitterName ?? "",
+      submitterEmail: tool?.submitterEmail ?? "",
+      submitterNote: tool?.submitterNote ?? "",
+      discountCode: tool?.discountCode ?? "",
+      discountAmount: tool?.discountAmount ?? "",
+      publishedAt: tool?.publishedAt ?? undefined,
+      status: tool?.status ?? ToolStatus.Draft,
+      tier: tool?.tier ?? ToolTier.Free,
+      categories: categoryIds,
+      pricingType: tool?.pricingType ?? "Free",
+      pricingDetails: tool?.pricingDetails ?? "",
+      xAccountUrl: tool?.xAccountUrl ?? "",
+      logoUrl: tool?.logoUrl ?? "",
+      websiteScreenshotUrl: tool?.websiteScreenshotUrl ?? "",
+      affiliateOptIn: tool?.affiliateOptIn ?? false,
     },
   })
 
   // Create tool
   const { execute: createToolAction, isPending: isCreatingTool } = useServerAction(createTool, {
     onSuccess: ({ data }) => {
-      toast.success("Tool successfully created")
-      redirect(`/admin/tools/${data.slug}`)
+      startTransition(() => {
+        toast.success("Tool successfully created")
+        router.push(`/admin/tools/${data.slug}`)
+      })
     },
-
     onError: ({ err }) => {
       toast.error(err.message)
     },
@@ -75,20 +103,66 @@ export function ToolForm({
   // Update tool
   const { execute: updateToolAction, isPending: isUpdatingTool } = useServerAction(updateTool, {
     onSuccess: ({ data }) => {
-      toast.success("Tool successfully updated")
-      redirect(`/admin/tools/${data.slug}`)
+      startTransition(() => {
+        toast.success("Tool successfully updated")
+        router.push(`/admin/tools/${data.slug}`)
+      })
     },
-
     onError: ({ err }) => {
       toast.error(err.message)
     },
   })
 
-  const onSubmit = form.handleSubmit(data => {
-    tool ? updateToolAction({ id: tool.id, ...data }) : createToolAction(data)
+  const onSubmit = form.handleSubmit(async data => {
+    try {
+      const formData = {
+        // Required fields - keep as is
+        name: data.name,
+        website: data.website,
+        submitterName: data.submitterName,
+        submitterEmail: data.submitterEmail,
+        
+        // Optional fields - convert empty strings to undefined
+        slug: data.slug || undefined,
+        tagline: data.tagline || undefined,
+        description: data.description || undefined,
+        content: data.content || undefined,
+        faviconUrl: data.faviconUrl || undefined,
+        screenshotUrl: data.screenshotUrl || undefined,
+        submitterNote: data.submitterNote || undefined,
+        discountCode: data.discountCode || undefined,
+        discountAmount: data.discountAmount || undefined,
+        pricingDetails: data.pricingDetails || undefined,
+        xAccountUrl: data.xAccountUrl || undefined,
+        logoUrl: data.logoUrl || undefined,
+        websiteScreenshotUrl: data.websiteScreenshotUrl || undefined,
+        
+        // Fields with defaults
+        status: data.status,
+        tier: data.tier,
+        pricingType: data.pricingType,
+        affiliateOptIn: data.affiliateOptIn,
+        categories: data.categories,
+        publishedAt: data.publishedAt || undefined,
+      }
+
+      if (tool) {
+        await updateToolAction({ id: tool.id, ...formData })
+      } else {
+        await createToolAction(formData)
+      }
+    } catch (error) {
+      console.error('Form submission error:', {
+        error,
+        formData: data,
+        toolId: tool?.id,
+        stack: error instanceof Error ? error.stack : undefined
+      })
+      toast.error('Failed to save tool')
+    }
   })
 
-  const isPending = isCreatingTool || isUpdatingTool
+  const isPending = isCreatingTool || isUpdatingTool || isTransitioning
 
   return (
     <Form {...form}>
@@ -104,7 +178,7 @@ export function ToolForm({
             name="name"
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel>Name</FormLabel>
+                <FormLabel className="after:text-red-500 after:content-['*']">AI Agent Name</FormLabel>
                 <FormControl>
                   <Input placeholder="PostHog" {...field} />
                 </FormControl>
@@ -133,7 +207,7 @@ export function ToolForm({
           name="website"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Website</FormLabel>
+              <FormLabel className="after:text-red-500 after:content-['*']">Website URL</FormLabel>
               <FormControl>
                 <Input placeholder="https://posthog.com" {...field} />
               </FormControl>
@@ -144,23 +218,9 @@ export function ToolForm({
 
         <FormField
           control={form.control}
-          name="repository"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Repository</FormLabel>
-              <FormControl>
-                <Input type="url" placeholder="https://github.com/posthog/posthog" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="tagline"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="col-span-full">
               <FormLabel>Tagline</FormLabel>
               <FormControl>
                 <Input placeholder="How developers build successful products" {...field} />
@@ -201,16 +261,29 @@ export function ToolForm({
           )}
         />
 
-        <div className="flex flex-row gap-4 max-sm:contents">
+        <div className="grid gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
-            name="isFeatured"
+            name="tier"
             render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormLabel>Featured</FormLabel>
-                <FormControl>
-                  <Switch onCheckedChange={field.onChange} checked={field.value} />
-                </FormControl>
+              <FormItem>
+                <FormLabel>Tier</FormLabel>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  defaultValue={ToolTier.Free}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select tier" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value={ToolTier.Free}>Free</SelectItem>
+                    <SelectItem value={ToolTier.Featured}>Featured</SelectItem>
+                    <SelectItem value={ToolTier.Premium}>Premium</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -220,23 +293,24 @@ export function ToolForm({
             control={form.control}
             name="status"
             render={({ field }) => (
-              <FormItem className="flex-1">
+              <FormItem>
                 <FormLabel>Status</FormLabel>
-                <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="h-8 w-full tabular-nums">
-                      <SelectValue />
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  defaultValue={ToolStatus.Draft}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
                     </SelectTrigger>
-
-                    <SelectContent side="top" className="tabular-nums">
-                      {Object.values(ToolStatus).map(status => (
-                        <SelectItem key={status} value={status}>
-                          {status}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value={ToolStatus.Draft}>Draft</SelectItem>
+                    <SelectItem value={ToolStatus.Published}>Published</SelectItem>
+                    <SelectItem value={ToolStatus.Scheduled}>Scheduled</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -267,7 +341,7 @@ export function ToolForm({
           name="submitterName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Submitter Name</FormLabel>
+              <FormLabel>Your Name</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -281,7 +355,7 @@ export function ToolForm({
           name="submitterEmail"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Submitter Email</FormLabel>
+              <FormLabel>Your Email</FormLabel>
               <FormControl>
                 <Input type="email" {...field} />
               </FormControl>
@@ -298,20 +372,6 @@ export function ToolForm({
               <FormLabel>Submitter Note</FormLabel>
               <FormControl>
                 <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="hostingUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Hosting URL</FormLabel>
-              <FormControl>
-                <Input type="url" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -376,41 +436,144 @@ export function ToolForm({
 
         <FormField
           control={form.control}
-          name="alternatives"
+          name="categories"
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormLabel>Categories</FormLabel>
+                <RelationSelector
+                  relations={categories}
+                  selectedIds={field.value ?? []}
+                  onChange={field.onChange}
+                />
+              </FormItem>
+            )
+          }}
+        />
+
+        <div className="col-span-full grid gap-4 md:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="pricingType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Pricing Type</FormLabel>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select pricing type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Free">Free</SelectItem>
+                    <SelectItem value="Freemium">Freemium</SelectItem>
+                    <SelectItem value="Paid">Paid</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="pricingDetails"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Pricing Details</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g. Starts at $10/month" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="col-span-full grid gap-4 md:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="xAccountUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>X Account</FormLabel>
+                <FormControl>
+                  <Input placeholder="https://x.com/username" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="logoUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Logo URL</FormLabel>
+                <FormControl>
+                  <Input placeholder="https://example.com/logo.png" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="websiteScreenshotUrl"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Alternatives</FormLabel>
-              <RelationSelector
-                promise={alternatives}
-                selectedIds={field.value ?? []}
-                onChange={field.onChange}
-              />
+            <FormItem className="col-span-full">
+              <FormLabel>Website Screenshot URL</FormLabel>
+              <FormControl>
+                <Input placeholder="https://example.com/screenshot.png" {...field} />
+              </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
 
         <FormField
           control={form.control}
-          name="categories"
+          name="affiliateOptIn"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Categories</FormLabel>
-              <RelationSelector
-                promise={categories}
-                selectedIds={field.value ?? []}
-                onChange={field.onChange}
-              />
+            <FormItem className="col-span-full flex flex-row items-start space-x-3 space-y-0">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>
+                  Affiliate Program
+                </FormLabel>
+                <FormDescription>
+                  Tool owner is interested in affiliate partnership
+                </FormDescription>
+              </div>
             </FormItem>
           )}
         />
 
-        <div className="flex justify-between gap-4 col-span-full">
+        <div className="col-span-full flex justify-end gap-4">
           <Button variant="outline" asChild>
             <Link href="/admin/tools">Cancel</Link>
           </Button>
-
-          <Button isPending={isPending} disabled={isPending}>
-            {tool ? "Update tool" : "Create tool"}
+          <Button 
+            type="submit" 
+            disabled={isPending}
+            className="min-w-[100px]"
+          >
+            {isPending ? (
+              <div className="flex items-center gap-2">
+                <Loader2Icon className="h-4 w-4 animate-spin" />
+                <span>{tool ? "Updating..." : "Creating..."}</span>
+              </div>
+            ) : (
+              <span>{tool ? "Update tool" : "Create tool"}</span>
+            )}
           </Button>
         </div>
       </form>
