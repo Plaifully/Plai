@@ -21,12 +21,14 @@ export const repositorySchema = z
 const baseToolSchema = {
   name: z.string().min(1, "Name is required"),
   website: z.string().min(1, "Website is required").url("Invalid URL").trim(),
+  tagline: z.string().optional(),
   xAccountUrl: z.string().optional(),
   logoUrl: z.string().optional(),
   websiteScreenshotUrl: z.string().optional(),
   pricingType: z.enum(["Free", "Freemium", "Paid"]).default("Free"),
   pricingDetails: z.string().optional(),
   affiliateOptIn: z.boolean().optional().default(false),
+  categories: z.array(z.string()).optional(),
 }
 
 // Schema for submitting new tools (requires submitter info)

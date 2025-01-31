@@ -60,6 +60,8 @@ export const submitTool = createServerAction()
 
     const { newsletterOptIn, ...inputData } = input
     console.log('Processed input data:', inputData)
+    console.log('Categories from input:', inputData.categories)
+
     const isValidEmail = await isRealEmail(inputData.submitterEmail)
 
     if (!isValidEmail) {
@@ -88,6 +90,20 @@ export const submitTool = createServerAction()
     // Generate a unique slug
     const slug = await generateUniqueSlug(inputData.name)
 
+    // Prepare categories connection if provided
+    const categoriesConnect = inputData.categories?.length 
+      ? { 
+          categories: { 
+            connect: inputData.categories.map(slug => ({ 
+              slug: slug.toString() 
+            }))
+          } 
+        }
+      : {}
+    
+    console.log('Categories connection object:', categoriesConnect)
+    console.log('Categories being connected:', inputData.categories?.map(slug => ({ slug: slug.toString() })))
+
     // Map the data to match Prisma schema
     const data: Prisma.ToolCreateInput = {
       name: inputData.name,
@@ -99,16 +115,32 @@ export const submitTool = createServerAction()
       pricingType: inputData.pricingType,
       affiliateOptIn: inputData.affiliateOptIn,
       // Optional fields - only include if they have non-empty values
+      ...(inputData.tagline && inputData.tagline.trim() ? { tagline: inputData.tagline } : {}),
       ...(inputData.xAccountUrl && inputData.xAccountUrl.trim() ? { xAccountUrl: inputData.xAccountUrl } : {}),
       ...(inputData.logoUrl && inputData.logoUrl.trim() ? { logoUrl: inputData.logoUrl } : {}),
       ...(inputData.websiteScreenshotUrl && inputData.websiteScreenshotUrl.trim() ? { websiteScreenshotUrl: inputData.websiteScreenshotUrl } : {}),
-      ...(inputData.pricingDetails && inputData.pricingDetails.trim() ? { pricingDetails: inputData.pricingDetails } : {})
+      ...(inputData.pricingDetails && inputData.pricingDetails.trim() ? { pricingDetails: inputData.pricingDetails } : {}),
+      ...categoriesConnect
     }
+
+    console.log('Final data being sent to Prisma:', JSON.stringify(data, null, 2))
 
     try {
       // Save the tool to the database
       try {
-        const tool = await prisma.tool.create({ data })
+        const tool = await prisma.tool.create({ 
+          data,
+          include: {
+            categories: {
+              select: {
+                id: true,
+                name: true,
+                slug: true
+              }
+            }
+          }
+        })
+        console.log('Created tool with categories:', JSON.stringify(tool.categories, null, 2))
         revalidateTag("admin-tools")
 
         return { success: true, data: tool }

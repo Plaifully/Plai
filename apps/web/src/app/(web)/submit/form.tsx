@@ -23,7 +23,10 @@ import { Input } from "~/components/web/ui/input"
 import { type SubmitToolSchema, submitToolSchema } from "~/server/schemas"
 import { cx } from "~/utils/cva"
 import { Alert, AlertDescription } from "~/components/web/ui/alert"
-import { InfoIcon } from "lucide-react"
+import { InfoIcon, CheckIcon, ChevronsUpDown, X as XIcon } from "lucide-react"
+import { Textarea } from "~/components/web/ui/textarea"
+import { findCategories } from "~/server/web/categories/queries"
+import { type CategoryMany } from "~/server/web/categories/payloads"
 import {
   Select,
   SelectContent,
@@ -31,9 +34,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/web/ui/select"
-import { Textarea } from "~/components/web/ui/textarea"
 
-export const SubmitForm = ({ className, ...props }: HTMLAttributes<HTMLFormElement>) => {
+type SubmitFormProps = HTMLAttributes<HTMLFormElement> & {
+  categories: CategoryMany[]
+}
+
+export const SubmitForm = ({ className, categories, ...props }: SubmitFormProps) => {
   const router = useRouter()
 
   const form = useForm<SubmitToolSchema>({
@@ -41,6 +47,7 @@ export const SubmitForm = ({ className, ...props }: HTMLAttributes<HTMLFormEleme
     defaultValues: {
       name: "",
       website: "",
+      tagline: "",
       submitterName: "",
       submitterEmail: "",
       xAccountUrl: "",
@@ -50,6 +57,7 @@ export const SubmitForm = ({ className, ...props }: HTMLAttributes<HTMLFormEleme
       pricingDetails: "",
       newsletterOptIn: true,
       affiliateOptIn: false,
+      categories: [],
     },
   })
 
@@ -71,10 +79,16 @@ export const SubmitForm = ({ className, ...props }: HTMLAttributes<HTMLFormEleme
     }
   })
 
+  const onSubmit = form.handleSubmit(data => {
+    console.log('Form data being submitted:', data)
+    console.log('Selected category:', data.categories)
+    return execute(data)
+  })
+
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(data => execute(data))}
+        onSubmit={onSubmit}
         className={cx("grid w-full gap-8", className)}
         noValidate
         {...props}
@@ -89,15 +103,45 @@ export const SubmitForm = ({ className, ...props }: HTMLAttributes<HTMLFormEleme
         {/* Basic Information */}
         <div className="space-y-6">
           <h3 className="text-lg font-semibold">Basic Information</h3>
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-5">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel isRequired>AI Agent Name</FormLabel>
+                    <FormControl>
+                      <Input type="text" size="lg" placeholder="MyAI Assistant" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="website"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel isRequired>Website URL</FormLabel>
+                    <FormControl>
+                      <Input type="url" size="lg" placeholder="https://myai.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             <FormField
               control={form.control}
-              name="name"
+              name="tagline"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel isRequired>AI Agent Name</FormLabel>
+                  <FormLabel>Tagline</FormLabel>
                   <FormControl>
-                    <Input type="text" size="lg" placeholder="MyAI Assistant" {...field} />
+                    <Input type="text" size="lg" placeholder="A short description of your AI agent" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -106,13 +150,30 @@ export const SubmitForm = ({ className, ...props }: HTMLAttributes<HTMLFormEleme
 
             <FormField
               control={form.control}
-              name="website"
+              name="categories"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel isRequired>Website URL</FormLabel>
-                  <FormControl>
-                    <Input type="url" size="lg" placeholder="https://myai.com" {...field} />
-                  </FormControl>
+                  <FormLabel>Category</FormLabel>
+                  <Select
+                    value={field.value?.[0] || ""}
+                    onValueChange={(value) => {
+                      console.log('Category selected:', value)
+                      field.onChange([value])
+                    }}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {categories.map(category => (
+                        <SelectItem key={category.slug} value={category.slug} className="cursor-pointer">
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

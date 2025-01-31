@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import { Metadata } from "next"
 import { SubmitForm } from "~/app/(web)/submit/form"
 import { Card } from "~/components/web/ui/card"
 import { Intro, IntroDescription, IntroTitle } from "~/components/web/ui/intro"
@@ -7,6 +7,7 @@ import { Section } from "~/components/web/ui/section"
 import { config } from "~/config"
 import { metadataConfig } from "~/config/metadata"
 import { PricingSection } from "~/components/web/pricing/pricing-section"
+import { findCategories } from "~/server/web/categories/queries"
 
 export const metadata: Metadata = {
   title: "Submit your agent",
@@ -15,17 +16,21 @@ export const metadata: Metadata = {
   alternates: { ...metadataConfig.alternates, canonical: "/submit" },
 }
 
-export default async function SubmitPage() {
+export default async function Submit() {
+  const categories = await findCategories({})
+
   return (
     <>
-      <Intro>
-        <IntroTitle>{metadata.title as string}</IntroTitle>
-        <IntroDescription>{metadata.description}</IntroDescription>
+      <Intro alignment="center">
+        <IntroTitle>Submit your agent</IntroTitle>
+        <IntroDescription>
+          Join the internet's largest and most relevant AI agent roster today.
+        </IntroDescription>
       </Intro>
 
       <Section>
         <Section.Content>
-          <SubmitForm />
+          <SubmitForm categories={categories} />
         </Section.Content>
 
         <Section.Sidebar>
