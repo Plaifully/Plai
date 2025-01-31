@@ -330,7 +330,7 @@ export function ToolForm({
           name="submitterName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="after:text-red-500 after:content-['*']">Your Name</FormLabel>
+              <FormLabel>Your Name</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -344,7 +344,7 @@ export function ToolForm({
           name="submitterEmail"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="after:text-red-500 after:content-['*']">Your Email</FormLabel>
+              <FormLabel>Your Email</FormLabel>
               <FormControl>
                 <Input type="email" {...field} />
               </FormControl>
