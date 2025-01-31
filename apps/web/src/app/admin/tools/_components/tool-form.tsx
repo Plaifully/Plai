@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ToolStatus, ToolTier } from "@plai/db/client"
 import { formatDate } from "date-fns"
 import Link from "next/link"
-import { redirect } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 import type React from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -36,6 +36,8 @@ import { type ToolSchema, toolSchema } from "~/server/admin/tools/validations"
 import { cx } from "~/utils/cva"
 import { nullsToUndefined } from "~/utils/helpers"
 import { Checkbox } from "~/components/common/checkbox"
+import { Loader2Icon } from "lucide-react"
+import { useTransition } from "react"
 
 type ToolFormProps = React.HTMLAttributes<HTMLFormElement> & {
   tool?: Awaited<ReturnType<typeof findToolBySlug>>
@@ -49,6 +51,9 @@ export function ToolForm({
   categories,
   ...props
 }: ToolFormProps) {
+  const router = useRouter()
+  const [isTransitioning, startTransition] = useTransition()
+
   const form = useForm<ToolSchema>({
     resolver: zodResolver(toolSchema),
     defaultValues: {
@@ -65,7 +70,7 @@ export function ToolForm({
       submitterNote: tool?.submitterNote ?? "",
       discountCode: tool?.discountCode ?? "",
       discountAmount: tool?.discountAmount ?? "",
-      publishedAt: tool?.publishedAt,
+      publishedAt: tool?.publishedAt ?? undefined,
       status: tool?.status ?? ToolStatus.Draft,
       tier: tool?.tier ?? ToolTier.Free,
       categories: tool?.categories?.map(({ id }) => id) ?? [],
@@ -81,10 +86,11 @@ export function ToolForm({
   // Create tool
   const { execute: createToolAction, isPending: isCreatingTool } = useServerAction(createTool, {
     onSuccess: ({ data }) => {
-      toast.success("Tool successfully created")
-      redirect(`/admin/tools/${data.slug}`)
+      startTransition(() => {
+        toast.success("Tool successfully created")
+        router.push(`/admin/tools/${data.slug}`)
+      })
     },
-
     onError: ({ err }) => {
       toast.error(err.message)
     },
@@ -93,10 +99,11 @@ export function ToolForm({
   // Update tool
   const { execute: updateToolAction, isPending: isUpdatingTool } = useServerAction(updateTool, {
     onSuccess: ({ data }) => {
-      toast.success("Tool successfully updated")
-      redirect(`/admin/tools/${data.slug}`)
+      startTransition(() => {
+        toast.success("Tool successfully updated")
+        router.push(`/admin/tools/${data.slug}`)
+      })
     },
-
     onError: ({ err }) => {
       toast.error(err.message)
     },
@@ -151,7 +158,7 @@ export function ToolForm({
     }
   })
 
-  const isPending = isCreatingTool || isUpdatingTool
+  const isPending = isCreatingTool || isUpdatingTool || isTransitioning
 
   return (
     <Form {...form}>
@@ -548,8 +555,19 @@ export function ToolForm({
           <Button variant="outline" asChild>
             <Link href="/admin/tools">Cancel</Link>
           </Button>
-          <Button type="submit" disabled={isPending}>
-            {tool ? "Update tool" : "Create tool"}
+          <Button 
+            type="submit" 
+            disabled={isPending}
+            className="min-w-[100px]"
+          >
+            {isPending ? (
+              <div className="flex items-center gap-2">
+                <Loader2Icon className="h-4 w-4 animate-spin" />
+                <span>{tool ? "Updating..." : "Creating..."}</span>
+              </div>
+            ) : (
+              <span>{tool ? "Update tool" : "Create tool"}</span>
+            )}
           </Button>
         </div>
       </form>
