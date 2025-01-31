@@ -20,14 +20,14 @@ type Relation = {
 }
 
 type RelationSelectorProps = {
-  promise: Promise<Relation[]>
+  relations: Relation[] | Promise<Relation[]>
   selectedIds: string[]
   maxSelected?: number
   onChange: (selectedIds: string[]) => void
 }
 
-export const RelationSelector = ({ promise, selectedIds, onChange }: RelationSelectorProps) => {
-  const relations = use(promise)
+export const RelationSelector = ({ relations: relationsInput, selectedIds, onChange }: RelationSelectorProps) => {
+  const relations = relationsInput instanceof Promise ? use(relationsInput) : relationsInput
   const selectedRelations = relations?.filter(rel => selectedIds.includes(rel.id))
 
   return (

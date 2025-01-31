@@ -39,11 +39,7 @@ const generateUniqueSlug = async (baseName: string): Promise<string> => {
 export const submitTool = createServerAction()
   .input(submitToolSchema)
   .handler(async (args) => {
-    console.log('Raw input args:', args)
-    console.log('Input type:', typeof args)
-    
     if (!args || typeof args !== 'object' || !('input' in args)) {
-      console.error('Invalid input format:', args)
       return { 
         success: false, 
         error: 'Invalid input format' 
@@ -51,16 +47,7 @@ export const submitTool = createServerAction()
     }
 
     const { input } = args
-    // const ip = await getIP()
-
-    // Rate limiting check
-    // if (await isRateLimited(ip, "submission")) {
-    //   throw new Error("Too many submissions. Please try again later.")
-    // }
-
     const { newsletterOptIn, ...inputData } = input
-    console.log('Processed input data:', inputData)
-    console.log('Categories from input:', inputData.categories)
 
     const isValidEmail = await isRealEmail(inputData.submitterEmail)
 
@@ -100,9 +87,6 @@ export const submitTool = createServerAction()
           } 
         }
       : {}
-    
-    console.log('Categories connection object:', categoriesConnect)
-    console.log('Categories being connected:', inputData.categories?.map(slug => ({ slug: slug.toString() })))
 
     // Map the data to match Prisma schema
     const data: Prisma.ToolCreateInput = {
@@ -123,8 +107,6 @@ export const submitTool = createServerAction()
       ...categoriesConnect
     }
 
-    console.log('Final data being sent to Prisma:', JSON.stringify(data, null, 2))
-
     try {
       // Save the tool to the database
       try {
@@ -140,7 +122,6 @@ export const submitTool = createServerAction()
             }
           }
         })
-        console.log('Created tool with categories:', JSON.stringify(tool.categories, null, 2))
         revalidateTag("admin-tools")
 
         return { success: true, data: tool }
@@ -160,16 +141,6 @@ export const submitTool = createServerAction()
         }
         throw error
       }
-
-      // // Send an event to the Inngest pipeline
-      // try {
-      //   await inngest.send({ name: "tool.submitted", data: { slug } })
-      // } catch (inngestError) {
-      //   console.error('Error sending Inngest event:', inngestError)
-      //   // Don't throw here, as the tool was created successfully
-      // }
-
-      // Revalidate cache
 
     } catch (error) {
       // Log the raw error stack to avoid Next.js source map issues

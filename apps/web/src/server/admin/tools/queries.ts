@@ -48,6 +48,15 @@ export const findTools = cache(
         orderBy: column ? { [column]: order } : undefined,
         take: per_page,
         skip: offset,
+        include: {
+          categories: {
+            select: {
+              id: true,
+              name: true,
+              slug: true
+            }
+          }
+        }
       }),
 
       prisma.tool.count({
@@ -82,9 +91,8 @@ export const findToolBySlug = (slug: string) =>
       return prisma.tool.findUnique({
         where: { slug },
         include: {
-          categories: true,
-          topics: true,
-        },
+          categories: true
+        }
       })
     },
     [`tool-${slug}`],

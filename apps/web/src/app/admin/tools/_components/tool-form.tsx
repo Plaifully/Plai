@@ -41,7 +41,7 @@ import { useTransition } from "react"
 
 type ToolFormProps = React.HTMLAttributes<HTMLFormElement> & {
   tool?: Awaited<ReturnType<typeof findToolBySlug>>
-  categories: ReturnType<typeof findCategoryList>
+  categories: Awaited<ReturnType<typeof findCategoryList>>
 }
 
 export function ToolForm({
@@ -53,6 +53,10 @@ export function ToolForm({
 }: ToolFormProps) {
   const router = useRouter()
   const [isTransitioning, startTransition] = useTransition()
+
+  console.log('Tool categories:', tool?.categories)
+  const categoryIds = tool?.categories?.map(({ id }) => id) ?? []
+  console.log('Mapped category IDs:', categoryIds)
 
   const form = useForm<ToolSchema>({
     resolver: zodResolver(toolSchema),
@@ -73,7 +77,7 @@ export function ToolForm({
       publishedAt: tool?.publishedAt ?? undefined,
       status: tool?.status ?? ToolStatus.Draft,
       tier: tool?.tier ?? ToolTier.Free,
-      categories: tool?.categories?.map(({ id }) => id) ?? [],
+      categories: categoryIds,
       pricingType: tool?.pricingType ?? "Free",
       pricingDetails: tool?.pricingDetails ?? "",
       xAccountUrl: tool?.xAccountUrl ?? "",
@@ -433,16 +437,18 @@ export function ToolForm({
         <FormField
           control={form.control}
           name="categories"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Categories</FormLabel>
-              <RelationSelector
-                promise={categories}
-                selectedIds={field.value ?? []}
-                onChange={field.onChange}
-              />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormLabel>Categories</FormLabel>
+                <RelationSelector
+                  relations={categories}
+                  selectedIds={field.value ?? []}
+                  onChange={field.onChange}
+                />
+              </FormItem>
+            )
+          }}
         />
 
         <div className="col-span-full grid gap-4 md:grid-cols-2">

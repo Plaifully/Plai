@@ -11,13 +11,22 @@ import { Checkbox } from "~/components/common/checkbox";
 import { Badge } from "~/components/web/ui/badge";
 import { cx } from "~/utils/cva";
 
+// Define the type for a tool with categories
+type ToolWithCategories = Tool & {
+  categories: Array<{
+    id: string;
+    name: string;
+    slug: string;
+  }>;
+};
+
 const tierLabels: Record<ToolTier, string> = {
   Free: "Free",
   Featured: "Featured",
   Premium: "Premium",
 };
 
-export function getColumns(): ColumnDef<Tool>[] {
+export function getColumns(): ColumnDef<ToolWithCategories>[] {
   return [
     {
       accessorKey: "name",
@@ -62,6 +71,22 @@ export function getColumns(): ColumnDef<Tool>[] {
       cell: ({ row }) => (
         <div className="max-w-96 truncate text-muted-foreground">
           {row.getValue("tagline")}
+        </div>
+      ),
+      enableSorting: false,
+    },
+    {
+      id: "categories",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Categories" />
+      ),
+      cell: ({ row }) => (
+        <div className="flex flex-wrap gap-1">
+          {row.original.categories?.map((category) => (
+            <Badge key={category.id} variant="outline" className="text-xs">
+              {category.name}
+            </Badge>
+          ))}
         </div>
       ),
       enableSorting: false,
