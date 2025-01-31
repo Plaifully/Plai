@@ -27,7 +27,7 @@ import { nullsToUndefined } from "~/utils/helpers"
 
 type CategoryFormProps = React.HTMLAttributes<HTMLFormElement> & {
   category?: Awaited<ReturnType<typeof findCategoryBySlug>>
-  tools: ReturnType<typeof findToolList>
+  tools: Awaited<ReturnType<typeof findToolList>>
 }
 
 export function CategoryForm({
@@ -140,7 +140,7 @@ export function CategoryForm({
             <FormItem className="col-span-full">
               <FormLabel>Tools</FormLabel>
               <RelationSelector
-                promise={tools}
+                relations={tools}
                 selectedIds={field.value ?? []}
                 onChange={field.onChange}
               />
