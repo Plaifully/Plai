@@ -105,32 +105,33 @@ export function ToolForm({
   const onSubmit = form.handleSubmit(async data => {
     try {
       const formData = {
-        ...data,
-        // Convert empty strings to null for optional fields
+        // Required fields - keep as is
+        name: data.name,
+        website: data.website,
+        submitterName: data.submitterName,
+        submitterEmail: data.submitterEmail,
+        
+        // Optional fields - convert empty strings to undefined
+        slug: data.slug || undefined,
         tagline: data.tagline || undefined,
         description: data.description || undefined,
         content: data.content || undefined,
         faviconUrl: data.faviconUrl || undefined,
         screenshotUrl: data.screenshotUrl || undefined,
-        submitterName: data.submitterName || undefined,
-        submitterEmail: data.submitterEmail || undefined,
         submitterNote: data.submitterNote || undefined,
         discountCode: data.discountCode || undefined,
         discountAmount: data.discountAmount || undefined,
-        // New fields
         pricingDetails: data.pricingDetails || undefined,
         xAccountUrl: data.xAccountUrl || undefined,
         logoUrl: data.logoUrl || undefined,
         websiteScreenshotUrl: data.websiteScreenshotUrl || undefined,
-        // Keep required fields as is
-        name: data.name,
-        website: data.website,
+        
+        // Fields with defaults
         status: data.status,
         tier: data.tier,
         pricingType: data.pricingType,
         affiliateOptIn: data.affiliateOptIn,
         categories: data.categories,
-        // Handle date separately
         publishedAt: data.publishedAt || undefined,
       }
 
@@ -166,7 +167,7 @@ export function ToolForm({
             name="name"
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel>Name</FormLabel>
+                <FormLabel className="after:text-red-500 after:content-['*']">AI Agent Name</FormLabel>
                 <FormControl>
                   <Input placeholder="PostHog" {...field} />
                 </FormControl>
@@ -195,7 +196,7 @@ export function ToolForm({
           name="website"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Website</FormLabel>
+              <FormLabel className="after:text-red-500 after:content-['*']">Website URL</FormLabel>
               <FormControl>
                 <Input placeholder="https://posthog.com" {...field} />
               </FormControl>
@@ -329,7 +330,7 @@ export function ToolForm({
           name="submitterName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Submitter Name</FormLabel>
+              <FormLabel className="after:text-red-500 after:content-['*']">Your Name</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -343,7 +344,7 @@ export function ToolForm({
           name="submitterEmail"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Submitter Email</FormLabel>
+              <FormLabel className="after:text-red-500 after:content-['*']">Your Email</FormLabel>
               <FormControl>
                 <Input type="email" {...field} />
               </FormControl>

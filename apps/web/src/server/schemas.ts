@@ -1,6 +1,14 @@
 import { getRepositoryString, githubRegex } from "@plai/github"
+import { PricingType } from "@prisma/client"
 import { z } from "zod"
 import { config } from "~/config"
+
+// Create a mapping of the enum values
+const pricingTypeValues = {
+  Free: "Free",
+  Freemium: "Freemium",
+  Paid: "Paid"
+} as const
 
 export const repositorySchema = z
   .string()
@@ -17,9 +25,9 @@ export const submitToolSchema = z.object({
     .string()
     .min(1, "Your email is required")
     .email("Invalid email address, please use a correct format."),
-  xAccountUrl: z.string().url("Invalid X/Twitter URL").optional(),
-  logoUrl: z.string().url("Invalid logo URL").optional(),
-  websiteScreenshotUrl: z.string().url("Invalid screenshot URL").optional(),
+  xAccountUrl: z.string().optional(),
+  logoUrl: z.string().optional(),
+  websiteScreenshotUrl: z.string().optional(),
   pricingType: z.enum(["Free", "Freemium", "Paid"]).default("Free"),
   pricingDetails: z.string().optional(),
   newsletterOptIn: z.boolean().optional().default(true),

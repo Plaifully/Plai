@@ -54,11 +54,21 @@ export const SubmitForm = ({ className, ...props }: HTMLAttributes<HTMLFormEleme
   })
 
   const { error, execute, isPending } = useServerAction(submitTool, {
-    onSuccess: ({ data }) => {
-      form.reset()
-      posthog.capture("submit_tool", { slug: data.slug })
-      router.push(`/submit/${data.slug}`)
+    onSuccess: (response: any) => {
+      if (response?.data) {
+        form.reset()
+        if (response.data.slug) {
+          router.push(`/submit/${response.data.slug}`)
+        }
+      } else {
+        console.error('Submission failed:', response)
+        toast.error(response.error || 'Failed to submit tool')
+      }
     },
+    onError: (err: any) => {
+      console.error('Submission error:', err)
+      toast.error(err?.message || 'An unexpected error occurred')
+    }
   })
 
   return (
