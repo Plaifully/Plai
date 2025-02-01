@@ -1,1 +1,1 @@
-![Minimalist Symmetrical Black 'P' Abstract Design on White (1)-modified](https://github.com/user-attachments/assets/e792b7f4-8403-4d68-91c0-cad36220d7a7)
+Plaiful is using source code from the open source https://openalternative.co/ and assumes the same GLP-3.0 License
