@@ -54,7 +54,7 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
 
           <Stack className="text-sm/normal">
             <TooltipProvider delayDuration={500} disableHoverableContent>
-              <DropdownMenu modal={false}>
+              {/* <DropdownMenu modal={false}>
                 <Tooltip tooltip="RSS Feeds">
                   <DropdownMenuTrigger aria-label="RSS Feeds" {...props}>
                     <RssIcon className="size-[1.44em] stroke-[1.25] text-muted hover:text-foreground" />
@@ -70,7 +70,7 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
-              </DropdownMenu>
+              </DropdownMenu> */}
 
               <Tooltip tooltip="Contact us">
                 <NavLink
@@ -89,11 +89,11 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
                 </NavLink>
               </Tooltip>
 
-              <Tooltip tooltip="Follow us on LinkedIn">
+              {/* <Tooltip tooltip="Follow us on LinkedIn">
                 <NavLink href={config.links.linkedin} target="_blank" rel="nofollow noreferrer">
                   <BrandLinkedInIcon className="size-[1.44em] stroke-[1.25]" />
                 </NavLink>
-              </Tooltip>
+              </Tooltip> */}
 
               <Tooltip tooltip="View source code">
                 <NavLink href={config.links.github} target="_blank" rel="nofollow noreferrer">
@@ -124,7 +124,7 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
 
         <Stack direction="column" className="text-sm/normal md:col-span-3">
           <Stack direction="column">
-            <H6 as="strong">Other Products:</H6>
+            <H6 as="strong">Fans Of:</H6>
 
             {config.links.family.map(({ href, title, description }) => (
               <NavLink

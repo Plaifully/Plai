@@ -11,20 +11,10 @@ export const linksConfig = {
   ],
   family: [
     {
-      title: "DevSuite",
-      href: "https://devsuite.co",
-      description: "Find the perfect developer tools for your next project",
-    },
-    {
-      title: "Superstash",
-      href: "https://superstash.co",
-      description: "No-code directory website builder",
-    },
-    {
-      title: "Chipmunk Theme",
-      href: "https://chipmunktheme.com",
-      description: "Build directory websites in WordPress",
-    },
+      title: "OpenAlternative",
+      href: "https://openalternative.co/",
+      description: "Discover Open Source Alternatives to Popular Software",
+    }
   ],
   toolsUsed: [
     {
