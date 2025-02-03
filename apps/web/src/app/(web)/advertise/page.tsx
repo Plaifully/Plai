@@ -32,7 +32,7 @@ export default async function AdvertisePage() {
 
       <PricingSection />
 
-      <Stats className="py-8" />
+      {/* <Stats className="py-8" />
 
       {config.ads.testimonials.map(testimonial => (
         <Testimonial key={testimonial.quote} {...testimonial} />
@@ -44,7 +44,7 @@ export default async function AdvertisePage() {
         </p>
 
         <Advertisers />
-      </div>
+      </div> */}
 
       <hr className="my-8" />
 
