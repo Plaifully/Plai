@@ -106,7 +106,7 @@ export const Header = ({ className, ...props }: HTMLAttributes<HTMLElement>) => 
             <DropdownMenuContent align="start">
               <DropdownMenuItem asChild>
                 <NavLink href="/?sort=publishedAt.desc">
-                  <CalendarDaysIcon className="shrink-0 size-4 opacity-75" /> Latest tools
+                  <CalendarDaysIcon className="shrink-0 size-4 opacity-75" /> Latest Agents
                 </NavLink>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
@@ -118,7 +118,7 @@ export const Header = ({ className, ...props }: HTMLAttributes<HTMLElement>) => 
           </DropdownMenu>
 
           <NavLink href="/advertise">Advertise</NavLink>
-          <NavLink href="/blog">Blogs</NavLink>
+          <NavLink href="/blog">Blog</NavLink>
         </nav>
 
         <Stack className="items-center gap-3 lg:gap-4">
