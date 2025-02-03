@@ -1,4 +1,4 @@
-import { ToolTier } from "@plai/db/client"
+import { AdType, ToolTier } from "@plai/db/client"
 import { HashIcon } from "lucide-react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
@@ -20,7 +20,8 @@ import { IntroDescription } from "~/components/web/ui/intro"
 import { Section } from "~/components/web/ui/section"
 import { Tag } from "~/components/web/ui/tag"
 import { metadataConfig } from "~/config/metadata"
-import { getToolSuffix } from "~/lib/tools"
+import { AdOne } from "~/server/web/ads/payloads"
+import { findAd } from "~/server/web/ads/queries"
 import type { ToolOne } from "~/server/web/tools/payloads"
 import { findToolBySlug, findToolSlugs } from "~/server/web/tools/queries"
 
@@ -63,9 +64,14 @@ export const generateMetadata = async (props: PageProps): Promise<Metadata> => {
 }
 
 export default async function ToolPage(props: PageProps) {
-  const tool = await getTool(props)
+  const [tool, ad] = await Promise.all([
+    getTool(props),
+    findAd({ where: { type: AdType.ToolPage } }),
+  ])
   const { title } = getMetadata(tool)
   const jsonLd: ImageObject[] = []
+
+  console.log("AD:", ad)
 
   if (tool.screenshotUrl) {
     jsonLd.push({
@@ -182,7 +188,7 @@ export default async function ToolPage(props: PageProps) {
         <Section.Sidebar className="max-md:contents">
           {/* Advertisement */}
           <Suspense fallback={<AdCardSkeleton className="max-md:order-4" />}>
-            <AdCard type="ToolPage" className="max-md:order-4" />
+            <AdCard ad={ad as AdOne} className="max-md:order-4" />
           </Suspense>
 
           {/* Featured */}

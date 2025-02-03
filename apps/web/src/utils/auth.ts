@@ -6,15 +6,17 @@ import { env } from "~/env"
  * @returns - True if the email is allowed, false otherwise
  */
 export const isAllowedEmail = (email?: string | null): boolean => {
-  // If no allowed emails are set, allow all
-  if (!env.AUTH_ALLOWED_EMAILS) return true
-
   // If no email is provided, do not allow
   if (!email) return false
+
+  // If no allowed emails are set, deny all
+  if (!env.AUTH_ALLOWED_EMAILS) return false
 
   // Clean up the allowed emails
   const allowedEmails = env.AUTH_ALLOWED_EMAILS.split(",").map(e => e.trim())
 
-  // Allow specified domains or emails
-  return allowedEmails.some(e => (e.includes("@") ? email === e : email.endsWith(e)))
+  // Allow specified domains (starting with @) or exact email matches
+  return allowedEmails.some(e => 
+    e.startsWith("@") ? email.endsWith(e) : email === e
+  )
 }

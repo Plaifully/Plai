@@ -10,6 +10,17 @@ import {
 } from "~/server/web/tools/payloads"
 import type { toolsSearchParams } from "~/server/web/tools/search-params"
 
+export const searchAllPublishedTools = cache(
+  async ({ where, ...args }: Prisma.ToolFindManyArgs) => {
+    return prisma.tool.findMany({
+      ...args,
+      where: { status: ToolStatus.Published, ...where },
+      select: toolManyPayload,
+    })
+  },
+  ["tools"],
+)
+
 export const searchTools = cache(
   async (
     { q, category, page, sort, perPage }: inferParserType<typeof toolsSearchParams>,

@@ -1,27 +1,22 @@
-import type { SearchParams } from "nuqs/server"
 import { ToolQuery } from "~/components/web/tools/tool-query"
-import { findCategories } from "~/server/web/categories/queries"
-import { searchTools } from "~/server/web/tools/queries"
-import { toolsSearchParamsCache } from "~/server/web/tools/search-params"
+import { AdOne } from "~/server/web/ads/payloads"
+import { CategoryMany } from "~/server/web/categories/payloads"
+import { ToolMany } from "~/server/web/tools/payloads"
 
 type HomeToolListingProps = {
-  searchParams: Promise<SearchParams>
+  tools: ToolMany[]
+  perPage: number
+  categories: CategoryMany[]
+  ad?: AdOne
 }
 
-export const HomeToolListing = async ({ searchParams }: HomeToolListingProps) => {
-  const parsedParams = toolsSearchParamsCache.parse(await searchParams)
-
-  const [{ tools, totalCount }, categories] = await Promise.all([
-    searchTools(parsedParams, {}),
-    findCategories({}),
-  ])
-
+export const HomeToolListing = async ({ tools, perPage, categories, ad }: HomeToolListingProps) => {
   return (
     <ToolQuery
       tools={tools}
-      totalCount={totalCount}
-      perPage={parsedParams.perPage}
+      perPage={perPage}
       categories={categories}
+      ad={ad}
     />
   )
 }

@@ -1,4 +1,4 @@
-import type { SearchParams } from "nuqs/server"
+import { AdType } from "@plai/db/client"
 import { Suspense } from "react"
 import { CountBadge, CountBadgeSkeleton } from "~/app/(web)/(home)/count-badge"
 import { HomeToolListing } from "~/app/(web)/(home)/listing"
@@ -7,12 +7,18 @@ import { NewsletterProof } from "~/components/web/newsletter-proof"
 import { ToolQuerySkeleton } from "~/components/web/tools/tool-query"
 import { Intro, IntroDescription, IntroTitle } from "~/components/web/ui/intro"
 import { config } from "~/config"
+import { findCategories } from "~/server/admin/categories/queries"
+import { AdOne } from "~/server/web/ads/payloads"
+import { findAd } from "~/server/web/ads/queries"
+import { searchAllPublishedTools } from "~/server/web/tools/queries"
 
-type PageProps = {
-  searchParams: Promise<SearchParams>
-}
+export default async function Home() {
+  const [tools, categories, ad] = await Promise.all([
+    searchAllPublishedTools({}),
+    findCategories({}),
+    findAd({ where: { type: AdType.Homepage } }),
+  ])
 
-export default function Home({ searchParams }: PageProps) {
   return (
     <>
       <section className="flex flex-col gap-y-6 w-full mb-[2vh]">
@@ -36,9 +42,16 @@ export default function Home({ searchParams }: PageProps) {
           <NewsletterProof />
         </NewsletterForm>
       </section>
-
       <Suspense fallback={<ToolQuerySkeleton />}>
-        <HomeToolListing searchParams={searchParams} />
+        <HomeToolListing
+          tools={tools}
+          perPage={10}
+          categories={categories.categories.map(cat => ({
+            ...cat,
+            _count: { tools: 0 }, // Adding missing _count property
+          }))}
+          ad={ad as AdOne}
+        />
       </Suspense>
     </>
   )

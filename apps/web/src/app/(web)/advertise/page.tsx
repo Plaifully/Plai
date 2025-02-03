@@ -26,13 +26,13 @@ export default async function AdvertisePage() {
       <Intro alignment="center">
         <IntroTitle>{metadata.title as string}</IntroTitle>
         <IntroDescription className="max-w-3xl">
-          Choose the perfect plan to showcase your AI tool to our community of developers and tech enthusiasts.
+          Choose the perfect plan to feature your agent to your target customers.
         </IntroDescription>
       </Intro>
 
       <PricingSection />
 
-      <Stats className="py-8" />
+      {/* <Stats className="py-8" />
 
       {config.ads.testimonials.map(testimonial => (
         <Testimonial key={testimonial.quote} {...testimonial} />
@@ -44,7 +44,7 @@ export default async function AdvertisePage() {
         </p>
 
         <Advertisers />
-      </div>
+      </div> */}
 
       <hr className="my-8" />
 

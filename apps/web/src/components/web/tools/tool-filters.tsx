@@ -1,105 +1,224 @@
 "use client"
 
-import { LoaderIcon, SearchIcon } from "lucide-react"
-import { type Values, useQueryStates } from "nuqs"
-import { useEffect, useState, useTransition } from "react"
+import { SearchIcon, XCircleIcon, ChevronDownIcon } from "lucide-react"
+import { type ComponentProps } from "react"
 import { Stack } from "~/components/common/stack"
 import { Input } from "~/components/web/ui/input"
-import { Select } from "~/components/web/ui/select"
-import { useDebounce } from "~/hooks/use-debounce"
+import * as Select from "@radix-ui/react-select"
 import type { CategoryMany } from "~/server/web/categories/payloads"
-import { toolsSearchParams } from "~/server/web/tools/search-params"
+import type { ToolMany } from "~/server/web/tools/payloads"
+import { Badge } from "~/components/web/ui/badge"
+import { Button } from "~/components/web/ui/button"
+import { XIcon } from "lucide-react"
+import { Checkbox } from "~/components/common/checkbox"
 
 export type ToolFiltersProps = {
   categories?: CategoryMany[]
   placeholder?: string
-  onLoadingChange?: (isLoading: boolean) => void
+  onSearch?: (search: string) => void
+  onCategoryChange?: (categories: string[]) => void
+  selectedCategories?: string[]
+  selectedPricingTypes: string[]
+  onPricingTypesChange: (types: string[]) => void
+  tools: ToolMany[]
 }
 
-export const ToolFilters = ({ categories, placeholder, onLoadingChange }: ToolFiltersProps) => {
-  const [isLoading, startTransition] = useTransition()
-  const [filters, setFilters] = useQueryStates(toolsSearchParams, {
-    shallow: false,
-    startTransition,
-  })
-  const [inputValue, setInputValue] = useState(filters.q || "")
-  const q = useDebounce(inputValue, 300)
+const pricingOptions = [
+  { label: "Free", value: "Free" },
+  { label: "Freemium", value: "Freemium" },
+  { label: "Paid", value: "Paid" },
+]
 
-  // Notify parent component of loading state changes
-  useEffect(() => {
-    onLoadingChange?.(isLoading)
-  }, [isLoading, onLoadingChange])
+const ToolFilters = ({ 
+  categories = [], 
+  placeholder = "Search tools...",
+  onSearch,
+  onCategoryChange,
+  selectedCategories = [],
+  selectedPricingTypes,
+  onPricingTypesChange,
+  tools = []
+}: ToolFiltersProps) => {
+  
+  // Calculate pricing type counts
+  const pricingTypeCounts = pricingOptions.reduce((acc, option) => {
+    const count = tools.filter(tool => (tool as any).pricingType === option.value).length
+    acc[option.value] = count
+    return acc
+  }, {} as Record<string, number>)
 
-  const updateFilters = (values: Partial<Values<typeof toolsSearchParams>>) => {
-    setFilters({ ...values, page: null })
+  // Calculate category counts
+  const categoryCounts = categories.reduce((acc, category) => {
+    const count = tools.filter(tool => 
+      tool.categories.some(c => c.slug === category.slug)
+    ).length
+    acc[category.slug] = count
+    return acc
+  }, {} as Record<string, number>)
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onSearch?.(e.target.value)
   }
 
-  useEffect(() => {
-    setFilters(prev => ({
-      ...prev,
-      q: q || null,
-      page: q && q !== prev.q ? null : prev.page,
-    }))
-  }, [q])
+  const handleCategorySelect = (category: string) => {
+    const newCategories = selectedCategories.includes(category)
+      ? selectedCategories.filter(c => c !== category)
+      : [...selectedCategories, category]
+    onCategoryChange?.(newCategories)
+  }
 
-  useEffect(() => {
-    setInputValue(filters.q || "")
-  }, [filters])
+  const handleClearCategories = () => {
+    onCategoryChange?.([])
+  }
 
-  const sortOptions = [
-    { value: "publishedAt.desc", label: "Recently Added" },
-    { value: "name.asc", label: "Name (A to Z)" },
-    { value: "name.desc", label: "Name (Z to A)" },
-    { value: "isFeatured.desc", label: "Featured" },
-  ]
+  const handleSelectAllCategories = () => {
+    if (selectedCategories.length === categories.length) {
+      onCategoryChange?.([])
+    } else {
+      onCategoryChange?.(categories.map(c => c.slug))
+    }
+  }
+
+  const handleTogglePricingType = (type: string) => {
+    if (selectedPricingTypes.includes(type)) {
+      onPricingTypesChange(selectedPricingTypes.filter(t => t !== type))
+    } else {
+      onPricingTypesChange([...selectedPricingTypes, type])
+    }
+  }
+
+  const handleClearPricingTypes = () => {
+    onPricingTypesChange([])
+  }
+
+  const handleSelectAllPricing = () => {
+    if (selectedPricingTypes.length === pricingOptions.length) {
+      onPricingTypesChange([])
+    } else {
+      onPricingTypesChange(pricingOptions.map(p => p.value))
+    }
+  }
 
   return (
-    <Stack className="w-full">
-      <div className="relative grow min-w-0">
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 opacity-50 pointer-events-none">
-          {isLoading ? <LoaderIcon className="animate-spin" /> : <SearchIcon />}
-        </div>
+    <div className="flex flex-col">
+      {/* Filters row */}
+      <div className="flex items-center gap-2">
+        {/* Categories dropdown */}
+        <Select.Root>
+          <Select.Trigger className="h-10 px-3 text-sm border rounded-md bg-background flex items-center justify-between gap-2 min-w-[180px]">
+            <Select.Value placeholder={
+              selectedCategories.length === 0 
+                ? "All categories" 
+                : `${selectedCategories.length} selected`
+            } />
+            <ChevronDownIcon className="h-4 w-4 opacity-50" />
+          </Select.Trigger>
 
-        <Input
-          size="lg"
-          value={inputValue}
-          onChange={e => setInputValue(e.target.value)}
-          placeholder={placeholder || "Search AI agents..."}
-          className="w-full truncate pl-10"
-        />
+          <Select.Portal>
+            <Select.Content 
+              className="z-50 min-w-[200px] overflow-hidden rounded-md border bg-background text-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+              position="popper"
+              side="bottom"
+              sideOffset={8}
+            >
+              <div className="flex flex-col gap-1 p-2 bg-background">
+                <div
+                  role="menuitem"
+                  onClick={handleSelectAllCategories}
+                  className="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-muted rounded-sm cursor-pointer"
+                >
+                  <Checkbox 
+                    checked={selectedCategories.length === categories.length}
+                    className="size-4"
+                    onCheckedChange={() => handleSelectAllCategories()}
+                  />
+                  <span>All categories</span>
+                </div>
+
+                <div className="my-1 border-t" />
+
+                {categories.map(category => (
+                  <div
+                    key={category.slug}
+                    role="menuitem"
+                    className="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-muted rounded-sm cursor-pointer"
+                    onClick={() => handleCategorySelect(category.slug)}
+                  >
+                    <Checkbox 
+                      checked={selectedCategories.includes(category.slug)}
+                      className="size-4"
+                      onCheckedChange={() => handleCategorySelect(category.slug)}
+                    />
+                    <span>{category.name}</span>
+                    <span className="ml-auto text-xs text-muted">
+                      {categoryCounts[category.slug] || 0}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+
+        {/* Pricing type dropdown */}
+        <Select.Root>
+          <Select.Trigger className="h-10 px-3 text-sm border rounded-md bg-background flex items-center justify-between gap-2 min-w-[180px]">
+            <Select.Value placeholder={
+              selectedPricingTypes.length === 0 
+                ? "All pricing" 
+                : `${selectedPricingTypes.length} selected`
+            } />
+            <ChevronDownIcon className="h-4 w-4 opacity-50" />
+          </Select.Trigger>
+
+          <Select.Portal>
+            <Select.Content 
+              className="z-50 min-w-[200px] overflow-hidden rounded-md border bg-background text-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+              position="popper"
+              side="bottom"
+              sideOffset={8}
+            >
+              <div className="flex flex-col gap-1 p-2 bg-background">
+                <div
+                  role="menuitem"
+                  onClick={handleSelectAllPricing}
+                  className="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-muted rounded-sm cursor-pointer"
+                >
+                  <Checkbox 
+                    checked={selectedPricingTypes.length === pricingOptions.length}
+                    className="size-4"
+                    onCheckedChange={() => handleSelectAllPricing()}
+                  />
+                  <span>All pricing</span>
+                </div>
+
+                <div className="my-1 border-t" />
+
+                {pricingOptions.map(option => (
+                  <div
+                    key={option.value}
+                    role="menuitem"
+                    className="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-muted rounded-sm cursor-pointer"
+                    onClick={() => handleTogglePricingType(option.value)}
+                  >
+                    <Checkbox 
+                      checked={selectedPricingTypes.includes(option.value)}
+                      className="size-4"
+                      onCheckedChange={() => handleTogglePricingType(option.value)}
+                    />
+                    <span>{option.label}</span>
+                    <span className="ml-auto text-xs text-muted">
+                      {pricingTypeCounts[option.value] || 0}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
       </div>
-
-      {categories && (
-        <Select
-          size="lg"
-          className="min-w-40 max-sm:flex-1"
-          value={filters.category || ""}
-          onChange={e => updateFilters({ category: e.target.value })}
-        >
-          <option value="">All categories</option>
-
-          {categories.map(category => (
-            <option key={category.slug} value={category.slug}>
-              {category.name}
-            </option>
-          ))}
-        </Select>
-      )}
-
-      <Select
-        size="lg"
-        className="min-w-36 max-sm:flex-1"
-        value={filters.sort}
-        onChange={e => updateFilters({ sort: e.target.value })}
-      >
-        <option value="">Order by</option>
-
-        {sortOptions.map(option => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </Select>
-    </Stack>
+    </div>
   )
 }
+
+export { ToolFilters }
