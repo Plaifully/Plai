@@ -9,6 +9,10 @@ export const adOnePayload = Prisma.validator<Prisma.AdSelect>()({
 })
 
 export const adManyPayload = Prisma.validator<Prisma.AdSelect>()({
+  name: true,
+  description: true,
+  website: true,
+  faviconUrl: true,
   type: true,
   startsAt: true,
   endsAt: true,

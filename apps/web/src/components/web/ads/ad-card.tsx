@@ -9,9 +9,14 @@ import type { AdOne } from "~/server/web/ads/payloads"
 
 type AdCardProps = ComponentProps<typeof Card> & {
   ad: AdOne
+  className?: string
 }
 
 const AdCard = ({ ad, className, ...props }: AdCardProps) => {
+  if (!ad) {
+    return <AdCardSkeleton className={className} {...props} />
+  }
+
   return (
     <Card className={className} asChild {...props}>
       <a href={ad.website} target="_blank" rel="noopener noreferrer">
