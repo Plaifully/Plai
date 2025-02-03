@@ -41,7 +41,7 @@ export default async function Submit() {
               </p>
 
               <ul className="[&_li]:p-0 list-inside p-0">
-                <li>An AI-powered tool or agent</li>
+                <li>An AI-powered agent</li>
                 <li>Actively maintained and accessible</li>
                 <li>Has a working website/landing page</li>
               </ul>
