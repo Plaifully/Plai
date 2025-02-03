@@ -29,37 +29,7 @@ const shareOptions: ShareOption[] = [
     platform: "X",
     url: (url, title) => `https://x.com/intent/post?text=${title}&url=${url}`,
     icon: <BrandXIcon />,
-  },
-  {
-    platform: "Bluesky",
-    url: (url, title) => `https://bsky.app/intent/compose?text=${title}+${url}`,
-    icon: <BrandBlueskyIcon />,
-  },
-  {
-    platform: "Facebook",
-    url: url => `https://www.facebook.com/sharer/sharer.php?u=${url}`,
-    icon: <BrandFacebookIcon />,
-  },
-  {
-    platform: "LinkedIn",
-    url: (url, title) => `https://linkedin.com/sharing/share-offsite?url=${url}&text=${title}`,
-    icon: <BrandLinkedInIcon />,
-  },
-  {
-    platform: "HackerNews",
-    url: (url, title) => `https://news.ycombinator.com/submitlink?u=${url}&t=${title}`,
-    icon: <BrandHackerNewsIcon />,
-  },
-  {
-    platform: "Reddit",
-    url: (url, title) => `https://reddit.com/submit?url=${url}&title=${title}`,
-    icon: <BrandRedditIcon />,
-  },
-  {
-    platform: "WhatsApp",
-    url: (url, title) => `https://api.whatsapp.com/send?text=${title}+${url}`,
-    icon: <BrandWhatsAppIcon />,
-  },
+  }
 ]
 
 type ShareButtonsProps = Omit<ComponentProps<"div">, "title"> & {
