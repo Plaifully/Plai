@@ -236,6 +236,7 @@ const ToolQuery = ({
                 setSelectedPricingTypes(types);
                 handleFiltersChange();
               }}
+              tools={tools}
             />
           </div>
         </div>
@@ -267,10 +268,29 @@ const ToolQuery = ({
                 </div>
               )
             })}
-            {selectedCategories.length > 0 && (
+            {selectedPricingTypes.map(type => (
+              <div
+                key={type}
+                className="group flex items-center gap-1.5 px-2 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-md text-sm transition-colors"
+              >
+                <span>{type}</span>
+                <button
+                  onClick={() => {
+                    const newTypes = selectedPricingTypes.filter(t => t !== type)
+                    setSelectedPricingTypes(newTypes)
+                    handleFiltersChange()
+                  }}
+                  className="opacity-50 hover:opacity-100 transition-opacity"
+                >
+                  <XIcon className="size-3" />
+                </button>
+              </div>
+            ))}
+            {(selectedCategories.length > 0 || selectedPricingTypes.length > 0) && (
               <button
                 onClick={() => {
                   setSelectedCategories([])
+                  setSelectedPricingTypes([])
                   handleFiltersChange()
                 }}
                 className="flex items-center gap-1.5 text-primary hover:text-primary hover:bg-primary/10 px-2 py-1 rounded-md text-sm"

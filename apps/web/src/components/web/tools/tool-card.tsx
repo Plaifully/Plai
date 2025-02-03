@@ -25,7 +25,7 @@ const ToolCard = ({ className, tool, isRelated, ...props }: ToolCardProps) => {
     },
     {
       label: "Pricing",
-      value: tool.discountAmount ? "Free + Paid" : "Free",
+      value: tool.pricingType ?? "Free",
       icon: <TagIcon className="size-3.5" />,
     },
   ]
