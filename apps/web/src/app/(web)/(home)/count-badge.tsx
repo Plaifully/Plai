@@ -32,7 +32,7 @@ const CountBadge = async () => {
       <Link href="/?sort=publishedAt.desc" prefetch={false}>
         {newCount
           ? `${formatNumber(newCount)} new ${plur("agent", newCount)} added`
-          : `${formatNumber(count)}+ AI Agents`}
+          : `${formatNumber(count)}+ AI Agents recently added`}
       </Link>
     </Badge>
   )
