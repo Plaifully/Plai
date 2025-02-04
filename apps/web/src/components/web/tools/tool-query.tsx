@@ -106,9 +106,7 @@ const ToolQuery = ({
 }: ToolQueryProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedPricingTypes, setSelectedPricingTypes] = useState<string[]>(
-    []
-  );
+  const [selectedPricingTypes, setSelectedPricingTypes] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<string>("latest");
 
@@ -171,59 +169,27 @@ const ToolQuery = ({
   return (
     <div className="flex flex-col gap-6">
       {/* Search and filters bar */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        {/* Search input - full width on mobile, fixed width on desktop */}
-        <div className="relative w-full sm:w-[280px]">
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <SearchIcon className="h-4 w-4 text-muted" />
-          </div>
-          <Input
-            value={searchQuery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setSearchQuery(e.target.value);
-              handleFiltersChange();
-            }}
-            placeholder="Search tools..."
-            className="h-10 pl-9 bg-background w-full"
-          />
-        </div>
-
-        {/* Filters group - start from left on mobile */}
-        <div className="flex items-center gap-2 sm:ml-auto">
-          <div className="h-10">
-            <Select.Root value={sortBy} onValueChange={setSortBy}>
-              <Select.Trigger className="h-10 px-3 text-sm border rounded-md bg-background flex items-center justify-between gap-2 min-w-[180px]">
-                <Select.Value>
-                  {sortOptions.find(option => option.value === sortBy)?.label || "Latest"}
-                </Select.Value>
-                <ChevronDownIcon className="h-4 w-4 opacity-50" />
-              </Select.Trigger>
-              <Select.Portal>
-                <Select.Content 
-                  className="z-50 min-w-[200px] overflow-hidden rounded-md border bg-background text-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-                  position="popper"
-                  side="bottom"
-                  sideOffset={8}
-                >
-                  <div className="flex flex-col gap-1 p-2 bg-background">
-                    {sortOptions.map((option) => (
-                      <div
-                        key={option.value}
-                        role="menuitem"
-                        className="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-muted rounded-sm cursor-pointer"
-                        onClick={() => setSortBy(option.value)}
-                      >
-                        <div className={`size-4 rounded-full border ${sortBy === option.value ? 'bg-primary border-primary' : 'border-muted'}`} />
-                        <span>{option.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </Select.Content>
-              </Select.Portal>
-            </Select.Root>
+      <div className="flex flex-col gap-3">
+        {/* Search and sort controls */}
+        <div className="flex flex-wrap gap-3">
+          {/* Search input */}
+          <div className="relative flex-1 min-w-[280px]">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <SearchIcon className="h-4 w-4 text-muted" />
+            </div>
+            <Input
+              value={searchQuery}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setSearchQuery(e.target.value);
+                handleFiltersChange();
+              }}
+              placeholder="Search tools..."
+              className="h-10 pl-9 bg-background w-full"
+            />
           </div>
 
-          <div className="h-10">
+          {/* Filters and Sort */}
+          <div className="min-h-10 w-full xl:w-fit">
             <ToolFilters
               categories={categories}
               selectedCategories={selectedCategories}
@@ -237,14 +203,14 @@ const ToolQuery = ({
                 handleFiltersChange();
               }}
               tools={tools}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
             />
           </div>
         </div>
-      </div>
 
-      {/* Active filters - always start from left */}
-      {(selectedCategories.length > 0 || selectedPricingTypes.length > 0) && (
-        <div className="w-full">
+        {/* Active filters */}
+        {(selectedCategories.length > 0 || selectedPricingTypes.length > 0) && (
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm text-muted">Active filters:</span>
             {selectedCategories.map(slug => {
@@ -300,8 +266,8 @@ const ToolQuery = ({
               </button>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Tool List */}
       <ToolList tools={paginatedTools} ad={ad} />
