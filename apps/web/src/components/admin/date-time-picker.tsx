@@ -13,7 +13,7 @@ import {
 import { Input } from "~/components/admin/ui/input"
 
 interface DateTimePickerProps {
-  value: Date
+  value?: Date
   onChange: (date: Date) => void
 }
 
@@ -25,7 +25,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
   // Handle time change
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const [hours, minutes] = e.target.value.split(":")
-    const newDate = new Date(value)
+    const newDate = new Date(value || new Date())
     newDate.setHours(parseInt(hours), parseInt(minutes))
     onChange(newDate)
   }
@@ -52,8 +52,13 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
             onSelect={(date) => {
               if (date) {
                 const newDate = new Date(date)
-                // Preserve the current time
-                newDate.setHours(value.getHours(), value.getMinutes())
+                // Preserve the current time if value exists, otherwise use current time
+                if (value) {
+                  newDate.setHours(value.getHours(), value.getMinutes())
+                } else {
+                  const now = new Date()
+                  newDate.setHours(now.getHours(), now.getMinutes())
+                }
                 onChange(newDate)
               }
             }}
