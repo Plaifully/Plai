@@ -189,7 +189,7 @@ export function AdForm({ children, className, ad, ...props }: AdFormProps) {
           )}
         />
 
-        <div className="col-span-full flex justify-end gap-4">
+        <div className="col-span-full flex justify-start gap-4 mt-6">
           <Button variant="outline" asChild>
             <Link href="/admin/ads">Cancel</Link>
           </Button>
