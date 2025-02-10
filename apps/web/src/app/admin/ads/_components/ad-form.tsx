@@ -14,6 +14,8 @@ import { Button } from "~/components/admin/ui/button"
 import { Input } from "~/components/admin/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/admin/ui/select"
 import { DateTimePicker } from "~/components/admin/date-time-picker"
+import Link from "next/link"
+import { Loader2Icon } from "lucide-react"
 import {
   Form,
   FormControl,
@@ -187,9 +189,25 @@ export function AdForm({ children, className, ad, ...props }: AdFormProps) {
           )}
         />
 
-        <Button type="submit" className="col-span-full" isPending={isPending}>
-          {ad ? "Update" : "Create"} ad
-        </Button>
+        <div className="col-span-full flex justify-end gap-4">
+          <Button variant="outline" asChild>
+            <Link href="/admin/ads">Cancel</Link>
+          </Button>
+          <Button 
+            type="submit" 
+            disabled={isPending}
+            className="min-w-[100px]"
+          >
+            {isPending ? (
+              <div className="flex items-center gap-2">
+                <Loader2Icon className="h-4 w-4 animate-spin" />
+                <span>{ad ? "Updating..." : "Creating..."}</span>
+              </div>
+            ) : (
+              <span>{ad ? "Update ad" : "Create ad"}</span>
+            )}
+          </Button>
+        </div>
       </form>
     </Form>
   )
