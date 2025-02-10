@@ -18,14 +18,17 @@ interface DateTimePickerProps {
 }
 
 export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
+  // Ensure we have a valid date object by converting string/number to Date if needed
+  const dateValue = value ? (value instanceof Date ? value : new Date(value)) : undefined
+  
   // Get the date and time parts
-  const date = value ? format(value, "PPP") : "Pick a date"
-  const time = value ? format(value, "HH:mm") : "00:00"
+  const date = dateValue && !isNaN(dateValue.getTime()) ? format(dateValue, "PPP") : "Pick a date"
+  const time = dateValue && !isNaN(dateValue.getTime()) ? format(dateValue, "HH:mm") : "00:00"
 
   // Handle time change
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const [hours, minutes] = e.target.value.split(":")
-    const newDate = new Date(value || new Date())
+    const newDate = new Date(dateValue || new Date())
     newDate.setHours(parseInt(hours), parseInt(minutes))
     onChange(newDate)
   }
@@ -38,7 +41,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
             variant="outline"
             className={cx(
               "justify-start text-left font-normal",
-              !value && "text-muted-foreground"
+              !dateValue && "text-muted-foreground"
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -48,13 +51,13 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="single"
-            selected={value}
+            selected={dateValue}
             onSelect={(date) => {
               if (date) {
                 const newDate = new Date(date)
                 // Preserve the current time if value exists, otherwise use current time
-                if (value) {
-                  newDate.setHours(value.getHours(), value.getMinutes())
+                if (dateValue) {
+                  newDate.setHours(dateValue.getHours(), dateValue.getMinutes())
                 } else {
                   const now = new Date()
                   newDate.setHours(now.getHours(), now.getMinutes())
