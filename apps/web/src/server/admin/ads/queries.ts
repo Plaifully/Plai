@@ -66,6 +66,9 @@ export const findAdById = (id: string) =>
     async (id: string) => {
       return prisma.ad.findUnique({
         where: { id },
+        include: {
+          categories: true
+        }
       })
     },
     [`ad-${id}`],
