@@ -145,7 +145,14 @@ export function AdForm({ children, className, ad, ...props }: AdFormProps) {
             <FormItem>
               <FormLabel>Favicon URL</FormLabel>
               <FormControl>
-                <Input type="url" placeholder="e.g. https://plaiful.com/favicon.png" value={field.value as string} onChange={field.onChange} />
+                <Input 
+                  placeholder="e.g. /plaiful-logo-white.png" 
+                  value={field.value as string} 
+                  onChange={(e) => {
+                    const value = e.target.value.trim();
+                    field.onChange(value || undefined);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
