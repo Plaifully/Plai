@@ -146,7 +146,7 @@ export function AdForm({ children, className, ad, ...props }: AdFormProps) {
               <FormLabel>Favicon URL</FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="e.g. /plaiful-logo-white.png" 
+                  placeholder="/plaiful-logo.png" 
                   value={field.value as string} 
                   onChange={(e) => {
                     const value = e.target.value.trim();
