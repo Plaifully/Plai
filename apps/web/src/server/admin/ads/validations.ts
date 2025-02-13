@@ -28,6 +28,7 @@ export const adSchema = z.object({
   type: z.nativeEnum(AdType).default(AdType.Homepage),
   startsAt: z.coerce.date(),
   endsAt: z.coerce.date(),
+  categories: z.array(z.string()).optional(),
 })
 
 export type AdSchema = z.infer<typeof adSchema> 
