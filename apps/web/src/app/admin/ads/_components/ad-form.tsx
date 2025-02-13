@@ -40,6 +40,7 @@ export function AdForm({ children, className, ad, ...props }: AdFormProps) {
       email: ad?.email ?? "",
       description: ad?.description ?? "",
       website: ad?.website ?? "",
+      faviconUrl: ad?.faviconUrl ?? "",
       type: (ad?.type as AdType) ?? "Homepage",
       startsAt: ad?.startsAt ?? new Date(),
       endsAt: ad?.endsAt ?? new Date(),
@@ -131,6 +132,20 @@ export function AdForm({ children, className, ad, ...props }: AdFormProps) {
               <FormLabel>Website</FormLabel>
               <FormControl>
                 <Input type="url" placeholder="e.g. https://plaiful.com" value={field.value as string} onChange={field.onChange} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="faviconUrl"
+          render={({ field }: { field: FormField<AdSchema> }) => (
+            <FormItem>
+              <FormLabel>Favicon URL</FormLabel>
+              <FormControl>
+                <Input type="url" placeholder="e.g. https://plaiful.com/favicon.png" value={field.value as string} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>
