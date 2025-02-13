@@ -18,17 +18,17 @@ interface DateTimePickerProps {
 }
 
 export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
-  // Ensure we have a valid date object by converting string/number to Date if needed
-  const dateValue = value ? (value instanceof Date ? value : new Date(value)) : undefined
+  // Ensure we have a valid date object
+  const dateValue = value instanceof Date && !isNaN(value.getTime()) ? value : new Date()
   
-  // Get the date and time parts
-  const date = dateValue && !isNaN(dateValue.getTime()) ? format(dateValue, "PPP") : "Pick a date"
-  const time = dateValue && !isNaN(dateValue.getTime()) ? format(dateValue, "HH:mm") : "00:00"
+  // Format the date and time parts
+  const date = format(dateValue, "PPP")
+  const time = format(dateValue, "HH:mm")
 
   // Handle time change
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const [hours, minutes] = e.target.value.split(":")
-    const newDate = new Date(dateValue || new Date())
+    const newDate = new Date(dateValue)
     newDate.setHours(parseInt(hours), parseInt(minutes))
     onChange(newDate)
   }
@@ -41,7 +41,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
             variant="outline"
             className={cx(
               "justify-start text-left font-normal",
-              !dateValue && "text-muted-foreground"
+              !value && "text-muted-foreground"
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -55,13 +55,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
             onSelect={(date) => {
               if (date) {
                 const newDate = new Date(date)
-                // Preserve the current time if value exists, otherwise use current time
-                if (dateValue) {
-                  newDate.setHours(dateValue.getHours(), dateValue.getMinutes())
-                } else {
-                  const now = new Date()
-                  newDate.setHours(now.getHours(), now.getMinutes())
-                }
+                newDate.setHours(dateValue.getHours(), dateValue.getMinutes())
                 onChange(newDate)
               }
             }}
