@@ -71,8 +71,6 @@ export default async function ToolPage(props: PageProps) {
   const { title } = getMetadata(tool)
   const jsonLd: ImageObject[] = []
 
-  console.log("AD:", ad)
-
   if (tool.screenshotUrl) {
     jsonLd.push({
       "@type": "ImageObject",

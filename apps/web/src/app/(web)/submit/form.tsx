@@ -80,8 +80,6 @@ export const SubmitForm = ({ className, categories, ...props }: SubmitFormProps)
   })
 
   const onSubmit = form.handleSubmit(data => {
-    console.log('Form data being submitted:', data)
-    console.log('Selected category:', data.categories)
     return execute(data)
   })
 
@@ -157,7 +155,6 @@ export const SubmitForm = ({ className, categories, ...props }: SubmitFormProps)
                   <Select
                     value={field.value?.[0] || ""}
                     onValueChange={(value) => {
-                      console.log('Category selected:', value)
                       field.onChange([value])
                     }}
                   >

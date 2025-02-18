@@ -54,9 +54,7 @@ export function ToolForm({
   const router = useRouter()
   const [isTransitioning, startTransition] = useTransition()
 
-  console.log('Tool categories:', tool?.categories)
   const categoryIds = tool?.categories?.map(({ id }) => id) ?? []
-  console.log('Mapped category IDs:', categoryIds)
 
   const form = useForm<ToolSchema>({
     resolver: zodResolver(toolSchema),
