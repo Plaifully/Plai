@@ -3,6 +3,8 @@ import { ScheduledCard } from "~/app/admin/_components/scheduled-card"
 import { StatsCard } from "~/app/admin/_components/stats-card"
 import { H3 } from "~/components/common/heading"
 
+export const dynamic = 'force-dynamic'
+
 export default function DashboardPage() {
   return (
     <>

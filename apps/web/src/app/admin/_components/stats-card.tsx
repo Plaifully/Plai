@@ -3,10 +3,15 @@ import { Card, CardDescription, CardHeader, CardTitle } from "~/components/admin
 import { cache } from "~/lib/cache"
 
 const getStats = cache(async () => {
-  return await prisma.$transaction([
-    prisma.tool.count(),
-    prisma.category.count(),
-  ])
+  try {
+    return await prisma.$transaction([
+      prisma.tool.count(),
+      prisma.category.count(),
+    ])
+  } catch (error) {
+    console.error('Error fetching stats:', error)
+    return [0, 0]
+  }
 }, ["stats"])
 
 export const StatsCard = async () => {
