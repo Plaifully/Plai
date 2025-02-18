@@ -41,15 +41,21 @@ const FormField = <
 const useFormField = () => {
   const fieldContext = use(FormFieldContext)
   const itemContext = use(FormItemContext)
-  const { getFieldState, formState } = useFormContext()
-
-  const fieldState = getFieldState(fieldContext.name, formState)
+  const { formState } = useFormContext()
 
   if (!fieldContext) {
     throw new Error("useFormField should be used within <FormField>")
   }
 
   const { id } = itemContext
+
+  // Compute field state directly from formState
+  const fieldState = {
+    invalid: !!formState?.errors?.[fieldContext.name as string],
+    isDirty: !!formState?.dirtyFields?.[fieldContext.name as string],
+    isTouched: !!formState?.touchedFields?.[fieldContext.name as string],
+    error: formState?.errors?.[fieldContext.name as string]
+  }
 
   return {
     id,
@@ -72,7 +78,7 @@ const FormItem = ({ className, ...props }: ComponentProps<"div">) => {
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div className={cx("flex flex-col items-start gap-2", className)} {...props} />
+      <div className={cx("space-y-2", className)} {...props} />
     </FormItemContext.Provider>
   )
 }
