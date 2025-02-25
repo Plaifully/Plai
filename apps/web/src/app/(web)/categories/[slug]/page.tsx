@@ -8,6 +8,8 @@ import { Intro, IntroDescription, IntroTitle } from "~/components/web/ui/intro"
 import { metadataConfig } from "~/config/metadata"
 import type { CategoryOne } from "~/server/web/categories/payloads"
 import { findCategoryBySlug, findCategorySlugs } from "~/server/web/categories/queries"
+import { findAd } from "~/server/web/ads/queries"
+import { AdType } from "@plai/db/client"
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -23,6 +25,20 @@ const getCategory = cache(async ({ params }: PageProps) => {
   }
 
   return category
+})
+
+const getCategoryAd = cache(async ({ params }: PageProps) => {
+  const { slug } = await params
+  return findAd({
+    where: {
+      type: AdType.CategoryPage,
+      categories: {
+        some: { slug }
+      },
+      startsAt: { lte: new Date() },
+      endsAt: { gt: new Date() }
+    }
+  })
 })
 
 const getMetadata = (category: CategoryOne): Metadata => {
@@ -51,7 +67,10 @@ export const generateMetadata = async (props: PageProps) => {
 }
 
 export default async function CategoryPage(props: PageProps) {
-  const category = await getCategory(props)
+  const [category, ad] = await Promise.all([
+    getCategory(props),
+    getCategoryAd(props)
+  ])
   const { title, description } = getMetadata(category)
 
   return (
@@ -62,7 +81,7 @@ export default async function CategoryPage(props: PageProps) {
       </Intro>
 
       <Suspense fallback={<ToolQuerySkeleton />}>
-        <CategoryToolListing category={category} searchParams={props.searchParams} />
+        <CategoryToolListing category={category} searchParams={props.searchParams} ad={ad} />
       </Suspense>
     </>
   )
