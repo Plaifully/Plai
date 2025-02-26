@@ -6,8 +6,8 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useServerAction } from "zsa-react"
 import { type HTMLAttributes } from "react"
-import { AdType } from "@plai/db/client"
-import { type AdSchema, adSchema } from "~/server/admin/ads/validations"
+import { AdType } from "@prisma/client"
+import { type AdSchema, adSchema, AdPlacement } from "~/server/admin/ads/validations"
 import { createAd, updateAd } from "~/server/admin/ads/actions"
 import { findAdById } from "~/server/admin/ads/queries"
 import { findCategoryList } from "~/server/admin/categories/queries"
@@ -44,9 +44,13 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
       website: ad?.website ?? "",
       faviconUrl: ad?.faviconUrl ?? "",
       type: ad?.type ?? AdType.Homepage,
+      placement: ad?.placement ?? AdPlacement.Agent,
       startsAt: ad?.startsAt ? new Date(ad.startsAt) : new Date(),
       endsAt: ad?.endsAt ? new Date(ad.endsAt) : new Date(),
       categories: ad?.categories?.map(c => c.id) ?? [],
+      imageUrl: ad?.imageUrl ?? "",
+      width: ad?.width ?? undefined,
+      height: ad?.height ?? undefined,
     },
   })
 
@@ -71,7 +75,9 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
   })
 
   const watchType = form.watch("type")
+  const watchPlacement = form.watch("placement")
   const showCategories = watchType === AdType.CategoryPage
+  const showBannerFields = watchPlacement !== AdPlacement.Agent
 
   return (
     <Form {...form}>
@@ -202,6 +208,34 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="placement"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Placement</FormLabel>
+                <FormControl>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select placement" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(AdPlacement).map((placement) => (
+                        <SelectItem key={placement} value={placement}>
+                          {placement}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           {showCategories && (
             <FormField
               control={form.control}
@@ -222,16 +256,79 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
             />
           )}
 
+          {showBannerFields && (
+            <>
+              <FormField
+                control={form.control}
+                name="imageUrl"
+                render={({ field }) => (
+                  <FormItem className="col-span-full">
+                    <FormLabel>Banner Image URL</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="url"
+                        placeholder="e.g. https://example.com/banner.jpg"
+                        {...field}
+                        value={field.value ?? ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="width"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Width (px)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number"
+                        placeholder="e.g. 728"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        value={field.value ?? ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="height"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Height (px)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number"
+                        placeholder="e.g. 90"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        value={field.value ?? ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
+
           <FormField
             control={form.control}
             name="startsAt"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Starts At</FormLabel>
+              <FormItem className="col-span-full">
+                <FormLabel>Start Date</FormLabel>
                 <FormControl>
-                  <DateTimePicker 
-                    value={field.value} 
-                    onChange={field.onChange} 
+                  <DateTimePicker
+                    value={field.value}
+                    onChange={field.onChange}
                   />
                 </FormControl>
                 <FormMessage />
@@ -243,12 +340,12 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
             control={form.control}
             name="endsAt"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Ends At</FormLabel>
+              <FormItem className="col-span-full">
+                <FormLabel>End Date</FormLabel>
                 <FormControl>
-                  <DateTimePicker 
-                    value={field.value} 
-                    onChange={field.onChange} 
+                  <DateTimePicker
+                    value={field.value}
+                    onChange={field.onChange}
                   />
                 </FormControl>
                 <FormMessage />
@@ -257,25 +354,20 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
           />
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-end gap-4">
           <Button variant="outline" asChild>
             <Link href="/admin/ads">Cancel</Link>
           </Button>
-          <Button 
-            type="submit" 
-            disabled={isCreating || isUpdating}
-            className="min-w-[100px]"
-          >
-            {isCreating || isUpdating ? (
-              <div className="flex items-center gap-2">
-                <Loader2Icon className="h-4 w-4 animate-spin" />
-                <span>{ad ? "Updating..." : "Creating..."}</span>
-              </div>
-            ) : (
-              <span>{ad ? "Update ad" : "Create ad"}</span>
+
+          <Button type="submit" disabled={isCreating || isUpdating}>
+            {(isCreating || isUpdating) && (
+              <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
             )}
+            {ad ? "Update" : "Create"}
           </Button>
         </div>
+
+        {children}
       </form>
     </Form>
   )
