@@ -1,7 +1,7 @@
 'use client'
 
-import { type ComponentProps, Fragment, Suspense } from "react"
-import { AdCard, AdCardSkeleton } from "~/components/web/ads/ad-card"
+import { type ComponentProps, Fragment } from "react"
+import { AdCard } from "~/components/web/ads/ad-card"
 import { EmptyList } from "~/components/web/empty-list"
 import { ToolCard, ToolCardSkeleton } from "~/components/web/tools/tool-card"
 import { Grid } from "~/components/web/ui/grid"
@@ -10,20 +10,18 @@ import type { AdOne } from "~/server/web/ads/payloads"
 
 type ToolListProps = ComponentProps<typeof Grid> & {
   tools: ToolMany[]
-  showAd?: boolean
-  ad?: AdOne
+  ads?: AdOne[]
 }
 
-const ToolList = ({ tools, showAd = true, ad, ...props }: ToolListProps) => {
+const ToolList = ({ tools, ads = [], ...props }: ToolListProps) => {
   return (
     <Grid {...props}>
-      {tools.map((tool, order) => (
+      {tools.map((tool, index) => (
         <Fragment key={tool.slug}>
-          {showAd && ad && Math.min(2, tools.length - 1) === order && (
-            <AdCard ad={ad} className="sm:order-2" />
+          <ToolCard tool={tool} />
+          {(index + 1) % 2 === 0 && ads[Math.floor(index / 2)] && (
+            <AdCard ad={ads[Math.floor(index / 2)]} />
           )}
-
-          <ToolCard tool={tool} style={{ order }} />
         </Fragment>
       ))}
 
