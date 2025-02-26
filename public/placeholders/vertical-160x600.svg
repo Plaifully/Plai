@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="160" height="600" viewBox="0 0 160 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="160" height="600" fill="#F3F4F6"/>
+  <text x="80" y="300" font-family="system-ui" font-size="14" fill="#6B7280" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90, 80, 300)">
+    Vertical Banner (160 × 600)
+  </text>
+  <rect width="160" height="600" stroke="#D1D5DB" fill="none"/>
+</svg> 
