@@ -75,6 +75,22 @@ export function getColumns(): ColumnDef<Ad>[] {
       size: 0,
     },
     {
+      accessorKey: "placement",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Placement" />,
+      cell: ({ row }) => {
+        const placement = row.getValue("placement") as string
+        return (
+          <div className="flex items-center gap-1.5">
+            <span>{placement}</span>
+          </div>
+        )
+      },
+      filterFn: (row, id, value: string[]) => {
+        return value.includes(row.getValue(id))
+      },
+      size: 0,
+    },
+    {
       accessorKey: "email",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Email" />,
       size: 0,
