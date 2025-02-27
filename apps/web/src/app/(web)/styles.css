@@ -44,6 +44,8 @@
   --grid-template-columns-xl: repeat(auto-fill, minmax(20rem, 1fr));
 
   --animate-shimmer: shimmer 1.25s cubic-bezier(0.5, 0.25, 0.25, 0.5) infinite;
+  --animate-gradient-rotate: gradient-rotate 3s linear infinite;
+  --animate-pulse-border: pulse-border 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
   @keyframes shimmer {
     from {
@@ -51,6 +53,26 @@
     }
     to {
       left: 90%;
+    }
+  }
+  
+  @keyframes gradient-rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes pulse-border {
+    0%, 100% {
+      border-color: rgba(249, 115, 22, 0.7);
+      box-shadow: 0 0 15px rgba(249, 115, 22, 0.3);
+    }
+    50% {
+      border-color: rgba(249, 115, 22, 1);
+      box-shadow: 0 0 20px rgba(249, 115, 22, 0.6);
     }
   }
 }
