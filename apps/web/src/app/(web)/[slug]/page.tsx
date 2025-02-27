@@ -1,4 +1,5 @@
 import { AdType, ToolTier } from "@plai/db/client"
+import { AdPlacement } from "@prisma/client"
 import { HashIcon } from "lucide-react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
@@ -64,9 +65,10 @@ export const generateMetadata = async (props: PageProps): Promise<Metadata> => {
 }
 
 export default async function ToolPage(props: PageProps) {
-  const [tool, ad] = await Promise.all([
+  const [tool, agentAd, verticalRightAd] = await Promise.all([
     getTool(props),
-    findAd({ where: { type: AdType.ToolPage } }),
+    findAd({ where: { type: AdType.ToolPage, placement: AdPlacement.Agent } }),
+    findAd({ where: { type: AdType.ToolPage, placement: AdPlacement.VerticalRight } }),
   ])
   const { title } = getMetadata(tool)
   const jsonLd: ImageObject[] = []
@@ -184,15 +186,37 @@ export default async function ToolPage(props: PageProps) {
         </Section.Content>
 
         <Section.Sidebar className="max-md:contents">
-          {/* Advertisement */}
+          {/* Agent Advertisement */}
           <Suspense fallback={<AdCardSkeleton className="max-md:order-4" />}>
-            <AdCard ad={ad as AdOne} className="max-md:order-4" />
+            <AdCard ad={agentAd as AdOne} className="max-md:order-4" />
           </Suspense>
 
           {/* Featured */}
           <Suspense>
             <FeaturedTools className="max-md:order-10" />
           </Suspense>
+          
+          {/* Vertical Right Banner Ad */}
+          {verticalRightAd && (
+            <Suspense fallback={<AdCardSkeleton className="max-md:order-11 mt-4" />}>
+              <div className="mt-4 max-md:order-11">
+                <a 
+                  href={verticalRightAd.website} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <img 
+                    src={verticalRightAd.imageUrl || ''} 
+                    alt={verticalRightAd.name} 
+                    width={verticalRightAd.width || 120} 
+                    height={verticalRightAd.height || 600}
+                    className="w-full h-auto"
+                  />
+                </a>
+              </div>
+            </Suspense>
+          )}
         </Section.Sidebar>
       </Section>
 
