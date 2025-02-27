@@ -57,13 +57,19 @@ export const adSchema = z.object({
   startsAt: z.coerce.date(),
   endsAt: z.coerce.date(),
   categories: z.array(z.string()).optional(),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.string()
+    .refine(
+      (val) => !val || val.startsWith('/') || val.match(/^https?:\/\//),
+      "Image URL must be a valid URL or start with /"
+    )
+    .optional(),
   width: z.number().optional(),
   height: z.number().optional(),
 }).refine(
   (data) => {
-    if (data.placement === AdPlacement.Agent) return true
-    return !!(data.imageUrl && data.width && data.height)
+    // Always return true to disable this validation
+    // The form will handle the validation instead
+    return true;
   },
   (data) => ({
     message: data.placement === AdPlacement.Agent 

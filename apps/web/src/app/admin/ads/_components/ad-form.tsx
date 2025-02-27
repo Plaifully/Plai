@@ -79,27 +79,65 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
   const showCategories = watchType === AdType.CategoryPage
   const showBannerFields = watchPlacement !== AdPlacement.Agent
 
+  const onSubmit = form.handleSubmit(async (data) => {
+    try {
+      console.log("Form submitted with data:", data)
+      console.log("Form errors:", form.formState.errors)
+      console.log("Form placement:", data.placement)
+      console.log("Is banner ad:", data.placement !== AdPlacement.Agent)
+      
+      // Check if form has validation errors
+      if (Object.keys(form.formState.errors).length > 0) {
+        console.error("Form has validation errors:", form.formState.errors)
+        toast.error("Please fix the form errors before submitting")
+        return
+      }
+      
+      // Only validate banner fields if placement is not Agent
+      if (data.placement !== AdPlacement.Agent) {
+        console.log("Validating banner fields")
+        if (!data.imageUrl) {
+          toast.error("Banner Image URL is required for this placement type");
+          return;
+        }
+        if (!data.width) {
+          toast.error("Width is required for this placement type");
+          return;
+        }
+        if (!data.height) {
+          toast.error("Height is required for this placement type");
+          return;
+        }
+      }
+      
+      const formData = {
+        ...data,
+        startsAt: new Date(data.startsAt),
+        endsAt: new Date(data.endsAt),
+      }
+      console.log("Processed form data:", formData)
+
+      if (ad) {
+        console.log("Updating ad with ID:", ad.id)
+        await updateAdAction({ ...formData, id: ad.id })
+      } else {
+        console.log("Creating new ad")
+        await createAdAction(formData)
+      }
+    } catch (error) {
+      console.error("Form submission error:", error)
+      toast.error(`Form submission failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    }
+  })
+
+  const isPending = isCreating || isUpdating
+
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(async data => {
-          try {
-            const formData = {
-              ...data,
-              startsAt: new Date(data.startsAt),
-              endsAt: new Date(data.endsAt),
-            }
-
-            if (ad) {
-              await updateAdAction({ ...formData, id: ad.id })
-            } else {
-              await createAdAction(formData)
-            }
-          } catch (error) {
-            toast.error(`Form submission failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
-          }
-        })}
+        onSubmit={onSubmit}
         className={cx("space-y-8", className)}
+        noValidate
         {...props}
       >
         <div className="grid gap-4 sm:grid-cols-2">
@@ -266,8 +304,7 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
                     <FormLabel>Banner Image URL</FormLabel>
                     <FormControl>
                       <Input 
-                        type="url"
-                        placeholder="e.g. https://example.com/banner.jpg"
+                        placeholder="e.g. /placeholders/banner.jpg or https://example.com/banner.jpg"
                         {...field}
                         value={field.value ?? ''}
                       />
@@ -359,11 +396,19 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
             <Link href="/admin/ads">Cancel</Link>
           </Button>
 
-          <Button type="submit" disabled={isCreating || isUpdating}>
-            {(isCreating || isUpdating) && (
-              <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+          <Button 
+            type="submit" 
+            disabled={isPending}
+            className="min-w-[100px]"
+          >
+            {isPending ? (
+              <div className="flex items-center gap-2">
+                <Loader2Icon className="h-4 w-4 animate-spin" />
+                <span>{ad ? "Updating..." : "Creating..."}</span>
+              </div>
+            ) : (
+              <span>{ad ? "Update" : "Create"}</span>
             )}
-            {ad ? "Update" : "Create"}
           </Button>
         </div>
 
