@@ -215,11 +215,11 @@ export default async function ToolPage(props: PageProps) {
           
           {/* Vertical Right Banner Ad */}
           {verticalRightAd && (
-            <Suspense fallback={<AdBannerSkeleton orientation="vertical" className="max-md:order-11" />}>
+            <Suspense fallback={<AdBannerSkeleton orientation="vertical" className="hidden md:block" />}>
               <AdBanner 
                 ad={verticalRightAd as AdOne} 
                 orientation="vertical" 
-                className="max-md:order-11" 
+                className="hidden md:block" 
               />
             </Suspense>
           )}

@@ -25,38 +25,38 @@ export const FloatingBannerAd = ({ ad, className, ...props }: BannerAdProps) => 
       )} 
       {...props}
     >
-      <div className="relative w-full max-w-[64rem] mx-auto px-6 lg:px-8">
+      <div className="relative w-full max-w-[64rem] mx-auto px-4 sm:px-6 lg:px-8">
         <Link
           href={ad.website}
           target="_blank"
           rel="noopener noreferrer"
           className="block group"
         >
-          <div className="flex items-center justify-between gap-3 bg-[#1C1C1C] hover:bg-[#242424] transition-colors rounded-b-xl border border-[#2A2A2A] px-6 py-2 shadow-[0_4px_24px_rgba(0,0,0,0.4)] relative">
+          <div className="flex items-center justify-between gap-2 sm:gap-3 bg-[#1C1C1C] hover:bg-[#242424] transition-colors rounded-b-xl border border-[#2A2A2A] px-3 sm:px-6 py-2 shadow-[0_4px_24px_rgba(0,0,0,0.4)] relative">
             <div className="text-xs font-medium bg-[#141414] text-white/80 px-2 py-0.5 rounded-md border border-[#2C2C2C]">Ad</div>
             
-            <div className="flex items-center gap-2 flex-1">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <div className="flex items-center gap-2 min-w-0">
                 {ad.faviconUrl && (
                   <Image
                     src={ad.faviconUrl}
                     alt=""
                     width={16}
                     height={16}
-                    className="size-4"
+                    className="size-4 flex-shrink-0"
                   />
                 )}
-                <span className="text-sm font-medium text-white/90">{ad.name}</span>
+                <span className="text-sm font-medium text-white/90 truncate">{ad.name}</span>
               </div>
               {ad.description && (
-                <>
+                <div className="hidden md:flex items-center">
                   <span className="text-white/30 mx-1.5">—</span>
-                  <span className="text-sm text-white/50">{ad.description}</span>
-                </>
+                  <span className="text-sm text-white/50 truncate">{ad.description}</span>
+                </div>
               )}
             </div>
 
-            <div className="text-xs font-medium bg-[#141414] text-white/90 hover:bg-[#1A1A1A] px-3 py-1 rounded-md transition-colors border border-[#2C2C2C]">
+            <div className="text-xs font-medium bg-[#141414] text-white/90 hover:bg-[#1A1A1A] px-2 sm:px-3 py-1 rounded-md transition-colors border border-[#2C2C2C] whitespace-nowrap flex-shrink-0">
               Learn More
             </div>
           </div>
