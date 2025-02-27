@@ -1,6 +1,8 @@
 import Script from "next/script"
 import { type PropsWithChildren, Suspense } from "react"
 import type { Graph } from "schema-dts"
+import { AdBanner } from "~/components/web/ads/ad-banner"
+import { FloatingAd } from "~/app/_components/ads/floating-ad"
 import { Footer } from "~/components/web/footer"
 import { Header } from "~/components/web/header"
 import { Container } from "~/components/web/ui/container"
@@ -17,32 +19,43 @@ export default function RootLayout({ children }: PropsWithChildren) {
     "@graph": [
       {
         "@type": "Organization",
-        "@id": `${url}#/schema/organization/1`,
+        "@id": `${url}/#/schema/organization/1`,
         name: config.site.name,
-        url,
+        url: `${url}/`,
+        sameAs: [
+          config.links.twitter,
+          config.links.linkedin,
+          config.links.github,
+        ],
         logo: {
           "@type": "ImageObject",
-          url: `${url}/logo.png`,
-          width: "512",
-          height: "512",
+          "@id": `${url}/#/schema/image/1`,
+          url: `${url}/favicon.png`,
+          width: "480",
+          height: "480",
+          caption: `${config.site.name} Logo`,
         },
+      },
+      {
+        "@type": "Person",
+        "@id": `${url}/#/schema/person/1`,
+        name: "Piotr Kulpinski",
+        sameAs: [config.links.twitter],
       },
       {
         "@type": "WebSite",
-        "@id": `${url}#/schema/website/1`,
-        url,
+        url: config.site.url,
         name: config.site.name,
         description: config.site.description,
-        publisher: {
-          "@id": `${url}#/schema/organization/1`,
-        },
-      },
-      {
-        "@type": "WebPage",
-        "@id": `${url}#/schema/webpage/1`,
-        url,
-        name: config.site.name,
-        description: config.site.description,
+        inLanguage: "en-US",
+        potentialAction: {
+          "@type": "SearchAction",
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: `${url}/?q={search_term_string}`,
+          },
+          "query-input": "required name=search_term_string",
+        } as any,
         isPartOf: { "@id": `${url}#/schema/website/1` },
         about: { "@id": `${url}#/schema/organization/1` },
       },
@@ -52,6 +65,10 @@ export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <Providers>
       <div className="flex flex-col min-h-dvh">
+        <Suspense>
+          <FloatingAd />
+        </Suspense>
+
         <Header />
 
         <Container asChild>
