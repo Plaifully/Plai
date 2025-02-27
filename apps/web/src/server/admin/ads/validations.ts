@@ -38,7 +38,12 @@ export const adSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
   website: z.string().url(),
-  faviconUrl: z.string().url().optional(),
+  faviconUrl: z.string()
+    .refine(
+      (val) => !val || val.startsWith('/') || val.match(/^https?:\/\//),
+      "Favicon URL must be a valid URL or start with /"
+    )
+    .optional(),
   type: z.nativeEnum(AdType),
   placement: z.enum([
     AdPlacement.Agent,
