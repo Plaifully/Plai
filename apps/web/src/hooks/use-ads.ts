@@ -1,7 +1,7 @@
 "use client"
 
-import type { AdType } from "@plai/db/client"
-import { useCallback, useMemo, useState } from "react"
+import type { AdType } from "@prisma/client"
+import { useState } from "react"
 import type { DateRange } from "react-day-picker"
 import { config } from "~/config"
 import { calculateAdsPrice } from "~/utils/ads"
@@ -19,56 +19,43 @@ export type AdsSelection = {
   duration?: number
 }
 
-export const useAds = () => {
+export const useAdsPicker = () => {
   const [selections, setSelections] = useState<AdsSelection[]>([])
   const spots = config.ads.adSpots
 
-  const findAdSpot = useCallback((type: AdType) => {
-    return spots.find(s => s.type === type) ?? spots[0]
-  }, [])
+  const addSelection = (type: AdType) => {
+    setSelections(prev => [...prev, { type }])
+  }
 
-  const clearSelection = useCallback((type: AdType) => {
+  const removeSelection = (type: AdType) => {
     setSelections(prev => prev.filter(s => s.type !== type))
-  }, [])
+  }
 
-  const updateSelection = useCallback(
-    (type: AdType, selection: Partial<Omit<AdsSelection, "type">>) => {
-      setSelections(prev => {
-        const existing = prev.find(s => s.type === type)
-        if (!existing) {
-          return [...prev, { type, ...selection }]
-        }
+  const updateSelection = (type: AdType, data: Partial<AdsSelection>) => {
+    setSelections(prev =>
+      prev.map(s => (s.type === type ? { ...s, ...data } : s)),
+    )
+  }
 
-        return prev.map(s => (s.type === type ? { ...s, ...selection } : s))
-      })
-    },
-    [],
-  )
-
-  const hasSelections = useMemo(() => {
-    return selections.some(s => s.duration && s.duration > 0)
-  }, [selections])
-
-  const price = useMemo(() => {
+  const getPrice = () => {
     const selectedItems = selections
       .filter(s => s.duration && s.duration > 0)
       .map(selection => ({
-        price: findAdSpot(selection.type).price,
-        duration: selection.duration,
+        price: spots.find(s => s.type === selection.type)?.price || 0,
+        duration: selection.duration || 1,
       }))
 
-    if (selectedItems.length === 0) return null
+    if (selectedItems.length === 0) return 0
 
     const basePrice = Math.min(...spots.map(s => s.price))
     return calculateAdsPrice(selectedItems, basePrice)
-  }, [selections, spots])
+  }
 
   return {
-    price,
     selections,
-    hasSelections,
-    findAdSpot,
-    clearSelection,
+    addSelection,
+    removeSelection,
     updateSelection,
+    getPrice,
   }
 }

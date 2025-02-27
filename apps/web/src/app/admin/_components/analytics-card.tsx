@@ -19,33 +19,38 @@ type AnalyticsData = {
 
 const getAnalytics = cache(
   async (): Promise<AnalyticsData | null> => {
-    const host = env.NEXT_PUBLIC_PLAUSIBLE_HOST
-    const apiKey = env.PLAUSIBLE_API_KEY
-    const domain = env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN
+    try {
+      const host = env.NEXT_PUBLIC_PLAUSIBLE_HOST
+      const apiKey = env.PLAUSIBLE_API_KEY
+      const domain = env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN
 
-    if (!host || !apiKey || !domain) {
+      if (!host || !apiKey || !domain) {
+        return null
+      }
+
+      const api = wretch(`${host}/api/v1`)
+        .auth(`Bearer ${apiKey}`)
+        .options({ cache: "no-store" })
+        .errorType("json")
+
+      const queryOptions = new URLSearchParams({
+        metrics: "visitors",
+        period: "30d",
+        site_id: domain,
+      })
+
+      const { results } = await api
+        .get(`/stats/timeseries?${queryOptions.toString()}`)
+        .json<{ results: AnalyticsChartData[] }>()
+      
+      const totalVisitors = results.reduce((acc, curr) => acc + curr.visitors, 0)
+      const averageVisitors = Math.round(totalVisitors / results.length)
+
+      return { results, totalVisitors, averageVisitors }
+    } catch (error) {
+      console.error('Error fetching analytics:', error)
       return null
     }
-
-    const api = wretch(`${host}/api/v1`)
-      .auth(`Bearer ${apiKey}`)
-      .options({ cache: "no-store" })
-      .errorType("json")
-
-    const queryOptions = new URLSearchParams({
-      metrics: "visitors",
-      period: "30d",
-      site_id: domain,
-    })
-
-    const { results } = await api
-      .get(`/stats/timeseries?${queryOptions.toString()}`)
-      .json<{ results: AnalyticsChartData[] }>()
-    
-    const totalVisitors = results.reduce((acc, curr) => acc + curr.visitors, 0)
-    const averageVisitors = Math.round(totalVisitors / results.length)
-
-    return { results, totalVisitors, averageVisitors }
   },
   ["analytics"],
   { revalidate: 60 * 60 },
@@ -57,7 +62,8 @@ const AnalyticsCard = async ({ ...props }: ComponentProps<typeof Card>) => {
   if (!analytics) {
     return <Card {...props}>
       <CardHeader>
-        <CardDescription>Analytics not configured</CardDescription>
+        <CardDescription>Analytics unavailable</CardDescription>
+        <CardTitle className="text-3xl tabular-nums">-</CardTitle>
       </CardHeader>
     </Card>
   }

@@ -30,9 +30,14 @@ export const createAd = authedProcedure
     }
   })
 
+const updateAdSchema = z.intersection(
+  z.object({ id: z.string() }),
+  adSchema
+)
+
 export const updateAd = authedProcedure
   .createServerAction()
-  .input(adSchema.extend({ id: z.string() }))
+  .input(updateAdSchema)
   .handler(async ({ input }) => {
     console.log('Server: Updating ad with input:', input)
     try {
@@ -42,7 +47,7 @@ export const updateAd = authedProcedure
         data: {
           ...rest,
           categories: categories ? {
-            set: categories.map(id => ({ id }))
+            set: categories.map((categoryId: string) => ({ id: categoryId }))
           } : undefined
         },
       })

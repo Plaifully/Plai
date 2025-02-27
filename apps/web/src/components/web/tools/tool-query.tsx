@@ -1,8 +1,8 @@
 "use client";
 
-import { PricingType, ToolTier } from "@plai/db/client";
+import { PricingType } from "@plai/db/client";
 import { useMemo, useState } from "react";
-import { MoveLeftIcon, MoveRightIcon, SearchIcon, XIcon, XCircleIcon, ChevronDownIcon } from "lucide-react";
+import { MoveLeftIcon, MoveRightIcon } from "lucide-react";
 import { ToolFilters } from "~/components/web/tools/tool-filters";
 import { ToolList } from "~/components/web/tools/tool-list";
 import { ToolListSkeleton } from "~/components/web/tools/tool-list";
@@ -12,7 +12,6 @@ import { Stack } from "~/components/common/stack";
 import type { CategoryMany } from "~/server/web/categories/payloads";
 import type { ToolMany } from "~/server/web/tools/payloads";
 import type { AdOne } from "~/server/web/ads/payloads";
-import * as Select from "@radix-ui/react-select";
 
 type ToolQueryProps = {
   tools: ToolMany[];
@@ -135,10 +134,9 @@ const ToolQuery = ({
 
     // Apply pricing type filter
     if (selectedPricingTypes.length > 0) {
-      filtered = filtered.filter((tool) => {
-        const toolPricing = (tool as any).pricingType || "Free";
-        return selectedPricingTypes.includes(toolPricing);
-      });
+      filtered = filtered.filter((tool) =>
+        selectedPricingTypes.includes(tool.pricingType)
+      );
     }
 
     // Apply sorting
@@ -162,117 +160,35 @@ const ToolQuery = ({
     setCurrentPage(1);
   };
 
-  const currentSortOption = sortOptions.find(
-    (option) => option.value === sortBy
-  );
-
   return (
-    <div className="flex flex-col gap-6">
-      {/* Search and filters bar */}
-      <div className="flex flex-col gap-3">
-        {/* Search and sort controls */}
-        <div className="flex flex-wrap gap-3">
-          {/* Search input */}
-          <div className="relative flex-1 min-w-[280px]">
-            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-              <SearchIcon className="h-4 w-4 text-muted" />
-            </div>
-            <Input
-              value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setSearchQuery(e.target.value);
-                handleFiltersChange();
-              }}
-              placeholder="Search tools..."
-              className="h-10 pl-9 bg-background w-full"
-            />
-          </div>
+    <div className="space-y-6">
+      <ToolFilters
+        categories={categories}
+        placeholder={placeholder}
+        onSearch={(query) => {
+          setSearchQuery(query);
+          handleFiltersChange();
+        }}
+        onCategoryChange={(categories) => {
+          setSelectedCategories(categories);
+          handleFiltersChange();
+        }}
+        selectedCategories={selectedCategories}
+        selectedPricingTypes={selectedPricingTypes}
+        onPricingTypesChange={(types) => {
+          setSelectedPricingTypes(types);
+          handleFiltersChange();
+        }}
+        tools={filteredTools}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+      />
 
-          {/* Filters and Sort */}
-          <div className="min-h-10 w-full xl:w-fit">
-            <ToolFilters
-              categories={categories}
-              selectedCategories={selectedCategories}
-              onCategoryChange={(categories) => {
-                setSelectedCategories(categories);
-                handleFiltersChange();
-              }}
-              selectedPricingTypes={selectedPricingTypes}
-              onPricingTypesChange={(types) => {
-                setSelectedPricingTypes(types);
-                handleFiltersChange();
-              }}
-              tools={tools}
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-            />
-          </div>
-        </div>
+      <ToolList
+        tools={paginatedTools}
+        ads={ad ? [ad] : []}
+      />
 
-        {/* Active filters */}
-        {(selectedCategories.length > 0 || selectedPricingTypes.length > 0) && (
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm text-muted">Active filters:</span>
-            {selectedCategories.map(slug => {
-              const category = categories.find(c => c.slug === slug)
-              return (
-                <div
-                  key={slug}
-                  className="group flex items-center gap-1.5 px-2 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-md text-sm transition-colors"
-                >
-                  <span>{category?.name}</span>
-                  <button
-                    onClick={() => {
-                      const newCategories = selectedCategories.filter(c => c !== slug)
-                      setSelectedCategories(newCategories)
-                      handleFiltersChange()
-                    }}
-                    className="opacity-50 hover:opacity-100 transition-opacity"
-                  >
-                    <XIcon className="size-3" />
-                  </button>
-                </div>
-              )
-            })}
-            {selectedPricingTypes.map(type => (
-              <div
-                key={type}
-                className="group flex items-center gap-1.5 px-2 py-1 bg-primary/10 text-primary hover:bg-primary/20 rounded-md text-sm transition-colors"
-              >
-                <span>{type}</span>
-                <button
-                  onClick={() => {
-                    const newTypes = selectedPricingTypes.filter(t => t !== type)
-                    setSelectedPricingTypes(newTypes)
-                    handleFiltersChange()
-                  }}
-                  className="opacity-50 hover:opacity-100 transition-opacity"
-                >
-                  <XIcon className="size-3" />
-                </button>
-              </div>
-            ))}
-            {(selectedCategories.length > 0 || selectedPricingTypes.length > 0) && (
-              <button
-                onClick={() => {
-                  setSelectedCategories([])
-                  setSelectedPricingTypes([])
-                  handleFiltersChange()
-                }}
-                className="flex items-center gap-1.5 text-primary hover:text-primary hover:bg-primary/10 px-2 py-1 rounded-md text-sm"
-              >
-                <XCircleIcon className="size-4" />
-                <span>Clear all</span>
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Tool List */}
-      <ToolList tools={paginatedTools} ad={ad} />
-
-      {/* Pagination */}
       {totalPages > 1 && (
         <ClientPagination
           currentPage={currentPage}

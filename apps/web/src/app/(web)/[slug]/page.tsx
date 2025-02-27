@@ -1,4 +1,5 @@
 import { AdType, ToolTier } from "@plai/db/client"
+import { AdPlacement } from "@prisma/client"
 import { HashIcon } from "lucide-react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
@@ -8,6 +9,7 @@ import { FeaturedTools } from "~/app/(web)/[slug]/featured-tools"
 import { H1, H5 } from "~/components/common/heading"
 import { Stack } from "~/components/common/stack"
 import { AdCard, AdCardSkeleton } from "~/components/web/ads/ad-card"
+import { AdBanner, AdBannerSkeleton } from "~/components/web/ads/ad-banner"
 import { ExternalLink } from "~/components/web/external-link"
 import { Markdown } from "~/components/web/markdown"
 import { ShareButtons } from "~/components/web/share-buttons"
@@ -64,14 +66,14 @@ export const generateMetadata = async (props: PageProps): Promise<Metadata> => {
 }
 
 export default async function ToolPage(props: PageProps) {
-  const [tool, ad] = await Promise.all([
+  const [tool, agentAd, verticalRightAd, horizontalTopAd] = await Promise.all([
     getTool(props),
-    findAd({ where: { type: AdType.ToolPage } }),
+    findAd({ where: { type: AdType.ToolPage, placement: AdPlacement.Agent } }),
+    findAd({ where: { type: AdType.ToolPage, placement: AdPlacement.VerticalRight } }),
+    findAd({ where: { type: AdType.ToolPage, placement: AdPlacement.HorizontalTop } }),
   ])
   const { title } = getMetadata(tool)
   const jsonLd: ImageObject[] = []
-
-  console.log("AD:", ad)
 
   if (tool.screenshotUrl) {
     jsonLd.push({
@@ -124,18 +126,33 @@ export default async function ToolPage(props: PageProps) {
 
             <Stack size="sm">
               {tool.website && (
-                <Button asChild>
-                  <ExternalLink
-                    href={tool.website}
-                    rel={tool.tier === ToolTier.Featured ? "noopener noreferrer" : undefined}
-                    eventName="click_website"
-                    eventProps={{ url: tool.website }}
+                <div className="flex flex-wrap gap-3">
+                  <Button asChild>
+                    <ExternalLink
+                      href={tool.website}
+                      rel={tool.tier === ToolTier.Featured ? "noopener noreferrer" : undefined}
+                      eventName="click_website"
+                      eventProps={{ url: tool.website }}
+                    >
+                      Visit {tool.name}
+                    </ExternalLink>
+                  </Button>
+                  
+                  <Button 
+                    variant="fancy"
                   >
-                    Visit {tool.name}
-                  </ExternalLink>
-                </Button>
+                    Hire {tool.name.split(' ')[0]}
+                  </Button>
+                </div>
               )}
             </Stack>
+
+            {/* Horizontal Top Banner Ad - Moved below the Visit button */}
+            {horizontalTopAd && (
+              <Suspense fallback={<AdBannerSkeleton orientation="horizontal" />}>
+                <AdBanner ad={horizontalTopAd as AdOne} orientation="horizontal" />
+              </Suspense>
+            )}
           </div>
 
           {tool.screenshotUrl && (
@@ -186,15 +203,26 @@ export default async function ToolPage(props: PageProps) {
         </Section.Content>
 
         <Section.Sidebar className="max-md:contents">
-          {/* Advertisement */}
+          {/* Agent Advertisement */}
           <Suspense fallback={<AdCardSkeleton className="max-md:order-4" />}>
-            <AdCard ad={ad as AdOne} className="max-md:order-4" />
+            <AdCard ad={agentAd as AdOne} className="max-md:order-4" />
           </Suspense>
 
           {/* Featured */}
           <Suspense>
             <FeaturedTools className="max-md:order-10" />
           </Suspense>
+          
+          {/* Vertical Right Banner Ad */}
+          {verticalRightAd && (
+            <Suspense fallback={<AdBannerSkeleton orientation="vertical" className="hidden md:block" />}>
+              <AdBanner 
+                ad={verticalRightAd as AdOne} 
+                orientation="vertical" 
+                className="hidden md:block" 
+              />
+            </Suspense>
+          )}
         </Section.Sidebar>
       </Section>
 

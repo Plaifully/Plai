@@ -1,8 +1,10 @@
 import { PrismaClient, ToolStatus, ToolTier } from "@prisma/client"
+import prompts from "prompts"
+import { seedAds } from "./seeds/ads"
 
 const prisma = new PrismaClient()
 
-async function main() {
+async function seedTools() {
   // Clean up existing data
   await prisma.tool.deleteMany()
   await prisma.category.deleteMany()
@@ -92,13 +94,36 @@ async function main() {
       },
     },
   })
+
+  console.log('✅ Tools, categories, and topics seeded successfully')
+}
+
+async function main() {
+  const response = await prompts({
+    type: 'multiselect',
+    name: 'seedTypes',
+    message: 'What would you like to seed?',
+    choices: [
+      { title: 'Tools, Categories & Topics', value: 'tools', selected: false },
+      { title: 'Ads', value: 'ads', selected: true }
+    ],
+  })
+
+  if (response.seedTypes.includes('tools')) {
+    await seedTools()
+  }
+  
+  if (response.seedTypes.includes('ads')) {
+    await seedAds()
+  }
 }
 
 main()
-  .catch(e => {
-    console.error(e)
-    process.exit(1)
-  })
-  .finally(async () => {
+  .then(async () => {
     await prisma.$disconnect()
+  })
+  .catch(async (e) => {
+    console.error(e)
+    await prisma.$disconnect()
+    process.exit(1)
   }) 
