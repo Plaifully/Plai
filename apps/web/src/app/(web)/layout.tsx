@@ -2,6 +2,7 @@ import Script from "next/script"
 import { type PropsWithChildren, Suspense } from "react"
 import type { Graph } from "schema-dts"
 import { AdBanner } from "~/components/web/ads/ad-banner"
+import { FloatingAd } from "~/app/_components/ads/floating-ad"
 import { Footer } from "~/components/web/footer"
 import { Header } from "~/components/web/header"
 import { Container } from "~/components/web/ui/container"
@@ -64,6 +65,10 @@ export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <Providers>
       <div className="flex flex-col min-h-dvh">
+        <Suspense>
+          <FloatingAd />
+        </Suspense>
+
         <Suspense>
           <AdBanner />
         </Suspense>

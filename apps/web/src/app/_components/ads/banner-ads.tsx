@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import type { ComponentProps } from "react"
 import type { AdOne } from "~/server/web/ads/payloads"
 import { cx } from "~/utils/cva"
@@ -10,36 +11,57 @@ type BannerAdProps = ComponentProps<"div"> & {
   className?: string
 }
 
-// Floating banner that sticks to the top of the screen
+// Floating banner that sits above the header
 export const FloatingBannerAd = ({ ad, className, ...props }: BannerAdProps) => {
-  if (!ad || !ad.imageUrl) {
+  if (!ad) {
     return null
   }
 
   return (
     <div 
       className={cx(
-        "fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-        "flex justify-center items-center py-2 border-b",
+        "w-full py-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
         className
       )} 
       {...props}
     >
-      <a 
-        href={ad.website} 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="block"
-      >
-        <Image
-          src={ad.imageUrl}
-          alt={ad.description || `Advertisement for ${ad.name}`}
-          width={ad.width || 728}
-          height={ad.height || 90}
-          className="mx-auto"
-          priority
-        />
-      </a>
+      <div className="relative w-full max-w-[64rem] mx-auto px-6 lg:px-8">
+        <Link
+          href={ad.website}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block group"
+        >
+          <div className="flex items-center justify-between gap-3 bg-[#1C1C1C] hover:bg-[#242424] transition-colors rounded-b-xl border border-[#2A2A2A] px-6 py-2 shadow-[0_4px_24px_rgba(0,0,0,0.4)] relative">
+            <div className="text-xs font-medium bg-[#141414] text-white/80 px-2 py-0.5 rounded-md border border-[#2C2C2C]">Ad</div>
+            
+            <div className="flex items-center gap-2 flex-1">
+              <div className="flex items-center gap-2">
+                {ad.faviconUrl && (
+                  <Image
+                    src={ad.faviconUrl}
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="size-4"
+                  />
+                )}
+                <span className="text-sm font-medium text-white/90">{ad.name}</span>
+              </div>
+              {ad.description && (
+                <>
+                  <span className="text-white/30 mx-1.5">—</span>
+                  <span className="text-sm text-white/50">{ad.description}</span>
+                </>
+              )}
+            </div>
+
+            <div className="text-xs font-medium bg-[#141414] text-white/90 hover:bg-[#1A1A1A] px-3 py-1 rounded-md transition-colors border border-[#2C2C2C]">
+              Learn More
+            </div>
+          </div>
+        </Link>
+      </div>
     </div>
   )
 }
@@ -58,7 +80,7 @@ export const HorizontalBannerAd = ({ ad, className, ...props }: BannerAdProps) =
       )} 
       {...props}
     >
-      <a 
+      <Link
         href={ad.website} 
         target="_blank" 
         rel="noopener noreferrer"
@@ -72,7 +94,7 @@ export const HorizontalBannerAd = ({ ad, className, ...props }: BannerAdProps) =
           className="mx-auto"
           priority
         />
-      </a>
+      </Link>
     </div>
   )
 }
@@ -91,7 +113,7 @@ export const VerticalBannerAd = ({ ad, className, ...props }: BannerAdProps) => 
       )} 
       {...props}
     >
-      <a 
+      <Link
         href={ad.website} 
         target="_blank" 
         rel="noopener noreferrer"
@@ -105,7 +127,7 @@ export const VerticalBannerAd = ({ ad, className, ...props }: BannerAdProps) => 
           className="mx-auto"
           priority
         />
-      </a>
+      </Link>
     </div>
   )
 } 
