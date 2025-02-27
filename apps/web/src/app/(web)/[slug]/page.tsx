@@ -9,6 +9,7 @@ import { FeaturedTools } from "~/app/(web)/[slug]/featured-tools"
 import { H1, H5 } from "~/components/common/heading"
 import { Stack } from "~/components/common/stack"
 import { AdCard, AdCardSkeleton } from "~/components/web/ads/ad-card"
+import { AdBanner, AdBannerSkeleton } from "~/components/web/ads/ad-banner"
 import { ExternalLink } from "~/components/web/external-link"
 import { Markdown } from "~/components/web/markdown"
 import { ShareButtons } from "~/components/web/share-buttons"
@@ -65,10 +66,11 @@ export const generateMetadata = async (props: PageProps): Promise<Metadata> => {
 }
 
 export default async function ToolPage(props: PageProps) {
-  const [tool, agentAd, verticalRightAd] = await Promise.all([
+  const [tool, agentAd, verticalRightAd, horizontalTopAd] = await Promise.all([
     getTool(props),
     findAd({ where: { type: AdType.ToolPage, placement: AdPlacement.Agent } }),
     findAd({ where: { type: AdType.ToolPage, placement: AdPlacement.VerticalRight } }),
+    findAd({ where: { type: AdType.ToolPage, placement: AdPlacement.HorizontalTop } }),
   ])
   const { title } = getMetadata(tool)
   const jsonLd: ImageObject[] = []
@@ -124,18 +126,33 @@ export default async function ToolPage(props: PageProps) {
 
             <Stack size="sm">
               {tool.website && (
-                <Button asChild>
-                  <ExternalLink
-                    href={tool.website}
-                    rel={tool.tier === ToolTier.Featured ? "noopener noreferrer" : undefined}
-                    eventName="click_website"
-                    eventProps={{ url: tool.website }}
+                <div className="flex flex-wrap gap-3">
+                  <Button asChild>
+                    <ExternalLink
+                      href={tool.website}
+                      rel={tool.tier === ToolTier.Featured ? "noopener noreferrer" : undefined}
+                      eventName="click_website"
+                      eventProps={{ url: tool.website }}
+                    >
+                      Visit {tool.name}
+                    </ExternalLink>
+                  </Button>
+                  
+                  <Button 
+                    variant="fancy"
                   >
-                    Visit {tool.name}
-                  </ExternalLink>
-                </Button>
+                    Hire {tool.name.split(' ')[0]}
+                  </Button>
+                </div>
               )}
             </Stack>
+
+            {/* Horizontal Top Banner Ad - Moved below the Visit button */}
+            {horizontalTopAd && (
+              <Suspense fallback={<AdBannerSkeleton orientation="horizontal" />}>
+                <AdBanner ad={horizontalTopAd as AdOne} orientation="horizontal" />
+              </Suspense>
+            )}
           </div>
 
           {tool.screenshotUrl && (
@@ -198,23 +215,12 @@ export default async function ToolPage(props: PageProps) {
           
           {/* Vertical Right Banner Ad */}
           {verticalRightAd && (
-            <Suspense fallback={<AdCardSkeleton className="max-md:order-11 mt-4" />}>
-              <div className="mt-4 max-md:order-11">
-                <a 
-                  href={verticalRightAd.website} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="block"
-                >
-                  <img 
-                    src={verticalRightAd.imageUrl || ''} 
-                    alt={verticalRightAd.name} 
-                    width={verticalRightAd.width || 120} 
-                    height={verticalRightAd.height || 600}
-                    className="w-full h-auto"
-                  />
-                </a>
-              </div>
+            <Suspense fallback={<AdBannerSkeleton orientation="vertical" className="max-md:order-11" />}>
+              <AdBanner 
+                ad={verticalRightAd as AdOne} 
+                orientation="vertical" 
+                className="max-md:order-11" 
+              />
             </Suspense>
           )}
         </Section.Sidebar>

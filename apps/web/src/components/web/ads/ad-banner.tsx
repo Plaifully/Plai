@@ -1,62 +1,67 @@
+'use client'
+
 import type { ComponentProps } from "react"
-import { Box } from "~/components/common/box"
 import { ExternalLink } from "~/components/web/external-link"
-import { Badge } from "~/components/web/ui/badge"
-import { Button } from "~/components/web/ui/button"
-import { Container } from "~/components/web/ui/container"
 import { Image } from "~/components/web/ui/image"
-import { findAd } from "~/server/web/ads/queries"
+import type { AdOne } from "~/server/web/ads/payloads"
 import { cx } from "~/utils/cva"
 
-export const AdBanner = async ({ className, ...props }: ComponentProps<typeof Container>) => {
-  const ad = await findAd({ where: { type: "Banner" } })
+type AdBannerProps = {
+  ad: AdOne
+  className?: string
+  orientation?: 'horizontal' | 'vertical'
+}
 
+export const AdBanner = ({ ad, className, orientation = 'horizontal', ...props }: AdBannerProps) => {
   if (!ad) {
-    return null
+    return <AdBannerSkeleton className={className} orientation={orientation} />
   }
 
   return (
-    <Box>
-      <Container
+    <div className={cx("w-full", orientation === 'horizontal' ? "my-6 px-4 md:px-0" : "mt-4", className)}>
+      <ExternalLink 
+        href={ad.website}
         className={cx(
-          "group/button relative -top-px inset-x-0 z-60 flex items-center justify-between gap-3 bg-card border-b py-2 hover:bg-card-dark lg:border-x lg:rounded-b-lg",
-          className,
+          "block", 
+          orientation === 'horizontal' ? "mx-auto max-w-[728px]" : ""
         )}
-        asChild
-        {...props}
+        eventName={`click_${orientation}_ad`}
+        eventProps={{ adName: ad.name }}
       >
-        <ExternalLink
-          href={ad.website}
-          eventName="click_ad"
-          eventProps={{ url: ad.website, type: ad.type }}
-        >
-          <Badge variant="outline" className="max-sm:order-last">
-            Ad
-          </Badge>
-
-          <div className="text-xs leading-tight text-secondary mr-auto md:text-sm">
-            {ad.faviconUrl && (
-              <Image
-                src={ad.faviconUrl}
-                alt={ad.name}
-                width={32}
-                height={32}
-                className="inline-flex align-text-top mr-1 size-3.5 md:size-4"
-              />
-            )}
-            <strong className="font-medium text-foreground">{ad.name}</strong> — {ad.description}
+        <div className="relative overflow-hidden rounded-md border border-border">
+          <Image 
+            src={ad.imageUrl || ''}
+            alt={ad.name} 
+            width={ad.width || (orientation === 'horizontal' ? 728 : 120)} 
+            height={ad.height || (orientation === 'horizontal' ? 90 : 600)}
+            className="w-full h-auto"
+          />
+          <div className="absolute top-1 left-1 bg-background/80 text-xs px-1 py-0.5 rounded text-muted-foreground">
+            Sponsored
           </div>
+        </div>
+      </ExternalLink>
+    </div>
+  )
+}
 
-          <Button
-            variant="secondary"
-            size="sm"
-            className="shrink-0 pointer-events-none max-sm:hidden"
-            asChild
-          >
-            <span>Learn More</span>
-          </Button>
-        </ExternalLink>
-      </Container>
-    </Box>
+export const AdBannerSkeleton = ({ 
+  className, 
+  orientation = 'horizontal' 
+}: { 
+  className?: string, 
+  orientation?: 'horizontal' | 'vertical' 
+}) => {
+  return (
+    <div className={cx(
+      "w-full", 
+      orientation === 'horizontal' ? "my-6 px-4 md:px-0" : "mt-4", 
+      className
+    )}>
+      <div className={cx(
+        orientation === 'horizontal' ? "mx-auto max-w-[728px] h-[90px]" : "w-full h-[600px]", 
+        "rounded-md border border-border bg-muted/20 animate-pulse"
+      )}></div>
+    </div>
   )
 }
