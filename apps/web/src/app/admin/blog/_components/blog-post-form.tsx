@@ -30,6 +30,8 @@ import {
 import { RichTextEditor } from "~/components/admin/rich-text-editor"
 import Link from "next/link"
 import { format } from "date-fns"
+import { useTransition } from "react"
+import { Loader2Icon } from "lucide-react"
 
 // Define the form schema using zod
 const formSchema = blogPostSchema
@@ -63,6 +65,7 @@ interface BlogPostFormProps {
 export function BlogPostForm({ blogPost, categories }: BlogPostFormProps) {
   const router = useRouter()
   const isEditing = !!blogPost
+  const [isTransitioning, startTransition] = useTransition()
 
   // Initialize the form with default values or existing blog post data
   const form = useForm<FormValues>({
@@ -100,13 +103,18 @@ export function BlogPostForm({ blogPost, categories }: BlogPostFormProps) {
         await createBlogPost(data)
         toast.success("Blog post created successfully")
       }
-      router.push("/admin/blog")
-      router.refresh()
+      startTransition(() => {
+        router.push("/admin/blog")
+        router.refresh()
+      })
     } catch (error) {
       console.error("Error saving blog post:", error)
       toast.error("Failed to save blog post")
     }
   }
+
+  // Combined loading state
+  const isPending = form.formState.isSubmitting || isTransitioning
 
   return (
     <Form {...form}>
@@ -339,12 +347,23 @@ export function BlogPostForm({ blogPost, categories }: BlogPostFormProps) {
           />
         </div>
 
-        <div className="flex justify-end gap-4">
+        <div className="col-span-full flex justify-start gap-4 mt-6">
           <Button variant="outline" asChild>
             <Link href="/admin/blog">Cancel</Link>
           </Button>
-          <Button type="submit" isPending={form.formState.isSubmitting}>
-            {isEditing ? "Update" : "Create"} Blog Post
+          <Button 
+            type="submit" 
+            disabled={isPending}
+            className="min-w-[100px]"
+          >
+            {isPending ? (
+              <div className="flex items-center gap-2">
+                <Loader2Icon className="h-4 w-4 animate-spin" />
+                <span>{blogPost ? "Updating..." : "Creating..."}</span>
+              </div>
+            ) : (
+              <span>{blogPost ? "Update blog post" : "Create blog post"}</span>
+            )}
           </Button>
         </div>
       </form>
