@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react"
-import { Markdown } from "~/components/web/markdown"
+import { RichTextContent } from "~/components/admin/rich-text-editor"
 import { Author } from "~/components/web/ui/author"
 import type { config } from "~/config"
 import { cx } from "~/utils/cva"
@@ -12,7 +12,7 @@ export const Testimonial = ({ quote, author, className, ...props }: TestimonialP
       className={cx("flex flex-col items-center gap-4 max-w-2xl mx-auto", className)}
       {...props}
     >
-      <Markdown className="text-center text-lg/relaxed" code={quote} />
+      <RichTextContent className="text-center text-lg/relaxed" content={quote} />
 
       <Author {...author} />
     </blockquote>

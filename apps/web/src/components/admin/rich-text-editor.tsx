@@ -24,6 +24,66 @@ import { Button } from "~/components/admin/ui/button"
 import { cx } from "~/utils/cva"
 import { Prose } from "~/components/web/ui/prose"
 
+// Add custom styles to fix editor issues
+const editorStyles = `
+  .ProseMirror {
+    outline: none !important;
+    box-shadow: none !important;
+    color: var(--color-foreground) !important;
+    min-height: 300px;
+    max-height: none !important;
+    overflow-y: auto;
+  }
+  
+  .ProseMirror:focus {
+    outline: none !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    ring: 0 !important;
+  }
+  
+  .ProseMirror p {
+    color: var(--color-foreground) !important;
+  }
+  
+  .ProseMirror-focused {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* Remove any character limits */
+  .ProseMirror * {
+    max-width: none !important;
+  }
+  
+  /* Ensure content doesn't overflow */
+  .prose {
+    width: 100%;
+    max-width: 100% !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+  
+  .prose img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  
+  .prose pre {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    white-space: pre-wrap !important;
+  }
+  
+  @media (max-width: 768px) {
+    .prose * {
+      max-width: 100% !important;
+    }
+  }
+`;
+
 interface RichTextEditorProps {
   content: string
   onChange: (content: string) => void
@@ -44,17 +104,27 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         class: cx(
-          "p-4 text-[rgb(179,179,179)] text-pretty leading-relaxed",
-          "prose prose-neutral dark:prose-invert prose-a:font-normal prose-a:text-foreground prose-a:hover:text-primary prose-hr:border-foreground prose-strong:text-foreground prose-p:first:mt-0 prose-p:last:mb-0 prose-ul:first:mt-0 prose-ul:last:mb-0 prose-li:mt-2 prose-li:first:m-0 prose-img:border prose-img:border-neutral-200 prose-img:rounded-md prose-lead:text-lg/relaxed prose-pre:font-mono prose-pre:rounded-none",
+          "p-4 text-secondary text-pretty leading-relaxed",
+          "prose prose-neutral dark:prose-invert max-w-none prose-a:font-normal prose-a:text-foreground prose-a:hover:text-primary prose-hr:border-foreground prose-strong:text-foreground prose-p:first:mt-0 prose-p:last:mb-0 prose-ul:first:mt-0 prose-ul:last:mb-0 prose-li:mt-2 prose-li:first:m-0 prose-img:border prose-img:border-neutral-200 prose-img:rounded-md prose-lead:text-lg/relaxed prose-pre:font-mono prose-pre:rounded-none",
           "prose-headings:scroll-mt-20 prose-headings:text-foreground prose-headings:font-semibold prose-headings:tracking-tight",
           "prose-code:before:hidden prose-code:after:hidden prose-code:bg-foreground/10 prose-code:rounded prose-code:mx-[0.088em] prose-code:px-[0.33em] prose-code:py-[0.166em] prose-code:font-normal",
-          "prose-h1:text")
+          "prose-h1:text-3xl md:prose-h1:text-4xl prose-h2:text-2xl md:prose-h2:text-3xl prose-h3:text-2xl prose-h4:text-xl prose-h5:text-base prose-h5:font-medium prose-h5:tracking-micro prose-h6:text-sm prose-h6:font-medium prose-h6:tracking-normal")
       },
     },
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3, 4, 5, 6],
+        },
+        // Remove any character limits
+        history: {
+          depth: 100,
+          newGroupDelay: 500,
+        },
+      }),
       Placeholder.configure({
         placeholder,
+        showOnlyWhenEditable: true,
       }),
       Link.configure({
         openOnClick: false,
@@ -111,7 +181,8 @@ export function RichTextEditor({
   }
 
   return (
-    <div className={cx("border rounded-md", className)}>
+    <div className={cx("rounded-md border-0", className)}>
+      <style jsx global>{editorStyles}</style>
       <div className="flex flex-wrap gap-1 p-2 border-b bg-muted/50">
         <Button
           type="button"
@@ -245,7 +316,7 @@ export function RichTextEditor({
         </Button>
       </div>
       
-        <EditorContent editor={editor} />
+      <EditorContent editor={editor} className="focus-visible:outline-none focus-visible:ring-0" />
     </div>
   )
 }
@@ -254,7 +325,12 @@ export function RichTextEditor({
 export function RichTextContent({ content, className }: { content: string; className?: string }) {
   return (
     <Prose 
-      className={className} 
+      className={cx(
+        "max-w-full overflow-hidden", 
+        "prose-img:max-w-full prose-img:h-auto", 
+        "prose-pre:overflow-x-auto prose-pre:whitespace-pre-wrap",
+        className
+      )} 
       dangerouslySetInnerHTML={{ __html: content }} 
     />
   )

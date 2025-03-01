@@ -11,7 +11,7 @@ import { Stack } from "~/components/common/stack"
 import { AdCard, AdCardSkeleton } from "~/components/web/ads/ad-card"
 import { AdBanner, AdBannerSkeleton } from "~/components/web/ads/ad-banner"
 import { ExternalLink } from "~/components/web/external-link"
-import { Markdown } from "~/components/web/markdown"
+import { RichTextContent } from "~/components/admin/rich-text-editor"
 import { ShareButtons } from "~/components/web/share-buttons"
 import { ToolBadges } from "~/components/web/tools/tool-badges"
 import { Badge } from "~/components/web/ui/badge"
@@ -167,7 +167,14 @@ export default async function ToolPage(props: PageProps) {
             />
           )}
 
-          {tool.content && <Markdown code={tool.content} className="max-md:order-5" />}
+          {tool.content && (
+            <div className="w-full overflow-hidden max-md:order-5">
+              <RichTextContent 
+                content={tool.content} 
+                className="prose-img:max-w-full prose-img:h-auto prose-pre:overflow-x-auto prose-pre:whitespace-pre-wrap break-words" 
+              />
+            </div>
+          )}
 
           {/* Categories */}
           {!!tool.categories.length && (
