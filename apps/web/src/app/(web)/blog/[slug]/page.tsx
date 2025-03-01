@@ -71,6 +71,20 @@ export default async function BlogPostPage(props: PageProps) {
     findAd({ where: { type: AdType.BlogPost, placement: AdPlacement.HorizontalBottom } }),
   ])
 
+  // Format the publishedAt date safely
+  const publishedAtFormatted = post.publishedAt 
+    ? formatDate(typeof post.publishedAt === 'string' 
+        ? post.publishedAt 
+        : post.publishedAt.toISOString())
+    : null;
+
+  // Get the ISO string for the datetime attribute
+  const publishedAtIso = post.publishedAt
+    ? typeof post.publishedAt === 'string'
+      ? post.publishedAt
+      : post.publishedAt.toISOString()
+    : null;
+
   return (
     <>
       <div className="flex flex-col gap-8 md:gap-10 lg:gap-12">
@@ -91,9 +105,9 @@ export default async function BlogPostPage(props: PageProps) {
                   </div>
                 )}
 
-                {post.publishedAt && (
-                  <time dateTime={post.publishedAt.toISOString()} className="">
-                    {formatDate(post.publishedAt.toISOString())}
+                {publishedAtFormatted && (
+                  <time dateTime={publishedAtIso || ''} className="">
+                    {publishedAtFormatted}
                   </time>
                 )}
 

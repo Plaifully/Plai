@@ -47,4 +47,7 @@ export const blogPostManyPayload = Prisma.validator<Prisma.BlogPostSelect>()({
 })
 
 export type BlogPostOne = Prisma.BlogPostGetPayload<{ select: typeof blogPostOnePayload }>
-export type BlogPostMany = Prisma.BlogPostGetPayload<{ select: typeof blogPostManyPayload }> 
+export type BlogPostMany = Prisma.BlogPostGetPayload<{ select: typeof blogPostManyPayload }>
+
+// Add a helper type to clarify that publishedAt can be a Date or string
+export type SafeDate = Date | string | null 

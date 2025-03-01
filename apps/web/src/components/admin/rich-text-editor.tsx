@@ -20,6 +20,7 @@ import {
 import { useCallback, useEffect, useState } from "react"
 import { Button } from "~/components/admin/ui/button"
 import { cx } from "~/utils/cva"
+import { Prose } from "~/components/web/ui/prose"
 
 interface RichTextEditorProps {
   content: string
@@ -210,7 +211,7 @@ export function RichTextEditor({
         </Button>
       </div>
       
-      <EditorContent editor={editor} className="p-4 prose max-w-none min-h-[200px]" />
+      <EditorContent editor={editor} className="p-4 min-h-[200px]" />
     </div>
   )
 }
@@ -218,8 +219,8 @@ export function RichTextEditor({
 // Component to render rich text content
 export function RichTextContent({ content, className }: { content: string; className?: string }) {
   return (
-    <div 
-      className={cx("prose max-w-none", className)} 
+    <Prose 
+      className={className} 
       dangerouslySetInnerHTML={{ __html: content }} 
     />
   )

@@ -11,6 +11,20 @@ type PostCardProps = ComponentProps<typeof Card> & {
 }
 
 export const PostCard = ({ className, post, ...props }: PostCardProps) => {
+  // Format the publishedAt date safely
+  const publishedAtFormatted = post.publishedAt 
+    ? formatDate(typeof post.publishedAt === 'string' 
+        ? post.publishedAt 
+        : post.publishedAt.toISOString())
+    : null;
+
+  // Get the ISO string for the datetime attribute
+  const publishedAtIso = post.publishedAt
+    ? typeof post.publishedAt === 'string'
+      ? post.publishedAt
+      : post.publishedAt.toISOString()
+    : null;
+
   return (
     <Card className="overflow-clip" asChild {...props}>
       <Link href={`/blog/${post.slug}`} prefetch={false}>
@@ -32,9 +46,9 @@ export const PostCard = ({ className, post, ...props }: PostCardProps) => {
 
         {post.description && <CardDescription>{post.description}</CardDescription>}
 
-        {post.publishedAt && (
+        {publishedAtFormatted && (
           <CardFooter>
-            <time dateTime={post.publishedAt.toISOString()}>{formatDate(post.publishedAt.toISOString())}</time>
+            <time dateTime={publishedAtIso || ''}>{publishedAtFormatted}</time>
             <span>&bull;</span>
             <span>{getReadTime(post.content)} min read</span>
           </CardFooter>
