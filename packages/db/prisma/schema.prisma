@@ -36,6 +36,13 @@ enum ToolStatus {
   Deleted
 }
 
+enum BlogPostStatus {
+  Draft
+  Scheduled
+  Published
+  Archived
+}
+
 enum StackType {
   Tool
   SaaS
@@ -135,6 +142,35 @@ model Tool {
   @@index([searchVector], type: Gin)
 }
 
+model BlogPost {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  title       String
+  description String?
+  content     String          // Rich text content in JSON format
+  image       String?         // Featured image URL
+  status      BlogPostStatus  @default(Draft)
+  publishedAt DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  searchVector Unsupported("tsvector")?
+
+  // Author information
+  authorId    String?
+  authorName  String
+  authorImage String?
+  authorTwitter String?
+
+  // Relations
+  categories  Category[]
+  topics      Topic[]
+
+  @@index([id, slug])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([searchVector], type: Gin)
+}
+
 model Category {
   id        String   @id @default(cuid())
   name      String   @db.Citext
@@ -144,8 +180,9 @@ model Category {
   updatedAt DateTime @updatedAt
 
   // Relations
-  tools Tool[]
-  ads   Ad[]
+  tools     Tool[]
+  ads       Ad[]
+  blogPosts BlogPost[]
 
   // Indexes
   @@index([slug])
@@ -157,7 +194,8 @@ model Topic {
   updatedAt DateTime @updatedAt
 
   // Implicit relation
-  tools Tool[]
+  tools     Tool[]
+  blogPosts BlogPost[]
 
   // Indexes
   @@index([slug])
