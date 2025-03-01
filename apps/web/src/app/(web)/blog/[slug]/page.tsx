@@ -1,4 +1,6 @@
 import { formatDate, getReadTime } from "@curiousleaf/utils"
+import { AdType } from "@plai/db/client"
+import { AdPlacement } from "@prisma/client"
 import { type Post, allPosts } from "content-collections"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
@@ -6,6 +8,7 @@ import { Suspense, cache } from "react"
 import { H6 } from "~/components/common/heading"
 import { Stack } from "~/components/common/stack"
 import { AdCard, AdCardSkeleton } from "~/components/web/ads/ad-card"
+import { AdBanner, AdBannerSkeleton } from "~/components/web/ads/ad-banner"
 import {
   AlternativePreview,
   AlternativePreviewSkeleton,
@@ -17,6 +20,8 @@ import { Image } from "~/components/web/ui/image"
 import { Intro, IntroDescription, IntroTitle } from "~/components/web/ui/intro"
 import { Section } from "~/components/web/ui/section"
 import { metadataConfig } from "~/config/metadata"
+import { AdOne } from "~/server/web/ads/payloads"
+import { findAd } from "~/server/web/ads/queries"
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -56,32 +61,51 @@ export const generateMetadata = async (props: PageProps) => {
 }
 
 export default async function BlogPostPage(props: PageProps) {
-  const post = await findPostBySlug(props)
+  const [
+    post, 
+    agentAd, 
+    verticalRightAd, 
+    horizontalTopAd, 
+    horizontalBottomAd
+  ] = await Promise.all([
+    findPostBySlug(props),
+    findAd({ where: { type: AdType.BlogPost, placement: AdPlacement.Agent } }),
+    findAd({ where: { type: AdType.BlogPost, placement: AdPlacement.VerticalRight } }),
+    findAd({ where: { type: AdType.BlogPost, placement: AdPlacement.HorizontalTop } }),
+    findAd({ where: { type: AdType.BlogPost, placement: AdPlacement.HorizontalBottom } }),
+  ])
 
   return (
     <>
       <div className="flex flex-col gap-8 md:gap-10 lg:gap-12">
-        <Intro>
-          <IntroTitle>{post.title}</IntroTitle>
-          <IntroDescription>{post.description}</IntroDescription>
-
-          <Stack className="mt-2 text-sm text-muted">
-            {/* <Badge size="lg" variant="outline">Uncategorized</Badge> */}
-
-            {post.publishedAt && (
-              <time dateTime={post.publishedAt} className="">
-                {formatDate(post.publishedAt)}
-              </time>
-            )}
-
-            <span className="-mx-1">&bull;</span>
-
-            <span>{getReadTime(post.content)} min read</span>
-          </Stack>
-        </Intro>
-
         <Section>
           <Section.Content>
+            <Intro className="w-full">
+              <IntroTitle>{post.title}</IntroTitle>
+              <IntroDescription>{post.description}</IntroDescription>
+
+              <Stack className="mt-2 text-sm text-muted">
+                {/* <Badge size="lg" variant="outline">Uncategorized</Badge> */}
+
+                {post.publishedAt && (
+                  <time dateTime={post.publishedAt} className="">
+                    {formatDate(post.publishedAt)}
+                  </time>
+                )}
+
+                <span className="-mx-1">&bull;</span>
+
+                <span>{getReadTime(post.content)} min read</span>
+              </Stack>
+            </Intro>
+
+            {/* Horizontal Top Banner Ad */}
+            {horizontalTopAd && (
+              <Suspense fallback={<AdBannerSkeleton orientation="horizontal" />}>
+                <AdBanner ad={horizontalTopAd as AdOne} orientation="horizontal" />
+              </Suspense>
+            )}
+            
             {post.image && (
               <Image
                 src={post.image}
@@ -93,6 +117,13 @@ export default async function BlogPostPage(props: PageProps) {
             )}
 
             <MDX code={post.content} />
+
+            {/* Horizontal Bottom Banner Ad */}
+            {horizontalBottomAd && (
+              <Suspense fallback={<AdBannerSkeleton orientation="horizontal" />}>
+                <AdBanner ad={horizontalBottomAd as AdOne} orientation="horizontal" />
+              </Suspense>
+            )}
 
             <ShareButtons title={post.title} />
           </Section.Content>
@@ -119,13 +150,23 @@ export default async function BlogPostPage(props: PageProps) {
 
             {/* <TOC title="On this page" content={post.content} className="flex-1 overflow-y-auto" /> */}
 
-            <Suspense fallback={<AdCardSkeleton className="max-md:hidden" />}>
-              <AdCard type="BlogPost" className="max-md:hidden" />
+            {/* Agent Advertisement */}
+            <Suspense fallback={<AdCardSkeleton />}>
+              <AdCard ad={agentAd as AdOne} />
             </Suspense>
+            
+            {/* Vertical Right Banner Ad */}
+            {verticalRightAd && (
+              <Suspense fallback={<AdBannerSkeleton orientation="vertical" />}>
+                <AdBanner 
+                  ad={verticalRightAd as AdOne} 
+                  orientation="vertical" 
+                />
+              </Suspense>
+            )}
           </Section.Sidebar>
         </Section>
       </div>
-
     </>
   )
 }
