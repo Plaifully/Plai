@@ -1,6 +1,6 @@
 import { formatDate } from "@curiousleaf/utils"
 import { differenceInDays } from "date-fns"
-import { BellPlusIcon, ClockIcon, SparklesIcon } from "lucide-react"
+import { ClockIcon, ZapIcon } from "lucide-react"
 import type { HTMLAttributes } from "react"
 import { Stack } from "~/components/common/stack"
 import { Tooltip, TooltipProvider } from "~/components/web/ui/tooltip"
@@ -13,28 +13,23 @@ type ToolBadgesProps = HTMLAttributes<HTMLElement> & {
 }
 
 export const ToolBadges = ({ tool, size, children, className, ...props }: ToolBadgesProps) => {
-  const { firstCommitDate, publishedAt } = tool
+  const publishedAt = tool.publishedAt
   const now = new Date().toISOString()
 
-  const commitDiff = firstCommitDate ? differenceInDays(new Date(now), firstCommitDate) : null
-  const publishedDiff = publishedAt ? differenceInDays(new Date(now), publishedAt) : null
+  const publishedDiff = publishedAt ? differenceInDays(new Date(now), new Date(publishedAt)) : null
 
-  const isNew = commitDiff !== null && commitDiff <= 365
-  const isFresh = publishedDiff !== null && publishedDiff <= 30 && publishedDiff >= 0
+  const isNew = publishedDiff !== null && publishedDiff <= 30 && publishedDiff >= 0
   const isScheduled = publishedAt !== null && publishedAt > new Date(now)
 
   return (
     <TooltipProvider delayDuration={500} disableHoverableContent>
       <Stack size={size} className={cx("flex-nowrap justify-end text-lg", className)} {...props}>
         {isNew && (
-          <Tooltip tooltip="Repo is less than 1 year old">
-            <SparklesIcon className="text-yellow-500" />
-          </Tooltip>
-        )}
-
-        {isFresh && (
           <Tooltip tooltip="Published in the last 30 days">
-            <BellPlusIcon className="text-green-500" />
+            <div className="flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold rounded-md px-1.5 py-0.5 shadow-sm">
+              <ZapIcon className="size-3 mr-0.5 stroke-[3]" />
+              NEW
+            </div>
           </Tooltip>
         )}
 
