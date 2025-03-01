@@ -21,7 +21,7 @@ export default async function EditBlogPostPage({ params }: EditBlogPostPageProps
   }
 
   return (
-    <Wrapper>
+    <Wrapper size="md">
       <H3 className="mb-6">Edit Blog Post</H3>
       <BlogPostForm blogPost={blogPost} categories={categories} />
     </Wrapper>

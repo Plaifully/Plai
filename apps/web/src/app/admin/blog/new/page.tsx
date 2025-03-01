@@ -7,7 +7,7 @@ export default async function NewBlogPostPage() {
   const categories = await findCategoryList()
 
   return (
-    <Wrapper>
+    <Wrapper size="md">
       <H3 className="mb-6">New Blog Post</H3>
       <BlogPostForm categories={categories} />
     </Wrapper>

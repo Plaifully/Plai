@@ -37,9 +37,27 @@ const formSchema = blogPostSchema
 // Infer the types from the schema
 type FormValues = z.infer<typeof formSchema>
 
+// Define the shape of the blogPost prop as it comes from the database
+interface BlogPostFromDB {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  content: string;
+  image: string | null;
+  status: BlogPostStatus;
+  publishedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  authorName: string;
+  authorImage: string | null;
+  authorTwitter: string | null;
+  categories: { id: string; name: string }[];
+}
+
 interface BlogPostFormProps {
-  blogPost?: FormValues & { id: string; categories: { id: string; name: string }[] }
-  categories: { id: string; name: string }[]
+  blogPost?: BlogPostFromDB;
+  categories: { id: string; name: string }[];
 }
 
 export function BlogPostForm({ blogPost, categories }: BlogPostFormProps) {
