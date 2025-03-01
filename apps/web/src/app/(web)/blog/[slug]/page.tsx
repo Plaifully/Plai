@@ -1,7 +1,6 @@
 import { formatDate, getReadTime } from "@curiousleaf/utils"
 import { AdType } from "@plai/db/client"
 import { AdPlacement } from "@prisma/client"
-import { type Post, allPosts } from "content-collections"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Suspense, cache } from "react"
@@ -22,53 +21,50 @@ import { Section } from "~/components/web/ui/section"
 import { metadataConfig } from "~/config/metadata"
 import { AdOne } from "~/server/web/ads/payloads"
 import { findAd } from "~/server/web/ads/queries"
+import { RichTextContent } from "~/components/admin/rich-text-editor"
+import { findBlogPostBySlug, findBlogPostSlugs } from "~/server/web/blog/queries"
 
 type PageProps = {
   params: Promise<{ slug: string }>
 }
 
-const findPostBySlug = cache(async ({ params }: PageProps) => {
-  const { slug } = await params
-  const post = allPosts.find(({ _meta }) => _meta.path === slug)
+export const generateStaticParams = async () => {
+  const posts = await findBlogPostSlugs({})
+  return posts.map(post => ({ slug: post.slug }))
+}
 
+export const generateMetadata = async (props: PageProps): Promise<Metadata> => {
+  const { slug } = await props.params
+  const post = await findBlogPostBySlug(slug)
+  
   if (!post) {
     notFound()
   }
+  
+  const url = `/blog/${post.slug}`
 
-  return post
-})
-
-export const generateStaticParams = () => {
-  return allPosts.map(({ _meta }) => ({ slug: _meta.path }))
-}
-
-const getMetadata = (post: Post): Metadata => {
   return {
     title: post.title,
-    description: post.description,
-  }
-}
-
-export const generateMetadata = async (props: PageProps) => {
-  const post = await findPostBySlug(props)
-  const url = `/blog/${post._meta.path}`
-
-  return {
-    ...getMetadata(post),
+    description: post.description || "",
     alternates: { ...metadataConfig.alternates, canonical: url },
     openGraph: { ...metadataConfig.openGraph, url },
   }
 }
 
 export default async function BlogPostPage(props: PageProps) {
+  const { slug } = await props.params
+  const post = await findBlogPostBySlug(slug)
+  
+  if (!post) {
+    notFound()
+  }
+  
   const [
-    post, 
     agentAd, 
     verticalRightAd, 
     horizontalTopAd, 
     horizontalBottomAd
   ] = await Promise.all([
-    findPostBySlug(props),
     findAd({ where: { type: AdType.BlogPost, placement: AdPlacement.Agent } }),
     findAd({ where: { type: AdType.BlogPost, placement: AdPlacement.VerticalRight } }),
     findAd({ where: { type: AdType.BlogPost, placement: AdPlacement.HorizontalTop } }),
@@ -82,14 +78,22 @@ export default async function BlogPostPage(props: PageProps) {
           <Section.Content>
             <Intro className="w-full">
               <IntroTitle>{post.title}</IntroTitle>
-              <IntroDescription>{post.description}</IntroDescription>
+              {post.description && <IntroDescription>{post.description}</IntroDescription>}
 
               <Stack className="mt-2 text-sm text-muted">
-                {/* <Badge size="lg" variant="outline">Uncategorized</Badge> */}
+                {post.categories.length > 0 && (
+                  <div className="flex gap-2">
+                    {post.categories.map(category => (
+                      <span key={category.id} className="text-sm text-muted-foreground">
+                        {category.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
                 {post.publishedAt && (
-                  <time dateTime={post.publishedAt} className="">
-                    {formatDate(post.publishedAt)}
+                  <time dateTime={post.publishedAt.toISOString()} className="">
+                    {formatDate(post.publishedAt.toISOString())}
                   </time>
                 )}
 
@@ -116,7 +120,8 @@ export default async function BlogPostPage(props: PageProps) {
               />
             )}
 
-            <MDX code={post.content} />
+            {/* Render rich text content */}
+            <RichTextContent content={post.content} />
 
             {/* Horizontal Bottom Banner Ad */}
             {horizontalBottomAd && (
@@ -134,21 +139,26 @@ export default async function BlogPostPage(props: PageProps) {
                 Written by
               </H6>
 
-              <a
-                href={`https://twitter.com/${post.author.twitterHandle}`}
-                target="_blank"
-                rel="noopener noreferrer nofollow"
-                className="group"
-              >
+              {post.authorTwitter ? (
+                <a
+                  href={`https://twitter.com/${post.authorTwitter}`}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  className="group"
+                >
+                  <Author
+                    name={post.authorName}
+                    image={post.authorImage || ""}
+                    title={`@${post.authorTwitter}`}
+                  />
+                </a>
+              ) : (
                 <Author
-                  name={post.author.name}
-                  image={post.author.image}
-                  title={`@${post.author.twitterHandle}`}
+                  name={post.authorName}
+                  image={post.authorImage || ""}
                 />
-              </a>
+              )}
             </Stack>
-
-            {/* <TOC title="On this page" content={post.content} className="flex-1 overflow-y-auto" /> */}
 
             {/* Agent Advertisement */}
             <Suspense fallback={<AdCardSkeleton />}>
