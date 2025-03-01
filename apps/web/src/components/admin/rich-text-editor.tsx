@@ -10,6 +10,8 @@ import {
   Italic, 
   Heading1, 
   Heading2, 
+  Heading3,
+  Heading4,
   List, 
   ListOrdered, 
   Link as LinkIcon, 
@@ -153,6 +155,28 @@ export function RichTextEditor({
           aria-label="Heading 2"
         >
           <Heading2 className="h-4 w-4" />
+        </Button>
+        
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
+          className={editor?.isActive('heading', { level: 3 }) ? 'bg-muted' : ''}
+          aria-label="Heading 3"
+        >
+          <Heading3 className="h-4 w-4" />
+        </Button>
+        
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => editor?.chain().focus().toggleHeading({ level: 4 }).run()}
+          className={editor?.isActive('heading', { level: 4 }) ? 'bg-muted' : ''}
+          aria-label="Heading 4"
+        >
+          <Heading4 className="h-4 w-4" />
         </Button>
         
         <Button
