@@ -9,7 +9,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "db:push": "prisma db push --skip-generate",
+    "db:push": "prisma db push",
     "db:reset": "prisma migrate reset",
     "db:seed": "bun prisma/seed.ts",
     "clean": "rm -rf .turbo node_modules dist"
