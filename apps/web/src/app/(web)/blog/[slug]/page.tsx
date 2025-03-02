@@ -117,6 +117,7 @@ export default async function BlogPostPage(props: PageProps) {
               </Stack>
             </Intro>
 
+            
             {/* Horizontal Top Banner Ad */}
             {horizontalTopAd && (
               <Suspense fallback={<AdBannerSkeleton orientation="horizontal" />}>
@@ -124,6 +125,7 @@ export default async function BlogPostPage(props: PageProps) {
               </Suspense>
             )}
             
+
             {post.image && (
               <Image
                 src={post.image}
