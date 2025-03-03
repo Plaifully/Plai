@@ -1,7 +1,7 @@
 "use client";
 
 import { SearchIcon, XCircleIcon, ChevronDownIcon } from "lucide-react";
-import { type ComponentProps } from "react";
+import { type ComponentProps, useEffect, useState } from "react";
 import { Stack } from "~/components/common/stack";
 import { Input } from "~/components/web/ui/input";
 import * as Select from "@radix-ui/react-select";
@@ -24,6 +24,8 @@ export type ToolFiltersProps = {
   tools: ToolMany[];
   sortBy: string;
   onSortChange: (value: string) => void;
+  initialSearchValue?: string;
+  disabled?: boolean;
 };
 
 const pricingOptions = [
@@ -62,7 +64,16 @@ const ToolFilters = ({
   tools = [],
   sortBy,
   onSortChange,
+  initialSearchValue = "",
+  disabled = false,
 }: ToolFiltersProps) => {
+  const [searchValue, setSearchValue] = useState(initialSearchValue);
+  
+  // Update search value when initialSearchValue changes
+  useEffect(() => {
+    setSearchValue(initialSearchValue);
+  }, [initialSearchValue]);
+
   // Calculate pricing type counts
   const pricingTypeCounts = pricingOptions.reduce((acc, option) => {
     const count = tools.filter(
@@ -82,7 +93,9 @@ const ToolFilters = ({
   }, {} as Record<string, number>);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onSearch?.(e.target.value);
+    const value = e.target.value;
+    setSearchValue(value);
+    onSearch?.(value);
   };
 
   const handleCategorySelect = (category: string) => {
@@ -127,7 +140,33 @@ const ToolFilters = ({
   return (
     <div className="flex flex-col w-full">
       {/* Filters row */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex items-center gap-2 w-full">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 items-center gap-2 w-full">
+        {/* Search box - moved to first position */}
+        <div className="relative col-span-2 sm:col-span-3 lg:col-span-1 order-last lg:order-first">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted">
+            <SearchIcon className="h-4 w-4" />
+          </div>
+          <Input
+            type="text"
+            placeholder={placeholder}
+            className="pl-9 w-full"
+            onChange={handleSearchChange}
+            value={searchValue}
+          />
+          {searchValue && (
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground"
+              onClick={() => {
+                setSearchValue("");
+                onSearch?.("");
+              }}
+            >
+              <XCircleIcon className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+        
         {/* Categories dropdown */}
         <Select.Root>
           <Select.Trigger className="h-10 px-3 text-sm border rounded-md bg-background flex items-center justify-between gap-2 w-full xl:min-w-[180px]">

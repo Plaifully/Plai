@@ -17,12 +17,21 @@ import {
   Link as LinkIcon, 
   Image as ImageIcon, 
   Code, 
-  Quote 
+  Quote,
+  Loader2
 } from "lucide-react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState, useRef } from "react"
 import { Button } from "~/components/admin/ui/button"
 import { cx } from "~/utils/cva"
 import { Prose } from "~/components/web/ui/prose"
+import { uploadImage } from "~/server/admin/uploads/actions"
+import { toast } from "sonner"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/admin/ui/dropdown-menu"
 
 // Add custom styles to fix editor issues
 const editorStyles = `
@@ -82,6 +91,11 @@ const editorStyles = `
       max-width: 100% !important;
     }
   }
+
+  /* Hidden file input */
+  .file-input {
+    display: none;
+  }
 `;
 
 interface RichTextEditorProps {
@@ -98,6 +112,8 @@ export function RichTextEditor({
   className 
 }: RichTextEditorProps) {
   const [isMounted, setIsMounted] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Initialize the editor
   const editor = useEditor({
@@ -144,13 +160,63 @@ export function RichTextEditor({
     },
   })
 
-  // Handle image insertion
-  const addImage = useCallback(() => {
+  // Handle direct URL image insertion
+  const addImageFromUrl = useCallback(() => {
     if (!editor) return
     
     const url = window.prompt('Enter image URL')
     if (url) {
       editor.chain().focus().setImage({ src: url }).run()
+    }
+  }, [editor])
+
+  // Trigger file upload dialog
+  const triggerFileUpload = useCallback(() => {
+    fileInputRef.current?.click()
+  }, [])
+
+  // Handle file upload to S3
+  const handleFileUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!editor || !event.target.files || event.target.files.length === 0) return
+    
+    const file = event.target.files[0]
+    
+    // Validate file
+    if (!file.type.startsWith('image/')) {
+      toast.error('Only image files are allowed')
+      return
+    }
+
+    try {
+      setIsUploading(true)
+      
+      // Convert file to ArrayBuffer
+      const fileBuffer = await file.arrayBuffer()
+      
+      // Upload to S3
+      const result = await uploadImage({
+        fileName: file.name,
+        fileType: file.type,
+        fileBuffer: fileBuffer,
+        folder: 'editor-images',
+      })
+      
+      if (result.success && result.url) {
+        // Insert the image
+        editor.chain().focus().setImage({ src: result.url }).run()
+        toast.success('Image uploaded successfully')
+      } else {
+        toast.error(result.error || 'Failed to upload image')
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      toast.error('Failed to upload image')
+    } finally {
+      setIsUploading(false)
+      // Reset the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
     }
   }, [editor])
 
@@ -283,15 +349,40 @@ export function RichTextEditor({
           <LinkIcon className="h-4 w-4" />
         </Button>
         
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={addImage}
-          aria-label="Image"
-        >
-          <ImageIcon className="h-4 w-4" />
-        </Button>
+        {/* Image button with dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={isUploading}
+              aria-label="Image options"
+            >
+              {isUploading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <ImageIcon className="h-4 w-4" />
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={triggerFileUpload}>
+              Upload from device
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={addImageFromUrl}>
+              Insert from URL
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        
+        <input 
+          ref={fileInputRef}
+          type="file" 
+          accept="image/*"
+          onChange={handleFileUpload}
+          className="file-input" 
+        />
         
         <Button
           type="button"
@@ -326,7 +417,7 @@ export function RichTextContent({ content, className }: { content: string; class
   return (
     <Prose 
       className={cx(
-        "max-w-full overflow-hidden border rounded-md p-4", 
+        "max-w-full overflow-hidden rounded-md", 
         "prose-img:max-w-full prose-img:h-auto", 
         "prose-pre:overflow-x-auto prose-pre:whitespace-pre-wrap",
         className
