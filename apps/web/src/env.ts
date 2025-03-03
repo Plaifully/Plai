@@ -39,6 +39,7 @@ export const env = createEnv({
     RESEND_API_KEY: z.string().optional(),
     ANTHROPIC_API_KEY: z.string().optional(),
     FIRECRAWL_API_KEY: z.string().optional(),
+    OPENAI_API_KEY: z.string().optional(),
     SCREENSHOTONE_ACCESS_KEY: z.string().optional(),
     BEEHIIV_API_KEY: z.string().optional(),
     BEEHIIV_PUBLICATION_ID: z.string().optional(),
