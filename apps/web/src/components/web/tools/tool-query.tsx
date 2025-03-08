@@ -115,7 +115,14 @@ const rankTools = (query: string, toolsToRank: ToolMany[]) => {
     .map(tool => {
       const toolName = tool.name.toLowerCase();
       const toolTagline = (tool.tagline || "").toLowerCase();
-      const combinedContent = `${toolName} ${toolTagline}`;
+      
+      // Get category names for matching
+      const categoryNames = (tool.categories || [])
+        .map(cat => cat.name?.toLowerCase() || "")
+        .filter(Boolean);
+      
+      // Combined content for matching
+      const combinedContent = `${toolName} ${toolTagline} ${categoryNames.join(" ")}`;
       
       let score = 0;
       
@@ -124,23 +131,40 @@ const rankTools = (query: string, toolsToRank: ToolMany[]) => {
         score += 100;
       }
       
-      // Check for name contains query
+      // Check for name contains full query
       if (toolName.includes(query.toLowerCase())) {
         score += 50;
       }
       
-      // Check for tagline contains query
+      // Check for tagline contains full query
       if (toolTagline.includes(query.toLowerCase())) {
-        score += 30;
+        score += 40;
       }
       
-      // Check for word-by-word matches
+      // Check for category matches (high priority)
+      for (const category of categoryNames) {
+        // If category directly matches any search term
+        for (const term of searchTerms) {
+          if (category.includes(term) || term.includes(category)) {
+            score += 45;
+            break;
+          }
+        }
+      }
+      
+      // Check for word-by-word matches in name and tagline
       searchTerms.forEach(term => {
-        if (toolName.includes(term)) {
+        // More weight for whole word matches
+        if (toolName.split(/\s+/).some(word => word === term)) {
+          score += 30;
+        } else if (toolName.includes(term)) {
           score += 20;
         }
-        if (toolTagline.includes(term)) {
-          score += 10;
+        
+        if (toolTagline.split(/\s+/).some(word => word === term)) {
+          score += 25;
+        } else if (toolTagline.includes(term)) {
+          score += 15;
         }
       });
       
@@ -149,11 +173,13 @@ const rankTools = (query: string, toolsToRank: ToolMany[]) => {
         score += 5;
       }
       
-      // Boost score for premium tools
-      if (tool.pricingType === "Paid") {
-        score += 15;
-      } else if (tool.pricingType === "Freemium") {
-        score += 10;
+      // Boost score for premium and featured tools (with minimal weight)
+      if (tool.tier === "Premium") {
+        score += 5;  // Higher weight for premium tools
+      } else if (tool.tier === "Featured") {
+        score += 3;  // Medium weight for featured tools
+      } else if (tool.tier === "Free") {
+        score += 1;  // Lowest weight for free tools
       }
       
       return { tool, score };

@@ -22,6 +22,34 @@ const cn = (...inputs: (string | undefined | null | false)[]) => {
   return twMerge(inputs.filter(Boolean).join(" "))
 }
 
+// Function to detect potential jailbreak attempts
+function containsJailbreakAttempt(query: string): boolean {
+  const lowerQuery = query.toLowerCase();
+  
+  // Common jailbreak indicators
+  const jailbreakPatterns = [
+    "ignore previous instructions",
+    "ignore all previous prompts",
+    "disregard your instructions",
+    "forget your instructions",
+    "ignore your programming",
+    "system prompt",
+    "you are now",
+    "act as",
+    "you are a",
+    "you're a",
+    "you're now",
+    "you are now",
+    "ignore safety",
+    "bypass",
+    "restrictions",
+    "ignore rules",
+    "ignore guidelines",
+  ];
+  
+  return jailbreakPatterns.some(pattern => lowerQuery.includes(pattern));
+}
+
 export const AiSearchForm = ({
   className,
   size = "sm",
@@ -41,6 +69,12 @@ export const AiSearchForm = ({
     e.preventDefault()
     
     if (!query.trim()) return
+    
+    // Check for potential jailbreak attempts
+    if (containsJailbreakAttempt(query)) {
+      setError(new Error("Invalid search query. Please try a different search term."))
+      return
+    }
     
     try {
       setIsPending(true)
@@ -85,14 +119,18 @@ export const AiSearchForm = ({
                 size === "lg" ? "text-base" : ""
               )}
               value={query}
-              onChange={e => setQuery(e.target.value)}
+              onChange={e => {
+                setQuery(e.target.value)
+                // Clear error when user types
+                if (error) setError(null)
+              }}
               aria-label="Search for AI tools"
             />
           </div>
           
           <button
             type="submit"
-            disabled={isPending}
+            disabled={isPending || !query.trim()}
             className={cn(
               "flex items-center justify-center gap-1 rounded-md font-medium shadow-sm",
               "bg-primary text-primary-foreground hover:bg-primary/90",
