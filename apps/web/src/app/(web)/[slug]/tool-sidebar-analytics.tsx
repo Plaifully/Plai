@@ -18,10 +18,6 @@ export function ToolSidebarAnalytics({ tool, className }: ToolSidebarAnalyticsPr
   const views = tool.views ?? 0;
   const clicks = tool.clicks ?? 0;
   
-  // Calculate conversion rates
-  const viewToImpressionRate = impressions > 0 ? Math.round((views / impressions) * 100) : 0;
-  const clickToViewRate = views > 0 ? Math.round((clicks / views) * 100) : 0;
-  
   return (
     <Card hover={false} focus={false} className={cx("p-4", className)}>
       <H5 as="strong" className="mb-1">Analytics:</H5>
@@ -38,14 +34,14 @@ export function ToolSidebarAnalytics({ tool, className }: ToolSidebarAnalyticsPr
         <div className="flex flex-col items-center justify-center p-2">
           <EyeIcon className="h-4 w-4 text-gray-500 mb-1" />
           <div className="text-sm font-medium">{views.toLocaleString()}</div>
-          <div className="text-xs text-gray-500 text-center">Views <span className="whitespace-nowrap">({viewToImpressionRate}%)</span></div>
+          <div className="text-xs text-gray-500 text-center">Views</div>
         </div>
         
         {/* Clicks */}
         <div className="flex flex-col items-center justify-center p-2">
           <MousePointerClickIcon className="h-4 w-4 text-gray-500 mb-1" />
           <div className="text-sm font-medium">{clicks.toLocaleString()}</div>
-          <div className="text-xs text-gray-500 text-center">Clicks <span className="whitespace-nowrap">({clickToViewRate}%)</span></div>
+          <div className="text-xs text-gray-500 text-center">Clicks</div>
         </div>
       </div>
     </Card>
