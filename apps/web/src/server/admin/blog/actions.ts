@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache"
 import { prisma } from "@plai/db"
 import { BlogPostStatus } from "@plai/db/client"
-import { z } from "zod"
-import { blogPostSchema } from "./validations"
+import type { z } from "zod"
+import type { blogPostSchema } from "./validations"
 
 // Delete multiple blog posts
 export async function deleteBlogPosts(ids: string[]) {
