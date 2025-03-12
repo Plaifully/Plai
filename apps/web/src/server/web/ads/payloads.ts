@@ -1,4 +1,4 @@
-import { type Ad, type AdType, type AdPlacement } from "@prisma/client"
+import type { Ad, AdType, AdPlacement } from "@prisma/client"
 
 export type AdOne = {
   name: string
