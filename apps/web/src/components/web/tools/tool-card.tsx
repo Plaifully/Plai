@@ -33,8 +33,8 @@ const ToolCard = ({ className, tool, isRelated, ...props }: ToolCardProps) => {
 
   return (
     <ToolCardClient slug={tool.slug}>
-      <Card asChild {...props}>
-        <Link href={`/${tool.slug}`} prefetch={false}>
+      <Card asChild className="h-full flex flex-col" {...props}>
+        <Link href={`/${tool.slug}`} prefetch={false} className="h-full flex flex-col">
           <CardHeader>
             <Favicon src={tool.faviconUrl} title={tool.name} />
 
@@ -47,7 +47,11 @@ const ToolCard = ({ className, tool, isRelated, ...props }: ToolCardProps) => {
             </ToolBadges>
           </CardHeader>
 
-          {tool.tagline && <CardDescription>{tool.tagline}</CardDescription>}
+          {tool.tagline && (
+            <CardDescription className="flex-grow">
+              {tool.tagline}
+            </CardDescription>
+          )}
 
           <CardFooter className="mt-auto pt-4 w-full">
             <Insights insights={insights} />
@@ -73,7 +77,7 @@ const ToolCardSkeleton = () => {
   ]
 
   return (
-    <Card hover={false} className="items-stretch select-none">
+    <Card hover={false} className="h-full flex flex-col items-stretch select-none">
       <CardHeader>
         <Favicon src="/favicon.png" className="animate-pulse opacity-50" />
 
@@ -82,7 +86,7 @@ const ToolCardSkeleton = () => {
         </H4>
       </CardHeader>
 
-      <CardDescription className="flex flex-col gap-0.5">
+      <CardDescription className="flex-grow flex flex-col gap-0.5">
         <Skeleton className="h-5 w-4/5">&nbsp;</Skeleton>
         <Skeleton className="h-5 w-1/2">&nbsp;</Skeleton>
       </CardDescription>
