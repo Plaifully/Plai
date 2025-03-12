@@ -2,7 +2,7 @@
 
 import { slugify } from "@curiousleaf/utils"
 import { prisma } from "@plai/db"
-import { PricingType, Prisma } from "@prisma/client"
+import { PricingType, type Prisma } from "@prisma/client"
 import { revalidateTag } from "next/cache"
 import { createServerAction } from "zsa"
 import { subscribeToNewsletter } from "~/actions/subscribe"

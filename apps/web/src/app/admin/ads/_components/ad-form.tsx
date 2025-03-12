@@ -5,12 +5,12 @@ import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useServerAction } from "zsa-react"
-import { type HTMLAttributes } from "react"
+import type { HTMLAttributes } from "react"
 import { AdType } from "@prisma/client"
 import { type AdSchema, adSchema, AdPlacement } from "~/server/admin/ads/validations"
 import { createAd, updateAd } from "~/server/admin/ads/actions"
-import { findAdById } from "~/server/admin/ads/queries"
-import { findCategoryList } from "~/server/admin/categories/queries"
+import type { findAdById } from "~/server/admin/ads/queries"
+import type { findCategoryList } from "~/server/admin/categories/queries"
 import { Button } from "~/components/admin/ui/button"
 import { Input } from "~/components/admin/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/admin/ui/select"
@@ -325,7 +325,7 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
                         type="number"
                         placeholder="e.g. 728"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        onChange={(e) => field.onChange(e.target.value ? Number.parseInt(e.target.value) : undefined)}
                         value={field.value ?? ''}
                       />
                     </FormControl>
@@ -345,7 +345,7 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
                         type="number"
                         placeholder="e.g. 90"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        onChange={(e) => field.onChange(e.target.value ? Number.parseInt(e.target.value) : undefined)}
                         value={field.value ?? ''}
                       />
                     </FormControl>

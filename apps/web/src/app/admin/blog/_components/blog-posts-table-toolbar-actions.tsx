@@ -4,7 +4,7 @@ import { ArchiveIcon, CheckIcon, ClockIcon, FileTextIcon, Trash2Icon } from "luc
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
-import { type Table } from "@tanstack/react-table"
+import type { Table } from "@tanstack/react-table"
 import { Button } from "~/components/admin/ui/button"
 import {
   DropdownMenu,

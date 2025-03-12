@@ -29,7 +29,7 @@ export function DateTimePicker({ value, onChange }: DateTimePickerProps) {
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const [hours, minutes] = e.target.value.split(":")
     const newDate = new Date(dateValue)
-    newDate.setHours(parseInt(hours), parseInt(minutes))
+    newDate.setHours(Number.parseInt(hours), Number.parseInt(minutes))
     onChange(newDate)
   }
 

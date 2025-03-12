@@ -1,7 +1,7 @@
 import { ToolQuery } from "~/components/web/tools/tool-query"
-import { AdOne } from "~/server/web/ads/payloads"
-import { CategoryMany } from "~/server/web/categories/payloads"
-import { ToolMany } from "~/server/web/tools/payloads"
+import type { AdOne } from "~/server/web/ads/payloads"
+import type { CategoryMany } from "~/server/web/categories/payloads"
+import type { ToolMany } from "~/server/web/tools/payloads"
 
 type HomeToolListingProps = {
   tools: ToolMany[]

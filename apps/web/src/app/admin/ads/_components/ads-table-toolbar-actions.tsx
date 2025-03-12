@@ -1,7 +1,7 @@
 "use client"
 
-import { type Ad } from "@plai/db/client"
-import { type Table } from "@tanstack/react-table"
+import type { Ad } from "@plai/db/client"
+import type { Table } from "@tanstack/react-table"
 import { TrashIcon } from "lucide-react"
 import { toast } from "sonner"
 import { useServerAction } from "zsa-react"

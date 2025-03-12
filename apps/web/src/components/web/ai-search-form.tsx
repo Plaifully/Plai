@@ -2,9 +2,9 @@
 
 import { Bot, Loader2, SearchIcon } from "lucide-react"
 import { useState } from "react"
-import { type HTMLAttributes } from "react"
+import type { HTMLAttributes } from "react"
 import { twMerge } from "tailwind-merge"
-import { ToolMany } from "~/server/web/tools/payloads"
+import type { ToolMany } from "~/server/web/tools/payloads"
 
 type AiSearchFormProps = HTMLAttributes<HTMLFormElement> & {
   size?: "sm" | "lg"

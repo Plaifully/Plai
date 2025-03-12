@@ -5,7 +5,8 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Suspense, cache } from "react"
 import type { ImageObject } from "schema-dts"
-import { FeaturedTools } from "~/app/(web)/[slug]/featured-tools"
+import { FeaturedTools } from "./featured-tools"
+import { ToolClient } from "~/app/(web)/[slug]/client"
 import { H1, H5 } from "~/components/common/heading"
 import { Stack } from "~/components/common/stack"
 import { AdCard, AdCardSkeleton } from "~/components/web/ads/ad-card"
@@ -22,10 +23,11 @@ import { IntroDescription } from "~/components/web/ui/intro"
 import { Section } from "~/components/web/ui/section"
 import { Tag } from "~/components/web/ui/tag"
 import { metadataConfig } from "~/config/metadata"
-import { AdOne } from "~/server/web/ads/payloads"
+import type { AdOne } from "~/server/web/ads/payloads"
 import { findAd } from "~/server/web/ads/queries"
 import type { ToolOne } from "~/server/web/tools/payloads"
 import { findToolBySlug, findToolSlugs } from "~/server/web/tools/queries"
+import { ToolSidebarAnalytics } from "./tool-sidebar-analytics"
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -126,24 +128,12 @@ export default async function ToolPage(props: PageProps) {
 
             <Stack size="sm">
               {tool.website && (
-                <div className="flex flex-wrap gap-3">
-                  <Button asChild>
-                    <ExternalLink
-                      href={tool.website}
-                      rel={tool.tier === ToolTier.Featured ? "noopener noreferrer" : undefined}
-                      eventName="click_website"
-                      eventProps={{ url: tool.website }}
-                    >
-                      Visit {tool.name}
-                    </ExternalLink>
-                  </Button>
-                  
-                  <Button 
-                    variant="fancy"
-                  >
-                    Hire {tool.name.split(' ')[0]}
-                  </Button>
-                </div>
+                <ToolClient 
+                  slug={tool.slug}
+                  name={tool.name}
+                  website={tool.website}
+                  tier={tool.tier}
+                />
               )}
             </Stack>
 
@@ -210,14 +200,26 @@ export default async function ToolPage(props: PageProps) {
         </Section.Content>
 
         <Section.Sidebar className="max-md:contents">
+          {/* Analytics */}
+          <Suspense fallback={<div className="h-32 bg-gray-100 rounded-lg animate-pulse" />}>
+            <ToolSidebarAnalytics 
+              tool={{
+                impressions: tool.impressions,
+                views: tool.views,
+                clicks: tool.clicks
+              }} 
+              className="max-md:order-3" 
+            />
+          </Suspense>
+          
           {/* Agent Advertisement */}
-          <Suspense fallback={<AdCardSkeleton className="max-md:order-4" />}>
+          <Suspense fallback={<div className="h-32 bg-gray-100 rounded-lg animate-pulse" />}>
             <AdCard ad={agentAd as AdOne} className="max-md:order-4" />
           </Suspense>
 
           {/* Featured */}
-          <Suspense>
-            <FeaturedTools className="max-md:order-10" />
+          <Suspense fallback={<div className="h-64 bg-gray-100 rounded-lg animate-pulse" />}>
+            <FeaturedTools />
           </Suspense>
           
           {/* Vertical Right Banner Ad */}

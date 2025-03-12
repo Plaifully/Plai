@@ -26,7 +26,7 @@ import { Alert, AlertDescription } from "~/components/web/ui/alert"
 import { InfoIcon, CheckIcon, ChevronsUpDown, X as XIcon } from "lucide-react"
 import { Textarea } from "~/components/web/ui/textarea"
 import { findCategories } from "~/server/web/categories/queries"
-import { type CategoryMany } from "~/server/web/categories/payloads"
+import type { CategoryMany } from "~/server/web/categories/payloads"
 import {
   Select,
   SelectContent,

@@ -1,7 +1,7 @@
 "use client"
 
-import { type Ad } from "@plai/db/client"
-import { type ColumnDef } from "@tanstack/react-table"
+import type { Ad } from "@plai/db/client"
+import type { ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { MoreHorizontalIcon, SparklesIcon } from "lucide-react"
 import Link from "next/link"
