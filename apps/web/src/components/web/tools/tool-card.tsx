@@ -5,6 +5,7 @@ import { H4 } from "~/components/common/heading"
 import { Skeleton } from "~/components/common/skeleton"
 import { Stack } from "~/components/common/stack"
 import { ToolBadges } from "~/components/web/tools/tool-badges"
+import { ToolCardClient } from "~/components/web/tools/tool-card-client"
 import { Badge } from "~/components/web/ui/badge"
 import { Card, CardDescription, CardHeader, CardFooter } from "~/components/web/ui/card"
 import { Favicon } from "~/components/web/ui/favicon"
@@ -31,27 +32,29 @@ const ToolCard = ({ className, tool, isRelated, ...props }: ToolCardProps) => {
   ]
 
   return (
-    <Card asChild {...props}>
-      <Link href={`/${tool.slug}`} prefetch={false}>
-        <CardHeader>
-          <Favicon src={tool.faviconUrl} title={tool.name} />
+    <ToolCardClient slug={tool.slug}>
+      <Card asChild {...props}>
+        <Link href={`/${tool.slug}`} prefetch={false}>
+          <CardHeader>
+            <Favicon src={tool.faviconUrl} title={tool.name} />
 
-          <H4 as="h3" className="truncate">
-            {tool.name}
-          </H4>
+            <H4 as="h3" className="truncate">
+              {tool.name}
+            </H4>
 
-          <ToolBadges tool={tool} size="sm" className="ml-auto text-base">
-            {tool.discountAmount && <Badge variant="success">Get {tool.discountAmount}!</Badge>}
-          </ToolBadges>
-        </CardHeader>
+            <ToolBadges tool={tool} size="sm" className="ml-auto text-base">
+              {tool.discountAmount && <Badge variant="success">Get {tool.discountAmount}!</Badge>}
+            </ToolBadges>
+          </CardHeader>
 
-        {tool.tagline && <CardDescription>{tool.tagline}</CardDescription>}
+          {tool.tagline && <CardDescription>{tool.tagline}</CardDescription>}
 
-        <CardFooter className="mt-auto pt-4 w-full">
-          <Insights insights={insights} />
-        </CardFooter>
-      </Link>
-    </Card>
+          <CardFooter className="mt-auto pt-4 w-full">
+            <Insights insights={insights} />
+          </CardFooter>
+        </Link>
+      </Card>
+    </ToolCardClient>
   )
 }
 
