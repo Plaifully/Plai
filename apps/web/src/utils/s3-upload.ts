@@ -28,7 +28,7 @@ const s3Client = isS3Configured
  */
 export async function uploadToS3(
   file: File, 
-  folder: string = "uploads"
+  folder = "uploads"
 ): Promise<string> {
   // Check if S3 is properly configured
   if (!isS3Configured) {
