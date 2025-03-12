@@ -135,6 +135,11 @@ model Tool {
   pricingType    PricingType @default(Free)
   pricingDetails String?     // For any additional pricing information
 
+  // Analytics
+  impressions    Int         @default(0)  // Number of times shown in listings
+  views          Int         @default(0)  // Number of times the tool page was viewed
+  clicks         Int         @default(0)  // Number of times the website link was clicked
+
   @@index([id, slug])
   @@index([name])
   @@index([status])
