@@ -14,19 +14,63 @@ type ToolListProps = ComponentProps<typeof Grid> & {
 }
 
 const ToolList = ({ tools, ads = [], ...props }: ToolListProps) => {
-  return (
-    <Grid {...props}>
-      {tools.map((tool, index) => (
-        <Fragment key={tool.slug}>
-          <ToolCard tool={tool} />
-          {(index + 1) % 2 === 0 && ads[Math.floor(index / 2)] && (
-            <AdCard ad={ads[Math.floor(index / 2)]} />
-          )}
-        </Fragment>
-      ))}
+  // If no tools, show empty state
+  if (!tools.length) {
+    return (
+      <Grid {...props}>
+        <EmptyList>No tools found.</EmptyList>
+      </Grid>
+    );
+  }
 
-      {!tools.length && <EmptyList>No tools found.</EmptyList>}
-    </Grid>
+  // Create a copy of tools array to manipulate
+  const toolsToRender = [...tools];
+
+  return (
+    <>
+      {/* Mobile-first ad placement - show at the top */}
+      {ads[0] && (
+        <div className="md:hidden mb-5">
+          <AdCard ad={ads[0]} />
+        </div>
+      )}
+
+      <Grid {...props}>
+        {/* First two tools in the first row */}
+        {toolsToRender.slice(0, 2).map((tool, index) => (
+          <ToolCard key={tool.slug} tool={tool} />
+        ))}
+        
+        {/* Desktop ad placement - top right position (3rd column, 1st row) */}
+        {ads[0] && (
+          <div className="hidden md:block">
+            <AdCard ad={ads[0]} />
+          </div>
+        )}
+        
+        {/* Remaining tools */}
+        {toolsToRender.slice(2).map((tool, index) => {
+          // For remaining ads (after the first one)
+          const adjustedIndex = index + 2; // Adjust index to account for first 2 tools
+          const isThirdColumn = ((adjustedIndex + 1) % 3 === 0); // +1 because we've already placed an ad
+          const adIndex = Math.floor(adjustedIndex / 3);
+          const showDesktopAd = isThirdColumn && ads[adIndex] && adIndex > 0; // adIndex > 0 to skip first ad
+
+          return (
+            <Fragment key={tool.slug}>
+              <ToolCard tool={tool} />
+              
+              {/* Additional desktop ad placements */}
+              {showDesktopAd && (
+                <div className="hidden md:block">
+                  <AdCard ad={ads[adIndex]} />
+                </div>
+              )}
+            </Fragment>
+          );
+        })}
+      </Grid>
+    </>
   )
 }
 

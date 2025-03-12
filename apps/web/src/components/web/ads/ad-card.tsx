@@ -21,22 +21,26 @@ const AdCard = ({ ad, className, ...props }: AdCardProps) => {
   return (
     <Card 
       className={cx(
-        "relative overflow-hidden border-2 border-orange-500", 
+        "relative overflow-hidden border-2 border-orange-500 h-full flex flex-col", 
         className
       )} 
       style={{ animation: 'var(--animate-pulse-border)' }}
       asChild 
       {...props}
     >
-      <Link href={ad.website} target="_blank" rel="noopener noreferrer">
+      <Link href={ad.website} target="_blank" rel="noopener noreferrer" className="h-full flex flex-col">
         <CardHeader>
           <Favicon src={ad.faviconUrl} title={ad.name} />
           <H4 as="h3" className="truncate">
             {ad.name}
           </H4>
-          {ad.description && <CardDescription className="mt-1">{ad.description}</CardDescription>}
+          {ad.description && (
+            <CardDescription className="flex-grow min-h-[3rem]">
+              {ad.description}
+            </CardDescription>
+          )}
         </CardHeader>
-        <CardFooter className="pt-0">
+        <CardFooter className="mt-auto pt-4">
           <div className="bg-orange-500 text-white text-xs px-2 py-1 rounded-sm font-medium">
             Sponsored
           </div>
@@ -47,7 +51,7 @@ const AdCard = ({ ad, className, ...props }: AdCardProps) => {
 }
 
 const AdCardSkeleton = ({ className, ...props }: ComponentProps<typeof Card>) => {
-  return <Card className={cx("border-muted/30", className)} {...props} />
+  return <Card className={cx("border-muted/30 h-full flex flex-col", className)} {...props} />
 }
 
 export { AdCard, AdCardSkeleton }
