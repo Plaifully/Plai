@@ -3,7 +3,7 @@ import Link from "next/link"
 import type { HTMLAttributes } from "react"
 import { H2 } from "~/components/common/heading"
 import { Stack } from "~/components/common/stack"
-import { Markdown } from "~/components/web/markdown"
+import { RichTextContent } from "~/components/admin/rich-text-editor"
 import { ToolBadges } from "~/components/web/tools/tool-badges"
 import { Badge } from "~/components/web/ui/badge"
 import { Button } from "~/components/web/ui/button"
@@ -70,9 +70,13 @@ const ToolEntry = ({ className, tool, ...props }: ToolEntryProps) => {
       )}
 
       {tool.content && (
-        <div className="relative max-h-72 overflow-hidden">
-          <Markdown code={tool.content} />
-
+        <div className="relative max-h-72 overflow-hidden w-full">
+          <div className="w-full overflow-x-hidden">
+            <RichTextContent 
+              content={tool.content} 
+              className="prose-img:max-w-full prose-img:h-auto prose-pre:overflow-x-auto prose-pre:whitespace-pre-wrap break-words" 
+            />
+          </div>
           <div className="absolute inset-0 top-auto h-1/5 bg-linear-to-t from-background pointer-events-none" />
         </div>
       )}

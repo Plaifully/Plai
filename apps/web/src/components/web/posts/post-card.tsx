@@ -1,19 +1,33 @@
 import { formatDate, getReadTime } from "@curiousleaf/utils"
-import type { Post } from "content-collections"
 import Link from "next/link"
 import type { ComponentProps } from "react"
 import { H4 } from "~/components/common/heading"
 import { Card, CardDescription, CardFooter, CardHeader } from "~/components/web/ui/card"
 import { Image } from "~/components/web/ui/image"
+import type { BlogPostMany } from "~/server/web/blog/payloads"
 
 type PostCardProps = ComponentProps<typeof Card> & {
-  post: Post
+  post: BlogPostMany
 }
 
 export const PostCard = ({ className, post, ...props }: PostCardProps) => {
+  // Format the publishedAt date safely
+  const publishedAtFormatted = post.publishedAt 
+    ? formatDate(typeof post.publishedAt === 'string' 
+        ? post.publishedAt 
+        : post.publishedAt.toISOString())
+    : null;
+
+  // Get the ISO string for the datetime attribute
+  const publishedAtIso = post.publishedAt
+    ? typeof post.publishedAt === 'string'
+      ? post.publishedAt
+      : post.publishedAt.toISOString()
+    : null;
+
   return (
     <Card className="overflow-clip" asChild {...props}>
-      <Link href={`/blog/${post._meta.path}`} prefetch={false}>
+      <Link href={`/blog/${post.slug}`} prefetch={false}>
         {post.image && (
           <Image
             src={post.image}
@@ -32,9 +46,9 @@ export const PostCard = ({ className, post, ...props }: PostCardProps) => {
 
         {post.description && <CardDescription>{post.description}</CardDescription>}
 
-        {post.publishedAt && (
+        {publishedAtFormatted && (
           <CardFooter>
-            <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
+            <time dateTime={publishedAtIso || ''}>{publishedAtFormatted}</time>
             <span>&bull;</span>
             <span>{getReadTime(post.content)} min read</span>
           </CardFooter>

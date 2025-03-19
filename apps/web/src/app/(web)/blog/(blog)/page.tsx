@@ -1,7 +1,7 @@
-import { allPosts } from "content-collections"
 import type { Metadata } from "next"
-import { PostCard } from "~/components/web/posts/post-card"
-import { Grid } from "~/components/web/ui/grid"
+import { Suspense } from "react"
+import { BlogListing } from "~/app/(web)/blog/(blog)/listing"
+import { PostListSkeleton } from "~/components/web/posts/post-list"
 import { Intro, IntroDescription, IntroTitle } from "~/components/web/ui/intro"
 import { metadataConfig } from "~/config/metadata"
 
@@ -14,8 +14,6 @@ export const metadata: Metadata = {
 }
 
 export default function BlogPage() {
-  const posts = allPosts.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
-
   return (
     <>
       <Intro>
@@ -23,15 +21,9 @@ export default function BlogPage() {
         <IntroDescription>{metadata.description}</IntroDescription>
       </Intro>
 
-      {posts.length ? (
-        <Grid size="lg">
-          {allPosts.map(post => (
-            <PostCard key={post._meta.path} post={post} />
-          ))}
-        </Grid>
-      ) : (
-        <p>No posts found.</p>
-      )}
+      <Suspense fallback={<PostListSkeleton />}>
+        <BlogListing />
+      </Suspense>
     </>
   )
-}
+} 

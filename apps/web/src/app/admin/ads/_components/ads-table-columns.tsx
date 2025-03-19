@@ -1,7 +1,7 @@
 "use client"
 
-import { type Ad } from "@plai/db/client"
-import { type ColumnDef } from "@tanstack/react-table"
+import type { Ad } from "@plai/db/client"
+import type { ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { MoreHorizontalIcon, SparklesIcon } from "lucide-react"
 import Link from "next/link"
@@ -66,6 +66,22 @@ export function getColumns(): ColumnDef<Ad>[] {
           <div className="flex items-center gap-1.5">
             <SparklesIcon className="size-3.5" />
             <span>{type}</span>
+          </div>
+        )
+      },
+      filterFn: (row, id, value: string[]) => {
+        return value.includes(row.getValue(id))
+      },
+      size: 0,
+    },
+    {
+      accessorKey: "placement",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Placement" />,
+      cell: ({ row }) => {
+        const placement = row.getValue("placement") as string
+        return (
+          <div className="flex items-center gap-1.5">
+            <span>{placement}</span>
           </div>
         )
       },

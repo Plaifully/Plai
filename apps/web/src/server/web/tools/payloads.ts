@@ -27,6 +27,9 @@ export const toolOnePayload = Prisma.validator<Prisma.ToolSelect>()({
   status: true,
   publishedAt: true,
   updatedAt: true,
+  impressions: true,
+  views: true,
+  clicks: true,
   categories: toolCategoriesPayload,
   topics: toolTopicsPayload,
 })
@@ -38,6 +41,7 @@ export const toolManyPayload = Prisma.validator<Prisma.ToolSelect>()({
   faviconUrl: true,
   discountAmount: true,
   pricingType: true,
+  tier: true,
   publishedAt: true,
   updatedAt: true,
   categories: {

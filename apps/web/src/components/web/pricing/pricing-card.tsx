@@ -1,4 +1,4 @@
-import { type HTMLAttributes } from "react"
+import type { HTMLAttributes } from "react"
 import { CheckIcon, SparklesIcon, CrownIcon } from "lucide-react"
 import { Card } from "~/components/web/ui/card"
 import { Button } from "~/components/web/ui/button"
@@ -54,7 +54,7 @@ export function PricingCard({
           >
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
             >
               <SparklesIcon className="h-3 w-3" />
             </motion.div>
@@ -71,7 +71,7 @@ export function PricingCard({
           >
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
             >
               <CrownIcon className="h-3 w-3" />
             </motion.div>
@@ -143,7 +143,7 @@ export function PricingCard({
                       animate={{ x: ["100%", "-100%"] }}
                       transition={{ 
                         duration: 1.5,
-                        repeat: Infinity,
+                        repeat: Number.POSITIVE_INFINITY,
                         repeatDelay: 1
                       }}
                     />

@@ -1,7 +1,7 @@
 'use client'
 
-import { type ComponentProps, Fragment, Suspense } from "react"
-import { AdCard, AdCardSkeleton } from "~/components/web/ads/ad-card"
+import { type ComponentProps, Fragment } from "react"
+import { AdCard } from "~/components/web/ads/ad-card"
 import { EmptyList } from "~/components/web/empty-list"
 import { ToolCard, ToolCardSkeleton } from "~/components/web/tools/tool-card"
 import { Grid } from "~/components/web/ui/grid"
@@ -10,25 +10,67 @@ import type { AdOne } from "~/server/web/ads/payloads"
 
 type ToolListProps = ComponentProps<typeof Grid> & {
   tools: ToolMany[]
-  showAd?: boolean
-  ad?: AdOne
+  ads?: AdOne[]
 }
 
-const ToolList = ({ tools, showAd = true, ad, ...props }: ToolListProps) => {
+const ToolList = ({ tools, ads = [], ...props }: ToolListProps) => {
+  // If no tools, show empty state
+  if (!tools.length) {
+    return (
+      <Grid {...props}>
+        <EmptyList>No tools found.</EmptyList>
+      </Grid>
+    );
+  }
+
+  // Create a copy of tools array to manipulate
+  const toolsToRender = [...tools];
+
   return (
-    <Grid {...props}>
-      {tools.map((tool, order) => (
-        <Fragment key={tool.slug}>
-          {showAd && ad && Math.min(2, tools.length - 1) === order && (
-            <AdCard ad={ad} className="sm:order-2" />
-          )}
+    <>
+      {/* Mobile-first ad placement - show at the top */}
+      {ads[0] && (
+        <div className="md:hidden mb-5">
+          <AdCard ad={ads[0]} />
+        </div>
+      )}
 
-          <ToolCard tool={tool} style={{ order }} />
-        </Fragment>
-      ))}
+      <Grid {...props}>
+        {/* First two tools in the first row */}
+        {toolsToRender.slice(0, 2).map((tool, index) => (
+          <ToolCard key={tool.slug} tool={tool} />
+        ))}
+        
+        {/* Desktop ad placement - top right position (3rd column, 1st row) */}
+        {ads[0] && (
+          <div className="hidden md:block">
+            <AdCard ad={ads[0]} />
+          </div>
+        )}
+        
+        {/* Remaining tools */}
+        {toolsToRender.slice(2).map((tool, index) => {
+          // For remaining ads (after the first one)
+          const adjustedIndex = index + 2; // Adjust index to account for first 2 tools
+          const isThirdColumn = ((adjustedIndex + 1) % 3 === 0); // +1 because we've already placed an ad
+          const adIndex = Math.floor(adjustedIndex / 3);
+          const showDesktopAd = isThirdColumn && ads[adIndex] && adIndex > 0; // adIndex > 0 to skip first ad
 
-      {!tools.length && <EmptyList>No tools found.</EmptyList>}
-    </Grid>
+          return (
+            <Fragment key={tool.slug}>
+              <ToolCard tool={tool} />
+              
+              {/* Additional desktop ad placements */}
+              {showDesktopAd && (
+                <div className="hidden md:block">
+                  <AdCard ad={ads[adIndex]} />
+                </div>
+              )}
+            </Fragment>
+          );
+        })}
+      </Grid>
+    </>
   )
 }
 

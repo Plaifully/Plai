@@ -2,9 +2,9 @@ import { env } from "~/env"
 
 export const siteConfig = {
   name: "Plaiful",
-  tagline: "Plaiful - Find the perfect AI agent",
+  tagline: "Plaiful - Find and hire the perfect AI agent", // Deprecated -> This is now hardcoded in the homepage
   description:
-    "Discover more with our curated collection of the best AI agents across dozens of categories and use cases.",
+    "Finding an agent has never been easier",
   email: env.NEXT_PUBLIC_SITE_EMAIL,
   url: env.NEXT_PUBLIC_SITE_URL,
 

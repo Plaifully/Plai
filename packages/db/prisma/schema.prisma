@@ -19,11 +19,28 @@ enum AdType {
   All
 }
 
+enum AdPlacement {
+  Agent           // Default placement mixed with agent listings
+  FloatingTop     // Fixed at the top of the screen with high z-index
+  HorizontalTop   // Horizontal banner at the top of content
+  HorizontalMiddle // Horizontal banner in the middle of content
+  HorizontalBottom // Horizontal banner at the bottom of content
+  VerticalLeft    // Vertical banner on the left side
+  VerticalRight   // Vertical banner on the right side
+}
+
 enum ToolStatus {
   Draft
   Scheduled
   Published
   Deleted
+}
+
+enum BlogPostStatus {
+  Draft
+  Scheduled
+  Published
+  Archived
 }
 
 enum StackType {
@@ -58,17 +75,23 @@ enum PricingType {
 }
 
 model Ad {
-  id          String   @id @default(cuid())
+  id          String      @id @default(cuid())
   email       String
   name        String
   description String?
   website     String
   faviconUrl  String?
-  type        AdType   @default(Homepage)
+  type        AdType      @default(Homepage)
+  placement   AdPlacement @default(Agent) // Set Agent as default
   startsAt    DateTime
   endsAt      DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Banner specific fields
+  imageUrl    String?  // For banner image
+  width       Int?     // Banner width in pixels
+  height      Int?     // Banner height in pixels
 
   // Relations
   categories Category[]
@@ -112,10 +135,44 @@ model Tool {
   pricingType    PricingType @default(Free)
   pricingDetails String?     // For any additional pricing information
 
+  // Analytics
+  impressions    Int         @default(0)  // Number of times shown in listings
+  views          Int         @default(0)  // Number of times the tool page was viewed
+  clicks         Int         @default(0)  // Number of times the website link was clicked
+
   @@index([id, slug])
   @@index([name])
   @@index([status])
   @@index([tier])
+  @@index([searchVector], type: Gin)
+}
+
+model BlogPost {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  title       String
+  description String?
+  content     String          // Rich text content in JSON format
+  image       String?         // Featured image URL
+  status      BlogPostStatus  @default(Draft)
+  publishedAt DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  searchVector Unsupported("tsvector")?
+
+  // Author information
+  authorId    String?
+  authorName  String
+  authorImage String?
+  authorTwitter String?
+
+  // Relations
+  categories  Category[]
+  topics      Topic[]
+
+  @@index([id, slug])
+  @@index([status])
+  @@index([publishedAt])
   @@index([searchVector], type: Gin)
 }
 
@@ -128,8 +185,9 @@ model Category {
   updatedAt DateTime @updatedAt
 
   // Relations
-  tools Tool[]
-  ads   Ad[]
+  tools     Tool[]
+  ads       Ad[]
+  blogPosts BlogPost[]
 
   // Indexes
   @@index([slug])
@@ -141,7 +199,8 @@ model Topic {
   updatedAt DateTime @updatedAt
 
   // Implicit relation
-  tools Tool[]
+  tools     Tool[]
+  blogPosts BlogPost[]
 
   // Indexes
   @@index([slug])

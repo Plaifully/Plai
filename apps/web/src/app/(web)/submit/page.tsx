@@ -1,4 +1,4 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import { SubmitForm } from "~/app/(web)/submit/form"
 import { Card } from "~/components/web/ui/card"
 import { Intro, IntroDescription, IntroTitle } from "~/components/web/ui/intro"

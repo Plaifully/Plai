@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="250" viewBox="0 0 300 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="250" fill="#F3F4F6"/>
+  <text x="150" y="125" font-family="system-ui" font-size="14" fill="#6B7280" text-anchor="middle" dominant-baseline="middle">
+    Agent Banner (300 × 250)
+  </text>
+  <rect width="300" height="250" stroke="#D1D5DB" fill="none"/>
+</svg> 

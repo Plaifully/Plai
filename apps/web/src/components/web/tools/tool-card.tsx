@@ -5,6 +5,7 @@ import { H4 } from "~/components/common/heading"
 import { Skeleton } from "~/components/common/skeleton"
 import { Stack } from "~/components/common/stack"
 import { ToolBadges } from "~/components/web/tools/tool-badges"
+import { ToolCardClient } from "~/components/web/tools/tool-card-client"
 import { Badge } from "~/components/web/ui/badge"
 import { Card, CardDescription, CardHeader, CardFooter } from "~/components/web/ui/card"
 import { Favicon } from "~/components/web/ui/favicon"
@@ -31,27 +32,33 @@ const ToolCard = ({ className, tool, isRelated, ...props }: ToolCardProps) => {
   ]
 
   return (
-    <Card asChild {...props}>
-      <Link href={`/${tool.slug}`} prefetch={false}>
-        <CardHeader>
-          <Favicon src={tool.faviconUrl} title={tool.name} />
+    <ToolCardClient slug={tool.slug}>
+      <Card asChild className="h-full flex flex-col" {...props}>
+        <Link href={`/${tool.slug}`} prefetch={false} className="h-full flex flex-col">
+          <CardHeader>
+            <Favicon src={tool.faviconUrl} title={tool.name} />
 
-          <H4 as="h3" className="truncate">
-            {tool.name}
-          </H4>
+            <H4 as="h3" className="truncate">
+              {tool.name}
+            </H4>
 
-          <ToolBadges tool={tool} size="sm" className="ml-auto text-base">
-            {tool.discountAmount && <Badge variant="success">Get {tool.discountAmount}!</Badge>}
-          </ToolBadges>
-        </CardHeader>
+            <ToolBadges tool={tool} size="sm" className="ml-auto text-base">
+              {tool.discountAmount && <Badge variant="success">Get {tool.discountAmount}!</Badge>}
+            </ToolBadges>
+          </CardHeader>
 
-        {tool.tagline && <CardDescription>{tool.tagline}</CardDescription>}
+          {tool.tagline && (
+            <CardDescription className="flex-grow">
+              {tool.tagline}
+            </CardDescription>
+          )}
 
-        <CardFooter className="mt-auto pt-4 w-full">
-          <Insights insights={insights} />
-        </CardFooter>
-      </Link>
-    </Card>
+          <CardFooter className="mt-auto pt-4 w-full">
+            <Insights insights={insights} />
+          </CardFooter>
+        </Link>
+      </Card>
+    </ToolCardClient>
   )
 }
 
@@ -70,7 +77,7 @@ const ToolCardSkeleton = () => {
   ]
 
   return (
-    <Card hover={false} className="items-stretch select-none">
+    <Card hover={false} className="h-full flex flex-col items-stretch select-none">
       <CardHeader>
         <Favicon src="/favicon.png" className="animate-pulse opacity-50" />
 
@@ -79,7 +86,7 @@ const ToolCardSkeleton = () => {
         </H4>
       </CardHeader>
 
-      <CardDescription className="flex flex-col gap-0.5">
+      <CardDescription className="flex-grow flex flex-col gap-0.5">
         <Skeleton className="h-5 w-4/5">&nbsp;</Skeleton>
         <Skeleton className="h-5 w-1/2">&nbsp;</Skeleton>
       </CardDescription>

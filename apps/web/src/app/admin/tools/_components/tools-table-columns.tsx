@@ -2,7 +2,7 @@
 
 import { formatDate } from "@curiousleaf/utils";
 import { type Tool, type ToolTier, ToolStatus } from "@plai/db/client";
-import { type ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { ToolActions } from "~/app/admin/tools/_components/tool-actions";
 import { DataTableColumnHeader } from "~/components/admin/data-table/data-table-column-header";
 import { DataTableLink } from "~/components/admin/data-table/data-table-link";

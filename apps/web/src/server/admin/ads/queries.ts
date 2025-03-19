@@ -1,6 +1,6 @@
 import { isTruthy } from "@curiousleaf/utils"
 import { prisma } from "@plai/db"
-import { type Prisma, AdType } from "@plai/db/client"
+import type { Prisma, AdType } from "@plai/db/client"
 import { endOfDay, startOfDay } from "date-fns"
 import type { SearchParams } from "nuqs/server"
 import { cache } from "~/lib/cache"

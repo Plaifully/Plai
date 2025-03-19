@@ -43,7 +43,7 @@ const CardFooter = ({ className, ...props }: ComponentProps<typeof Stack>) => {
 const CardDescription = ({ className, ...props }: ComponentProps<"p">) => {
   return (
     <p
-      className={cx("line-clamp-2 text-sm/normal text-secondary text-pretty", className)}
+      className={cx("line-clamp-2 text-sm/normal text-secondary text-pretty min-h-[3rem]", className)}
       {...props}
     />
   )

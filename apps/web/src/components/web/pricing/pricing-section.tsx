@@ -69,7 +69,7 @@ export function PricingSection() {
             }}
             transition={{ 
               duration: 10,
-              repeat: Infinity,
+              repeat: Number.POSITIVE_INFINITY,
               ease: "easeInOut"
             }}
           />

@@ -5,12 +5,12 @@ import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useServerAction } from "zsa-react"
-import { type HTMLAttributes } from "react"
-import { AdType } from "@plai/db/client"
-import { type AdSchema, adSchema } from "~/server/admin/ads/validations"
+import type { HTMLAttributes } from "react"
+import { AdType } from "@prisma/client"
+import { type AdSchema, adSchema, AdPlacement } from "~/server/admin/ads/validations"
 import { createAd, updateAd } from "~/server/admin/ads/actions"
-import { findAdById } from "~/server/admin/ads/queries"
-import { findCategoryList } from "~/server/admin/categories/queries"
+import type { findAdById } from "~/server/admin/ads/queries"
+import type { findCategoryList } from "~/server/admin/categories/queries"
 import { Button } from "~/components/admin/ui/button"
 import { Input } from "~/components/admin/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/admin/ui/select"
@@ -44,9 +44,13 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
       website: ad?.website ?? "",
       faviconUrl: ad?.faviconUrl ?? "",
       type: ad?.type ?? AdType.Homepage,
+      placement: ad?.placement ?? AdPlacement.Agent,
       startsAt: ad?.startsAt ? new Date(ad.startsAt) : new Date(),
       endsAt: ad?.endsAt ? new Date(ad.endsAt) : new Date(),
       categories: ad?.categories?.map(c => c.id) ?? [],
+      imageUrl: ad?.imageUrl ?? "",
+      width: ad?.width ?? undefined,
+      height: ad?.height ?? undefined,
     },
   })
 
@@ -71,29 +75,69 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
   })
 
   const watchType = form.watch("type")
+  const watchPlacement = form.watch("placement")
   const showCategories = watchType === AdType.CategoryPage
+  const showBannerFields = watchPlacement !== AdPlacement.Agent
+
+  const onSubmit = form.handleSubmit(async (data) => {
+    try {
+      console.log("Form submitted with data:", data)
+      console.log("Form errors:", form.formState.errors)
+      console.log("Form placement:", data.placement)
+      console.log("Is banner ad:", data.placement !== AdPlacement.Agent)
+      
+      // Check if form has validation errors
+      if (Object.keys(form.formState.errors).length > 0) {
+        console.error("Form has validation errors:", form.formState.errors)
+        toast.error("Please fix the form errors before submitting")
+        return
+      }
+      
+      // Only validate banner fields if placement is not Agent
+      if (data.placement !== AdPlacement.Agent) {
+        console.log("Validating banner fields")
+        if (!data.imageUrl) {
+          toast.error("Banner Image URL is required for this placement type");
+          return;
+        }
+        if (!data.width) {
+          toast.error("Width is required for this placement type");
+          return;
+        }
+        if (!data.height) {
+          toast.error("Height is required for this placement type");
+          return;
+        }
+      }
+      
+      const formData = {
+        ...data,
+        startsAt: new Date(data.startsAt),
+        endsAt: new Date(data.endsAt),
+      }
+      console.log("Processed form data:", formData)
+
+      if (ad) {
+        console.log("Updating ad with ID:", ad.id)
+        await updateAdAction({ ...formData, id: ad.id })
+      } else {
+        console.log("Creating new ad")
+        await createAdAction(formData)
+      }
+    } catch (error) {
+      console.error("Form submission error:", error)
+      toast.error(`Form submission failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    }
+  })
+
+  const isPending = isCreating || isUpdating
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(async data => {
-          try {
-            const formData = {
-              ...data,
-              startsAt: new Date(data.startsAt),
-              endsAt: new Date(data.endsAt),
-            }
-
-            if (ad) {
-              await updateAdAction({ ...formData, id: ad.id })
-            } else {
-              await createAdAction(formData)
-            }
-          } catch (error) {
-            toast.error(`Form submission failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
-          }
-        })}
+        onSubmit={onSubmit}
         className={cx("space-y-8", className)}
+        noValidate
         {...props}
       >
         <div className="grid gap-4 sm:grid-cols-2">
@@ -202,6 +246,34 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="placement"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Placement</FormLabel>
+                <FormControl>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select placement" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(AdPlacement).map((placement) => (
+                        <SelectItem key={placement} value={placement}>
+                          {placement}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           {showCategories && (
             <FormField
               control={form.control}
@@ -222,16 +294,78 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
             />
           )}
 
+          {showBannerFields && (
+            <>
+              <FormField
+                control={form.control}
+                name="imageUrl"
+                render={({ field }) => (
+                  <FormItem className="col-span-full">
+                    <FormLabel>Banner Image URL</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="e.g. /placeholders/banner.jpg or https://example.com/banner.jpg"
+                        {...field}
+                        value={field.value ?? ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="width"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Width (px)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number"
+                        placeholder="e.g. 728"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value ? Number.parseInt(e.target.value) : undefined)}
+                        value={field.value ?? ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="height"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Height (px)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number"
+                        placeholder="e.g. 90"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value ? Number.parseInt(e.target.value) : undefined)}
+                        value={field.value ?? ''}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
+
           <FormField
             control={form.control}
             name="startsAt"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Starts At</FormLabel>
+              <FormItem className="col-span-full">
+                <FormLabel>Start Date</FormLabel>
                 <FormControl>
-                  <DateTimePicker 
-                    value={field.value} 
-                    onChange={field.onChange} 
+                  <DateTimePicker
+                    value={field.value}
+                    onChange={field.onChange}
                   />
                 </FormControl>
                 <FormMessage />
@@ -243,12 +377,12 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
             control={form.control}
             name="endsAt"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Ends At</FormLabel>
+              <FormItem className="col-span-full">
+                <FormLabel>End Date</FormLabel>
                 <FormControl>
-                  <DateTimePicker 
-                    value={field.value} 
-                    onChange={field.onChange} 
+                  <DateTimePicker
+                    value={field.value}
+                    onChange={field.onChange}
                   />
                 </FormControl>
                 <FormMessage />
@@ -257,25 +391,28 @@ export function AdForm({ children, className, ad, categories, ...props }: AdForm
           />
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-end gap-4">
           <Button variant="outline" asChild>
             <Link href="/admin/ads">Cancel</Link>
           </Button>
+
           <Button 
             type="submit" 
-            disabled={isCreating || isUpdating}
+            disabled={isPending}
             className="min-w-[100px]"
           >
-            {isCreating || isUpdating ? (
+            {isPending ? (
               <div className="flex items-center gap-2">
                 <Loader2Icon className="h-4 w-4 animate-spin" />
                 <span>{ad ? "Updating..." : "Creating..."}</span>
               </div>
             ) : (
-              <span>{ad ? "Update ad" : "Create ad"}</span>
+              <span>{ad ? "Update" : "Create"}</span>
             )}
           </Button>
         </div>
+
+        {children}
       </form>
     </Form>
   )

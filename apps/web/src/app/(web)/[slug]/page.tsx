@@ -1,15 +1,18 @@
 import { AdType, ToolTier } from "@plai/db/client"
+import { AdPlacement } from "@prisma/client"
 import { HashIcon } from "lucide-react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Suspense, cache } from "react"
 import type { ImageObject } from "schema-dts"
-import { FeaturedTools } from "~/app/(web)/[slug]/featured-tools"
+import { FeaturedTools } from "./featured-tools"
+import { ToolClient } from "~/app/(web)/[slug]/client"
 import { H1, H5 } from "~/components/common/heading"
 import { Stack } from "~/components/common/stack"
 import { AdCard, AdCardSkeleton } from "~/components/web/ads/ad-card"
+import { AdBanner, AdBannerSkeleton } from "~/components/web/ads/ad-banner"
 import { ExternalLink } from "~/components/web/external-link"
-import { Markdown } from "~/components/web/markdown"
+import { RichTextContent } from "~/components/admin/rich-text-editor"
 import { ShareButtons } from "~/components/web/share-buttons"
 import { ToolBadges } from "~/components/web/tools/tool-badges"
 import { Badge } from "~/components/web/ui/badge"
@@ -20,10 +23,11 @@ import { IntroDescription } from "~/components/web/ui/intro"
 import { Section } from "~/components/web/ui/section"
 import { Tag } from "~/components/web/ui/tag"
 import { metadataConfig } from "~/config/metadata"
-import { AdOne } from "~/server/web/ads/payloads"
+import type { AdOne } from "~/server/web/ads/payloads"
 import { findAd } from "~/server/web/ads/queries"
 import type { ToolOne } from "~/server/web/tools/payloads"
 import { findToolBySlug, findToolSlugs } from "~/server/web/tools/queries"
+import { ToolSidebarAnalytics } from "./tool-sidebar-analytics"
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -64,14 +68,14 @@ export const generateMetadata = async (props: PageProps): Promise<Metadata> => {
 }
 
 export default async function ToolPage(props: PageProps) {
-  const [tool, ad] = await Promise.all([
+  const [tool, agentAd, verticalRightAd, horizontalTopAd] = await Promise.all([
     getTool(props),
-    findAd({ where: { type: AdType.ToolPage } }),
+    findAd({ where: { type: AdType.ToolPage, placement: AdPlacement.Agent } }),
+    findAd({ where: { type: AdType.ToolPage, placement: AdPlacement.VerticalRight } }),
+    findAd({ where: { type: AdType.ToolPage, placement: AdPlacement.HorizontalTop } }),
   ])
   const { title } = getMetadata(tool)
   const jsonLd: ImageObject[] = []
-
-  console.log("AD:", ad)
 
   if (tool.screenshotUrl) {
     jsonLd.push({
@@ -124,18 +128,21 @@ export default async function ToolPage(props: PageProps) {
 
             <Stack size="sm">
               {tool.website && (
-                <Button asChild>
-                  <ExternalLink
-                    href={tool.website}
-                    rel={tool.tier === ToolTier.Featured ? "noopener noreferrer" : undefined}
-                    eventName="click_website"
-                    eventProps={{ url: tool.website }}
-                  >
-                    Visit {tool.name}
-                  </ExternalLink>
-                </Button>
+                <ToolClient 
+                  slug={tool.slug}
+                  name={tool.name}
+                  website={tool.website}
+                  tier={tool.tier}
+                />
               )}
             </Stack>
+
+            {/* Horizontal Top Banner Ad - Moved below the Visit button */}
+            {horizontalTopAd && (
+              <Suspense fallback={<AdBannerSkeleton orientation="horizontal" />}>
+                <AdBanner ad={horizontalTopAd as AdOne} orientation="horizontal" />
+              </Suspense>
+            )}
           </div>
 
           {tool.screenshotUrl && (
@@ -150,7 +157,14 @@ export default async function ToolPage(props: PageProps) {
             />
           )}
 
-          {tool.content && <Markdown code={tool.content} className="max-md:order-5" />}
+          {tool.content && (
+            <div className="w-full overflow-hidden max-md:order-5">
+              <RichTextContent 
+                content={tool.content} 
+                className="prose-img:max-w-full prose-img:h-auto prose-pre:overflow-x-auto prose-pre:whitespace-pre-wrap break-words" 
+              />
+            </div>
+          )}
 
           {/* Categories */}
           {!!tool.categories.length && (
@@ -186,15 +200,38 @@ export default async function ToolPage(props: PageProps) {
         </Section.Content>
 
         <Section.Sidebar className="max-md:contents">
-          {/* Advertisement */}
-          <Suspense fallback={<AdCardSkeleton className="max-md:order-4" />}>
-            <AdCard ad={ad as AdOne} className="max-md:order-4" />
+          {/* Analytics */}
+          <Suspense fallback={<div className="h-32 bg-gray-100 rounded-lg animate-pulse" />}>
+            <ToolSidebarAnalytics 
+              tool={{
+                impressions: tool.impressions,
+                views: tool.views,
+                clicks: tool.clicks
+              }} 
+              className="max-md:order-3" 
+            />
+          </Suspense>
+          
+          {/* Agent Advertisement */}
+          <Suspense fallback={<div className="h-32 bg-gray-100 rounded-lg animate-pulse" />}>
+            <AdCard ad={agentAd as AdOne} className="max-md:order-4" />
           </Suspense>
 
           {/* Featured */}
-          <Suspense>
-            <FeaturedTools className="max-md:order-10" />
+          <Suspense fallback={<div className="h-64 bg-gray-100 rounded-lg animate-pulse" />}>
+            <FeaturedTools />
           </Suspense>
+          
+          {/* Vertical Right Banner Ad */}
+          {verticalRightAd && (
+            <Suspense fallback={<AdBannerSkeleton orientation="vertical" className="hidden md:block" />}>
+              <AdBanner 
+                ad={verticalRightAd as AdOne} 
+                orientation="vertical" 
+                className="hidden md:block" 
+              />
+            </Suspense>
+          )}
         </Section.Sidebar>
       </Section>
 

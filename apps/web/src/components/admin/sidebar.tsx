@@ -8,6 +8,7 @@ import {
   LayoutDashboardIcon,
   LogOutIcon,
   SparklesIcon,
+  FileTextIcon,
 } from "lucide-react"
 import { signOut } from "next-auth/react"
 import { Nav } from "~/components/admin/nav"
@@ -56,6 +57,11 @@ export const Sidebar = () => {
               title: "Ads",
               href: "/admin/ads",
               prefix: <SparklesIcon />,
+            },
+            {
+              title: "Blog",
+              href: "/admin/blog",
+              prefix: <FileTextIcon />,
             },
           ]}
         />

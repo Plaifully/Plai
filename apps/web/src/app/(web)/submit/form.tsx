@@ -26,7 +26,7 @@ import { Alert, AlertDescription } from "~/components/web/ui/alert"
 import { InfoIcon, CheckIcon, ChevronsUpDown, X as XIcon } from "lucide-react"
 import { Textarea } from "~/components/web/ui/textarea"
 import { findCategories } from "~/server/web/categories/queries"
-import { type CategoryMany } from "~/server/web/categories/payloads"
+import type { CategoryMany } from "~/server/web/categories/payloads"
 import {
   Select,
   SelectContent,
@@ -80,8 +80,6 @@ export const SubmitForm = ({ className, categories, ...props }: SubmitFormProps)
   })
 
   const onSubmit = form.handleSubmit(data => {
-    console.log('Form data being submitted:', data)
-    console.log('Selected category:', data.categories)
     return execute(data)
   })
 
@@ -157,7 +155,6 @@ export const SubmitForm = ({ className, categories, ...props }: SubmitFormProps)
                   <Select
                     value={field.value?.[0] || ""}
                     onValueChange={(value) => {
-                      console.log('Category selected:', value)
                       field.onChange([value])
                     }}
                   >

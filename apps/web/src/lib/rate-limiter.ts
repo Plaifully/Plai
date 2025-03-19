@@ -22,6 +22,12 @@ const limiters = {
     analytics: true,
     limiter: Ratelimit.slidingWindow(2, "24 h"), // 2 attempts per day
   }),
+  
+  "ai-search": new Ratelimit({
+    redis,
+    analytics: true,
+    limiter: Ratelimit.slidingWindow(20, "1 h"), // 20 searches per hour
+  }),
 }
 
 /**

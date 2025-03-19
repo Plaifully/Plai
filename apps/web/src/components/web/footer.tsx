@@ -124,19 +124,9 @@ export const Footer = ({ children, className, hideNewsletter, ...props }: Footer
 
         <Stack direction="column" className="text-sm/normal md:col-span-3">
           <Stack direction="column">
-            <H6 as="strong">Fans Of:</H6>
-
-            {config.links.family.map(({ href, title, description }) => (
-              <NavLink
-                key={href}
-                href={updateUrlWithSearchParams(href, { ref: config.site.name.toLowerCase() })}
-                target="_blank"
-                rel="noreferrer noopener"
-                title={description}
-              >
-                {title}
-              </NavLink>
-            ))}
+            <H6 as="strong">Legal:</H6>
+            <NavLink href="/privacy-policy">Privacy Policy</NavLink>
+            <NavLink href="/terms-and-conditions">Terms and Conditions</NavLink>
           </Stack>
         </Stack>
       </div>

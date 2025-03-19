@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "~/components/admin/ui/select"
 import { Textarea } from "~/components/admin/ui/textarea"
+import { RichTextEditor } from "~/components/admin/rich-text-editor"
 import {
   Form,
   FormControl,
@@ -54,9 +55,7 @@ export function ToolForm({
   const router = useRouter()
   const [isTransitioning, startTransition] = useTransition()
 
-  console.log('Tool categories:', tool?.categories)
   const categoryIds = tool?.categories?.map(({ id }) => id) ?? []
-  console.log('Mapped category IDs:', categoryIds)
 
   const form = useForm<ToolSchema>({
     resolver: zodResolver(toolSchema),
@@ -254,7 +253,12 @@ export function ToolForm({
             <FormItem className="col-span-full">
               <FormLabel>Content</FormLabel>
               <FormControl>
-                <Textarea {...field} />
+                <RichTextEditor 
+                  content={field.value || ""}
+                  onChange={(value) => field.onChange(value)}
+                  placeholder="Write detailed content about this tool..."
+                  className="min-h-[300px]"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
