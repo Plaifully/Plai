@@ -34,7 +34,7 @@ export default async function Home() {
       <section className="flex flex-col gap-y-8 w-full mb-6">
         <Intro alignment="center">
           <IntroTitle className="max-w-[45rem] lg:text-5xl/[1.1]!">
-            Plaiful - Discover Enterprise Agents <span className="bg-clip-text text-transparent bg-primary">built</span> for Banks and Credit Unions.
+            The AI Agent Platform <span className="bg-clip-text text-transparent bg-primary">built</span> for Banks and Credit Unions.
           </IntroTitle>
 
           <IntroDescription className="lg:mt-2">{config.site.description}</IntroDescription>
