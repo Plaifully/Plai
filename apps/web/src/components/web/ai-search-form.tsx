@@ -133,7 +133,8 @@ export const AiSearchForm = ({
             disabled={isPending || !query.trim()}
             className={cn(
               "flex items-center justify-center gap-1 rounded-md font-medium shadow-sm",
-              "bg-primary text-primary-foreground hover:bg-primary/90",
+              "bg-orange-500 text-white hover:bg-orange-600",
+              "transition-transform hover:rotate-3",
               height,
               size === "lg" ? "min-w-32 px-8 text-sm" : "min-w-32 px-4 text-sm",
               "disabled:pointer-events-none disabled:opacity-50",

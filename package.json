@@ -6,9 +6,9 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "start": "turbo start",
-    "lint": "bun biome lint --apply .",
-    "check": "bun biome check --apply .",
-    "format": "bun biome format --organize-imports-enabled --write .",
+    "lint": "bun x @biomejs/biome lint --write .",
+    "check": "bun x @biomejs/biome check --write .",
+    "format": "bun x @biomejs/biome format --write .",
     "typecheck": "turbo typecheck",
     "db:generate": "bun --cwd packages/db db:generate",
     "db:migrate": "bun --cwd packages/db db:migrate",
@@ -23,10 +23,7 @@
     "turbo": "^2.3.3",
     "typescript": "^5.7.2"
   },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "packageManager": "bun@1.1.40",
   "dependencies": {
     "esbuild": "^0.24.2",
