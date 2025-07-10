@@ -11,6 +11,10 @@ export const createGithubClient = (token: string) => {
   return {
     async queryRepository(repository: string): Promise<RepositoryData | null> {
       const repo = getRepository(repository)
+      if (!repo) {
+        console.error(`Invalid repository URL: ${repository}`)
+        return null
+      }
 
       try {
         const { repository } = await client<{ repository: RepositoryQueryResult }>(
