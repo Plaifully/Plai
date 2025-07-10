@@ -10,10 +10,11 @@ export const githubRegex =
  * @param url The GitHub URL from which to extract the owner and name.
  * @returns An object containing the repository owner and name, or null if the URL is invalid.
  */
-export const getRepository = (url: string): Repository => {
+export const getRepository = (url: string): Repository | null => {
   const match = url.toLowerCase().match(githubRegex)
 
-  return match?.groups as Repository
+  if (!match || !match.groups) return null
+  return match.groups as Repository
 }
 
 /**
@@ -22,9 +23,10 @@ export const getRepository = (url: string): Repository => {
  * @param url The GitHub URL from which to extract the owner and name.
  * @returns The repository owner and name as a string.
  */
-export const getRepositoryString = (url: string) => {
-  const { owner, name } = getRepository(url)
-
+export const getRepositoryString = (url: string): string | null => {
+  const repo = getRepository(url)
+  if (!repo) return null
+  const { owner, name } = repo
   return `${owner}/${name}`
 }
 

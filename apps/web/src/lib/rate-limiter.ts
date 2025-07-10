@@ -8,7 +8,7 @@ const limiters = {
   stackAnalysis: new Ratelimit({
     redis,
     analytics: true,
-    limiter: Ratelimit.slidingWindow(10, "12 h"), // 5 attempts per 12 hours
+    limiter: Ratelimit.slidingWindow(10, "12 h"), // 10 attempts per 12 hours
   }),
 
   submission: new Ratelimit({
@@ -22,7 +22,7 @@ const limiters = {
     analytics: true,
     limiter: Ratelimit.slidingWindow(2, "24 h"), // 2 attempts per day
   }),
-  
+
   "ai-search": new Ratelimit({
     redis,
     analytics: true,
