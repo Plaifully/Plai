@@ -16,7 +16,7 @@
   --header-top: 0rem;
 
   --color-primary: hsl(15 63% 40%);
-  --color-background: hsl(0 0% 100%);
+  --color-background: hsl(40 20% 96%);
   --color-muted: hsl(0 0% 40%);
   --color-secondary: hsl(0 0% 30%);
   --color-foreground: hsl(0 0% 13%);
@@ -126,7 +126,7 @@
 @layer base {
   :root {
     --color-primary: hsl(15 63% 40%);
-    --color-background: hsl(0 0% 100%);
+    --color-background: hsl(40 20% 96%);
     --color-muted: hsl(0 0% 40%);
     --color-secondary: hsl(0 0% 30%);
     --color-foreground: hsl(0 0% 13%);
