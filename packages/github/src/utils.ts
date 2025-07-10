@@ -8,12 +8,17 @@ export const githubRegex =
  * Extracts the repository owner and name from a GitHub URL.
  *
  * @param url The GitHub URL from which to extract the owner and name.
- * @returns An object containing the repository owner and name, or null if the URL is invalid.
- */
+ * @returns An object containing the repository owner and name.
+ * @throws Will throw if the URL is not a valid GitHub repository.
+*/
 export const getRepository = (url: string): Repository => {
   const match = url.toLowerCase().match(githubRegex)
 
-  return match?.groups as Repository
+  if (!match || !match.groups) {
+    throw new Error(`Invalid GitHub repository URL: ${url}`)
+  }
+
+  return match.groups as Repository
 }
 
 /**
